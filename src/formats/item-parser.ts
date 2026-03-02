@@ -73,7 +73,6 @@ export interface BinaryParsedItem {
   crafted?: Record<string, number[]>;
   superior?: Record<string, number[]>;
   defense?: number;
-  ethbugged?: boolean;
   quantity?: number;
   ear?: { class: number; level: number; name: string };
   personalized?: string;
@@ -378,14 +377,7 @@ export function createItemParser(
       if (minac <= baseMaxAc + 1 && maxac >= baseMinAc) {
         item.defense = (Math.max(minac, baseMinAc) + Math.min(maxac, baseMaxAc + 1)) >> 1;
       } else {
-        const minac2 = Math.ceil(minac / 1.5);
-        const maxac2 = Math.ceil((maxac + 1) / 1.5) - 1;
-        if (minac2 <= baseMaxAc && maxac2 >= baseMinAc) {
-          item.defense = (Math.max(minac2, baseMinAc) + Math.min(maxac2, baseMaxAc)) >> 1;
-          item.ethbugged = true;
-        } else {
-          item.defense = (minac + maxac) >> 1;
-        }
+        item.defense = (minac + maxac) >> 1;
       }
     }
 

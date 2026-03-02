@@ -129,9 +129,6 @@ export interface ParsedItem {
   /** Base defense (armor items). */
   defense?: number;
 
-  /** Eth-bugged item. */
-  ethbugged?: boolean;
-
   /** Stack quantity (stackable items, potions, etc.). */
   quantity?: number;
 
