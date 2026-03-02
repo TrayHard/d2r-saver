@@ -1,0 +1,259 @@
+[
+  {
+    "name": "Beast",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Eagle",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Raven",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Viper",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "GhoulRI",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Skull",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Blood",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Dread",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Doom",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Grim",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Bone",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Death",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Shadow",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Storm",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Rune",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "PlagueRI",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Stone",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Wraithra",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Spirit",
+    "itype1": "armo",
+    "itype2": "rod"
+  },
+  {
+    "name": "Storm",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Demon",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Cruel",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Empyrion",
+    "itype1": "rod"
+  },
+  {
+    "name": "Bramble",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Pain",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Loath",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Glyph",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Imp",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Fiendra",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Hailstone",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Gale",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Dire",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Soul",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Brimstone",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Corpse",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Carrion",
+    "itype1": "armo",
+    "itype2": "weap"
+  },
+  {
+    "name": "Holocaust",
+    "itype1": "tors",
+    "itype2": "helm",
+    "itype3": "shld",
+    "itype4": "swor",
+    "itype5": "axe"
+  },
+  {
+    "name": "Havoc",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Bitter",
+    "itype1": "armo",
+    "itype2": "weap",
+    "itype3": "misc"
+  },
+  {
+    "name": "Entropy",
+    "itype1": "ring",
+    "itype2": "amul"
+  },
+  {
+    "name": "Chaos",
+    "itype1": "ring",
+    "itype2": "amul"
+  },
+  {
+    "name": "Order",
+    "itype1": "ring",
+    "itype2": "amul",
+    "itype3": "scep"
+  },
+  {
+    "name": "Rule",
+    "itype1": "rod"
+  },
+  {
+    "name": "Warp"
+  },
+  {
+    "name": "Rift"
+  },
+  {
+    "name": "Corruption",
+    "itype1": "ring",
+    "itype2": "amul",
+    "itype3": "undefined",
+    "itype4": "undefined",
+    "itype5": "undefined",
+    "itype6": "undefined",
+    "itype7": "undefined",
+    "etype1": "undefined",
+    "etype2": "undefined",
+    "etype3": "undefined",
+    "etype4": "undefined"
+  }
+]

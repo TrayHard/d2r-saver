@@ -1,0 +1,20 @@
+{
+    "inventory": {
+        "rows": 4,
+        "columns": 10
+    },
+    "cube": {
+        "rows": 4,
+        "columns": 3
+    },
+    "stash": {
+        "rows": 13,
+        "columns": 16
+    },
+    "options": {
+        "etherealBug": false,
+        "setUpgrade": true
+    },
+    "legacyFormat": false,
+    "patch": true
+}

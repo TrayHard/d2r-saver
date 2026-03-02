@@ -1,0 +1,112 @@
+import { readGameFile, writeJson, getString } from '../files.js';
+import { toNumber } from '../to-number.js';
+
+export async function levelsToJson(): Promise<Record<string, unknown>> {
+  const table = await readGameFile('levels');
+  const levels: Record<string, unknown> = {};
+
+  for (const line of table) {
+    if (getString(line[2]).trim() === '') continue;
+    const code = toNumber(line[2]);
+    if (code === undefined) continue;
+
+    const levelname = getString(line[1] + ' ').trim();
+
+    levels[String(code)] = {
+      levelname: (levelname === 'Null' || levelname === '') ? undefined : levelname,
+      mon1: getString(line[75] + ' ').trim() || undefined,
+      mon2: getString(line[76] + ' ').trim() || undefined,
+      mon3: getString(line[77] + ' ').trim() || undefined,
+      mon4: getString(line[78] + ' ').trim() || undefined,
+      mon5: getString(line[79] + ' ').trim() || undefined,
+      mon6: getString(line[80] + ' ').trim() || undefined,
+      mon7: getString(line[81] + ' ').trim() || undefined,
+      mon8: getString(line[82] + ' ').trim() || undefined,
+      mon9: getString(line[83] + ' ').trim() || undefined,
+      mon10: getString(line[84] + ' ').trim() || undefined,
+      mon11: getString(line[85] + ' ').trim() || undefined,
+      mon12: getString(line[86] + ' ').trim() || undefined,
+      mon13: getString(line[87] + ' ').trim() || undefined,
+      mon14: getString(line[88] + ' ').trim() || undefined,
+      mon15: getString(line[89] + ' ').trim() || undefined,
+      mon16: getString(line[90] + ' ').trim() || undefined,
+      mon17: getString(line[91] + ' ').trim() || undefined,
+      mon18: getString(line[92] + ' ').trim() || undefined,
+      mon19: getString(line[93] + ' ').trim() || undefined,
+      mon20: getString(line[94] + ' ').trim() || undefined,
+      mon21: getString(line[95] + ' ').trim() || undefined,
+      mon22: getString(line[96] + ' ').trim() || undefined,
+      mon23: getString(line[97] + ' ').trim() || undefined,
+      mon24: getString(line[98] + ' ').trim() || undefined,
+      mon25: getString(line[99] + ' ').trim() || undefined,
+      nmon1: getString(line[101] + ' ').trim() || undefined,
+      nmon2: getString(line[102] + ' ').trim() || undefined,
+      nmon3: getString(line[103] + ' ').trim() || undefined,
+      nmon4: getString(line[104] + ' ').trim() || undefined,
+      nmon5: getString(line[105] + ' ').trim() || undefined,
+      nmon6: getString(line[106] + ' ').trim() || undefined,
+      nmon7: getString(line[107] + ' ').trim() || undefined,
+      nmon8: getString(line[108] + ' ').trim() || undefined,
+      nmon9: getString(line[109] + ' ').trim() || undefined,
+      nmon10: getString(line[110] + ' ').trim() || undefined,
+      nmon11: getString(line[111] + ' ').trim() || undefined,
+      nmon12: getString(line[112] + ' ').trim() || undefined,
+      nmon13: getString(line[113] + ' ').trim() || undefined,
+      nmon14: getString(line[114] + ' ').trim() || undefined,
+      nmon15: getString(line[115] + ' ').trim() || undefined,
+      nmon16: getString(line[116] + ' ').trim() || undefined,
+      nmon17: getString(line[117] + ' ').trim() || undefined,
+      nmon18: getString(line[118] + ' ').trim() || undefined,
+      nmon19: getString(line[119] + ' ').trim() || undefined,
+      nmon20: getString(line[120] + ' ').trim() || undefined,
+      nmon21: getString(line[121] + ' ').trim() || undefined,
+      nmon22: getString(line[122] + ' ').trim() || undefined,
+      nmon23: getString(line[123] + ' ').trim() || undefined,
+      nmon24: getString(line[124] + ' ').trim() || undefined,
+      nmon25: getString(line[125] + ' ').trim() || undefined,
+      umon1: getString(line[126] + ' ').trim() || undefined,
+      umon2: getString(line[127] + ' ').trim() || undefined,
+      umon3: getString(line[128] + ' ').trim() || undefined,
+      umon4: getString(line[129] + ' ').trim() || undefined,
+      umon5: getString(line[130] + ' ').trim() || undefined,
+      umon6: getString(line[131] + ' ').trim() || undefined,
+      umon7: getString(line[132] + ' ').trim() || undefined,
+      umon8: getString(line[133] + ' ').trim() || undefined,
+      umon9: getString(line[134] + ' ').trim() || undefined,
+      umon10: getString(line[135] + ' ').trim() || undefined,
+      umon11: getString(line[136] + ' ').trim() || undefined,
+      umon12: getString(line[137] + ' ').trim() || undefined,
+      umon13: getString(line[138] + ' ').trim() || undefined,
+      umon14: getString(line[139] + ' ').trim() || undefined,
+      umon15: getString(line[140] + ' ').trim() || undefined,
+      umon16: getString(line[141] + ' ').trim() || undefined,
+      umon17: getString(line[142] + ' ').trim() || undefined,
+      umon18: getString(line[143] + ' ').trim() || undefined,
+      umon19: getString(line[144] + ' ').trim() || undefined,
+      umon20: getString(line[145] + ' ').trim() || undefined,
+      umon21: getString(line[146] + ' ').trim() || undefined,
+      umon22: getString(line[147] + ' ').trim() || undefined,
+      umon23: getString(line[148] + ' ').trim() || undefined,
+      umon24: getString(line[149] + ' ').trim() || undefined,
+      umon25: getString(line[150] + ' ').trim() || undefined,
+      id: code,
+      act: toNumber(line[4]),
+      nummon: toNumber(line[74]),
+      monlvl1: toNumber(line[57]),
+      monlvl2: toNumber(line[58]),
+      monlvl3: toNumber(line[59]),
+      monlvl1ex: toNumber(line[60]),
+      monlvl2ex: toNumber(line[61]),
+      monlvl3ex: toNumber(line[62]),
+      monumin: toNumber(line[66]),
+      monumax: toNumber(line[67]),
+      monuminn: toNumber(line[68]),
+      monumaxn: toNumber(line[69]),
+      monumixh: toNumber(line[70]),
+      monumaxh: toNumber(line[71]),
+    };
+  }
+
+  await writeJson('levels', levels);
+  return levels;
+}

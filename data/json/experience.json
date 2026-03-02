@@ -1,0 +1,406 @@
+{
+  "0": {
+    "amazon": 0,
+    "expratio": 1024
+  },
+  "1": {
+    "amazon": 500,
+    "expratio": 1024
+  },
+  "2": {
+    "amazon": 1500,
+    "expratio": 1024
+  },
+  "3": {
+    "amazon": 3750,
+    "expratio": 1024
+  },
+  "4": {
+    "amazon": 7875,
+    "expratio": 1024
+  },
+  "5": {
+    "amazon": 14175,
+    "expratio": 1024
+  },
+  "6": {
+    "amazon": 22680,
+    "expratio": 1024
+  },
+  "7": {
+    "amazon": 32886,
+    "expratio": 1024
+  },
+  "8": {
+    "amazon": 44396,
+    "expratio": 1024
+  },
+  "9": {
+    "amazon": 57715,
+    "expratio": 1024
+  },
+  "10": {
+    "amazon": 72144,
+    "expratio": 1024
+  },
+  "11": {
+    "amazon": 90180,
+    "expratio": 1024
+  },
+  "12": {
+    "amazon": 112725,
+    "expratio": 1024
+  },
+  "13": {
+    "amazon": 140906,
+    "expratio": 1024
+  },
+  "14": {
+    "amazon": 176132,
+    "expratio": 1024
+  },
+  "15": {
+    "amazon": 220165,
+    "expratio": 1024
+  },
+  "16": {
+    "amazon": 275207,
+    "expratio": 1024
+  },
+  "17": {
+    "amazon": 344008,
+    "expratio": 1024
+  },
+  "18": {
+    "amazon": 430010,
+    "expratio": 1024
+  },
+  "19": {
+    "amazon": 537513,
+    "expratio": 1024
+  },
+  "20": {
+    "amazon": 671891,
+    "expratio": 1024
+  },
+  "21": {
+    "amazon": 839864,
+    "expratio": 1024
+  },
+  "22": {
+    "amazon": 1049830,
+    "expratio": 1024
+  },
+  "23": {
+    "amazon": 1312287,
+    "expratio": 1024
+  },
+  "24": {
+    "amazon": 1640359,
+    "expratio": 1024
+  },
+  "25": {
+    "amazon": 2050449,
+    "expratio": 1024
+  },
+  "26": {
+    "amazon": 2563061,
+    "expratio": 1024
+  },
+  "27": {
+    "amazon": 3203826,
+    "expratio": 1024
+  },
+  "28": {
+    "amazon": 3902260,
+    "expratio": 1024
+  },
+  "29": {
+    "amazon": 4663553,
+    "expratio": 1024
+  },
+  "30": {
+    "amazon": 5493363,
+    "expratio": 1024
+  },
+  "31": {
+    "amazon": 6397855,
+    "expratio": 1024
+  },
+  "32": {
+    "amazon": 7383752,
+    "expratio": 1024
+  },
+  "33": {
+    "amazon": 8458379,
+    "expratio": 1024
+  },
+  "34": {
+    "amazon": 9629723,
+    "expratio": 1024
+  },
+  "35": {
+    "amazon": 10906488,
+    "expratio": 1024
+  },
+  "36": {
+    "amazon": 12298162,
+    "expratio": 1024
+  },
+  "37": {
+    "amazon": 13815086,
+    "expratio": 1024
+  },
+  "38": {
+    "amazon": 15468534,
+    "expratio": 1024
+  },
+  "39": {
+    "amazon": 17270791,
+    "expratio": 1024
+  },
+  "40": {
+    "amazon": 19235252,
+    "expratio": 1024
+  },
+  "41": {
+    "amazon": 21376515,
+    "expratio": 1024
+  },
+  "42": {
+    "amazon": 23710491,
+    "expratio": 1024
+  },
+  "43": {
+    "amazon": 26254525,
+    "expratio": 1024
+  },
+  "44": {
+    "amazon": 29027522,
+    "expratio": 1024
+  },
+  "45": {
+    "amazon": 32050088,
+    "expratio": 1024
+  },
+  "46": {
+    "amazon": 35344686,
+    "expratio": 1024
+  },
+  "47": {
+    "amazon": 38935798,
+    "expratio": 1024
+  },
+  "48": {
+    "amazon": 42850109,
+    "expratio": 1024
+  },
+  "49": {
+    "amazon": 47116709,
+    "expratio": 1024
+  },
+  "50": {
+    "amazon": 51767302,
+    "expratio": 1024
+  },
+  "51": {
+    "amazon": 56836449,
+    "expratio": 1024
+  },
+  "52": {
+    "amazon": 62361819,
+    "expratio": 1024
+  },
+  "53": {
+    "amazon": 68384473,
+    "expratio": 1024
+  },
+  "54": {
+    "amazon": 74949165,
+    "expratio": 1024
+  },
+  "55": {
+    "amazon": 82104680,
+    "expratio": 1024
+  },
+  "56": {
+    "amazon": 89904191,
+    "expratio": 1024
+  },
+  "57": {
+    "amazon": 98405658,
+    "expratio": 1024
+  },
+  "58": {
+    "amazon": 107672256,
+    "expratio": 1024
+  },
+  "59": {
+    "amazon": 117772849,
+    "expratio": 1024
+  },
+  "60": {
+    "amazon": 128782495,
+    "expratio": 1024
+  },
+  "61": {
+    "amazon": 140783010,
+    "expratio": 1024
+  },
+  "62": {
+    "amazon": 153863570,
+    "expratio": 1024
+  },
+  "63": {
+    "amazon": 168121381,
+    "expratio": 1024
+  },
+  "64": {
+    "amazon": 183662396,
+    "expratio": 1024
+  },
+  "65": {
+    "amazon": 200602101,
+    "expratio": 1024
+  },
+  "66": {
+    "amazon": 219066380,
+    "expratio": 1024
+  },
+  "67": {
+    "amazon": 239192444,
+    "expratio": 1024
+  },
+  "68": {
+    "amazon": 261129853,
+    "expratio": 1024
+  },
+  "69": {
+    "amazon": 285041630,
+    "expratio": 1024
+  },
+  "70": {
+    "amazon": 311105466,
+    "expratio": 976
+  },
+  "71": {
+    "amazon": 339515048,
+    "expratio": 928
+  },
+  "72": {
+    "amazon": 370481492,
+    "expratio": 880
+  },
+  "73": {
+    "amazon": 404234916,
+    "expratio": 832
+  },
+  "74": {
+    "amazon": 441026148,
+    "expratio": 784
+  },
+  "75": {
+    "amazon": 481128591,
+    "expratio": 736
+  },
+  "76": {
+    "amazon": 524840254,
+    "expratio": 688
+  },
+  "77": {
+    "amazon": 572485967,
+    "expratio": 640
+  },
+  "78": {
+    "amazon": 624419793,
+    "expratio": 592
+  },
+  "79": {
+    "amazon": 681027665,
+    "expratio": 544
+  },
+  "80": {
+    "amazon": 742730244,
+    "expratio": 496
+  },
+  "81": {
+    "amazon": 809986056,
+    "expratio": 448
+  },
+  "82": {
+    "amazon": 883294891,
+    "expratio": 400
+  },
+  "83": {
+    "amazon": 963201521,
+    "expratio": 352
+  },
+  "84": {
+    "amazon": 1050299747,
+    "expratio": 304
+  },
+  "85": {
+    "amazon": 1145236814,
+    "expratio": 256
+  },
+  "86": {
+    "amazon": 1248718217,
+    "expratio": 192
+  },
+  "87": {
+    "amazon": 1361512946,
+    "expratio": 144
+  },
+  "88": {
+    "amazon": 1484459201,
+    "expratio": 108
+  },
+  "89": {
+    "amazon": 1618470619,
+    "expratio": 81
+  },
+  "90": {
+    "amazon": 1764543065,
+    "expratio": 61
+  },
+  "91": {
+    "amazon": 1923762030,
+    "expratio": 46
+  },
+  "92": {
+    "amazon": 2097310703,
+    "expratio": 35
+  },
+  "93": {
+    "amazon": 2286478756,
+    "expratio": 26
+  },
+  "94": {
+    "amazon": 2492671933,
+    "expratio": 20
+  },
+  "95": {
+    "amazon": 2717422497,
+    "expratio": 15
+  },
+  "96": {
+    "amazon": 2962400612,
+    "expratio": 11
+  },
+  "97": {
+    "amazon": 3229426756,
+    "expratio": 8
+  },
+  "98": {
+    "amazon": 3520485254,
+    "expratio": 6
+  },
+  "99": {
+    "amazon": 3837739017,
+    "expratio": 5
+  },
+  "MaxLvl": {
+    "amazon": 99,
+    "expratio": 10
+  }
+}

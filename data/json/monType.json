@@ -1,0 +1,125 @@
+{
+  "undead": {},
+  "demon": {},
+  "insect": {},
+  "human": {},
+  "construct": {},
+  "lowundead": {
+    "equiv1": "undead"
+  },
+  "highundead": {
+    "equiv1": "undead"
+  },
+  "skeleton": {
+    "equiv1": "lowundead"
+  },
+  "zombie": {
+    "equiv1": "lowundead"
+  },
+  "bighead": {
+    "equiv1": "demon"
+  },
+  "foulcrow": {},
+  "fallen": {
+    "equiv1": "demon"
+  },
+  "brute": {},
+  "sandraider": {},
+  "wraith": {
+    "equiv1": "undead"
+  },
+  "corruptrogue": {
+    "equiv1": "demon"
+  },
+  "baboon": {},
+  "goatman": {
+    "equiv1": "demon"
+  },
+  "quillrat": {},
+  "sandmaggot": {},
+  "clawviper": {
+    "equiv1": "demon"
+  },
+  "sandleaper": {},
+  "pantherwoman": {},
+  "swarm": {
+    "equiv1": "insect"
+  },
+  "scarab": {
+    "equiv1": "insect"
+  },
+  "mummy": {
+    "equiv1": "lowundead"
+  },
+  "unraveler": {
+    "equiv1": "highundead"
+  },
+  "vulture": {},
+  "mosquito": {
+    "equiv1": "insect"
+  },
+  "willowisp": {},
+  "arach": {
+    "equiv1": "insect"
+  },
+  "thornhulk": {},
+  "vampire": {
+    "equiv1": "highundead"
+  },
+  "batdemon": {},
+  "fetish": {
+    "equiv1": "demon"
+  },
+  "blunderbore": {
+    "equiv1": "demon"
+  },
+  "undeadfetish": {
+    "equiv1": "lowundead",
+    "equiv2": "demon"
+  },
+  "zakarum": {},
+  "frogdemon": {},
+  "tentacle": {},
+  "fingermage": {
+    "equiv1": "lowundead"
+  },
+  "golem": {
+    "equiv1": "construct"
+  },
+  "vilekind": {
+    "equiv1": "demon"
+  },
+  "regurgitator": {
+    "equiv1": "demon"
+  },
+  "doomknight": {
+    "equiv1": "lowundead"
+  },
+  "councilmember": {
+    "equiv1": "demon"
+  },
+  "megademon": {
+    "equiv1": "demon"
+  },
+  "bovine": {},
+  "siegebeast": {},
+  "snowyeti": {},
+  "minion": {},
+  "succubus": {
+    "equiv1": "demon"
+  },
+  "overseer": {
+    "equiv1": "demon"
+  },
+  "imp": {
+    "equiv1": "demon"
+  },
+  "frozenhorror": {},
+  "bloodlord": {
+    "equiv1": "demon"
+  },
+  "deathmauler": {},
+  "putriddefiler": {
+    "equiv1": "demon"
+  }
+}

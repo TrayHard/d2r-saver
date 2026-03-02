@@ -1,0 +1,44 @@
+[
+  {
+    "resistpenalty": 0,
+    "monsterskillbonus": 0,
+    "monsterfreezedivisor": 1,
+    "monstercolddivisor": 1,
+    "aicursedivisor": 1,
+    "lifestealdivisor": 1,
+    "manastealdivisor": 1,
+    "uniquedamagebonus": 90,
+    "championdamagebonus": 90,
+    "hireablebossdamagepercent": 50,
+    "mostercedamagepercent": 50,
+    "staticfieldmin": 0
+  },
+  {
+    "resistpenalty": -40,
+    "monsterskillbonus": 3,
+    "monsterfreezedivisor": 2,
+    "monstercolddivisor": 2,
+    "aicursedivisor": 2,
+    "lifestealdivisor": 2,
+    "manastealdivisor": 2,
+    "uniquedamagebonus": 75,
+    "championdamagebonus": 75,
+    "hireablebossdamagepercent": 35,
+    "mostercedamagepercent": 35,
+    "staticfieldmin": 33
+  },
+  {
+    "resistpenalty": -100,
+    "monsterskillbonus": 7,
+    "monsterfreezedivisor": 4,
+    "monstercolddivisor": 4,
+    "aicursedivisor": 4,
+    "lifestealdivisor": 3,
+    "manastealdivisor": 3,
+    "uniquedamagebonus": 66,
+    "championdamagebonus": 66,
+    "hireablebossdamagepercent": 25,
+    "mostercedamagepercent": 20,
+    "staticfieldmin": 50
+  }
+]

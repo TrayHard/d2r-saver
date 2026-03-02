@@ -1,0 +1,222 @@
+{
+  "baboon6": {
+    "prop1": "fade",
+    "prop1n": "fade",
+    "prop1h": "fade",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 2,
+    "max1n": 2,
+    "min1h": 2,
+    "max1h": 2
+  },
+  "irongolem": {
+    "prop1": "fade",
+    "prop1n": "fade",
+    "prop1h": "fade",
+    "min1": 16,
+    "max1": 16,
+    "min1n": 16,
+    "max1n": 16,
+    "min1h": 16,
+    "max1h": 16
+  },
+  "mephisto": {
+    "prop1n": "cast2",
+    "prop2n": "swing2",
+    "prop1h": "cast2",
+    "prop2h": "swing2",
+    "min1n": 15,
+    "min2n": 15,
+    "max1n": 15,
+    "max2n": 15,
+    "min1h": 30,
+    "min2h": 30,
+    "max1h": 30,
+    "max2h": 30
+  },
+  "blunderbore": {
+    "prop1n": "crush",
+    "prop1h": "crush",
+    "min1n": 15,
+    "max1n": 15,
+    "min1h": 25,
+    "max1h": 25
+  },
+  "councilmember1": {
+    "prop1n": "extra-fire",
+    "prop1h": "extra-fire",
+    "min1n": 40,
+    "max1n": 40,
+    "min1h": 100,
+    "max1h": 100
+  },
+  "councilmember2": {
+    "prop1n": "extra-fire",
+    "prop1h": "extra-fire",
+    "min1n": 40,
+    "max1n": 40,
+    "min1h": 100,
+    "max1h": 100
+  },
+  "councilmember3": {
+    "prop1n": "extra-fire",
+    "prop1h": "extra-fire",
+    "min1n": 40,
+    "max1n": 40,
+    "min1h": 100,
+    "max1h": 100
+  },
+  "baalhighpriest": {
+    "prop1n": "extra-fire",
+    "prop1h": "extra-fire",
+    "min1n": 60,
+    "max1n": 60,
+    "min1h": 120,
+    "max1h": 120
+  },
+  "bloodraven": {
+    "prop1h": "knock",
+    "min1h": 1,
+    "max1h": 1
+  },
+  "quillrat6": {
+    "prop1n": "thorns",
+    "prop1h": "thorns",
+    "min1n": 15,
+    "max1n": 20,
+    "min1h": 30,
+    "max1h": 40
+  },
+  "quillrat7": {
+    "prop1n": "thorns",
+    "prop1h": "thorns",
+    "min1n": 15,
+    "max1n": 20,
+    "min1h": 30,
+    "max1h": 40
+  },
+  "quillrat8": {
+    "prop1n": "thorns",
+    "prop1h": "thorns",
+    "min1n": 15,
+    "max1n": 20,
+    "min1h": 30,
+    "max1h": 40
+  },
+  "druidhawk": {
+    "prop1": "stupidity",
+    "prop1n": "stupidity",
+    "prop1h": "stupidity",
+    "min1": -1,
+    "max1": -1,
+    "min1n": -1,
+    "max1n": -1,
+    "min1h": -1,
+    "max1h": -1
+  },
+  "spiritofbarbsprop": {
+    "prop1": "aura",
+    "prop1n": "aura",
+    "prop1h": "aura",
+    "min1": 20,
+    "max1": 20,
+    "min1n": 20,
+    "max1n": 20,
+    "min1h": 20,
+    "max1h": 20
+  },
+  "uber": {
+    "prop1h": "state",
+    "min1h": 1,
+    "max1h": 1
+  },
+  "obelisk": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playerpal": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playersor": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playerdru": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playerass": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playerbar": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playernec": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  },
+  "playerama": {
+    "prop1": "state",
+    "prop1n": "state",
+    "prop1h": "state",
+    "min1": 1,
+    "max1": 1,
+    "min1n": 1,
+    "max1n": 1,
+    "min1h": 1,
+    "max1h": 1
+  }
+}

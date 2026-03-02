@@ -1,0 +1,663 @@
+{
+  "0": {
+    "state": "none"
+  },
+  "1": {
+    "state": "freeze"
+  },
+  "2": {
+    "state": "poison"
+  },
+  "3": {
+    "state": "resistfire"
+  },
+  "4": {
+    "state": "resistcold"
+  },
+  "5": {
+    "state": "resistlight"
+  },
+  "6": {
+    "state": "resistmagic"
+  },
+  "7": {
+    "state": "playerbody"
+  },
+  "8": {
+    "state": "resistall"
+  },
+  "9": {
+    "state": "amplifydamage"
+  },
+  "10": {
+    "state": "frozenarmor",
+    "group": 1
+  },
+  "11": {
+    "state": "cold"
+  },
+  "12": {
+    "state": "inferno"
+  },
+  "13": {
+    "state": "blaze"
+  },
+  "14": {
+    "state": "bonearmor",
+    "group": 1
+  },
+  "15": {
+    "state": "concentrate"
+  },
+  "16": {
+    "state": "enchant"
+  },
+  "17": {
+    "state": "innersight",
+    "curse": 1
+  },
+  "18": {
+    "state": "skill_move"
+  },
+  "19": {
+    "state": "weaken"
+  },
+  "20": {
+    "state": "chillingarmor",
+    "group": 1
+  },
+  "21": {
+    "state": "stunned"
+  },
+  "22": {
+    "state": "spiderlay"
+  },
+  "23": {
+    "state": "dimvision"
+  },
+  "24": {
+    "state": "slowed"
+  },
+  "25": {
+    "state": "fetishaura"
+  },
+  "26": {
+    "state": "shout"
+  },
+  "27": {
+    "state": "taunt"
+  },
+  "28": {
+    "state": "conviction"
+  },
+  "29": {
+    "state": "convicted",
+    "curse": 1
+  },
+  "30": {
+    "state": "energyshield"
+  },
+  "31": {
+    "state": "venomclaws"
+  },
+  "32": {
+    "state": "battleorders"
+  },
+  "33": {
+    "state": "might"
+  },
+  "34": {
+    "state": "prayer"
+  },
+  "35": {
+    "state": "holyfire"
+  },
+  "36": {
+    "state": "thorns"
+  },
+  "37": {
+    "state": "defiance"
+  },
+  "38": {
+    "state": "thunderstorm"
+  },
+  "39": {
+    "state": "lightningbolt"
+  },
+  "40": {
+    "state": "blessedaim"
+  },
+  "41": {
+    "state": "stamina"
+  },
+  "42": {
+    "state": "concentration"
+  },
+  "43": {
+    "state": "holywind"
+  },
+  "44": {
+    "state": "holywindcold"
+  },
+  "45": {
+    "state": "cleansing"
+  },
+  "46": {
+    "state": "holyshock"
+  },
+  "47": {
+    "state": "sanctuary"
+  },
+  "48": {
+    "state": "meditation"
+  },
+  "49": {
+    "state": "fanaticism"
+  },
+  "50": {
+    "state": "redemption"
+  },
+  "51": {
+    "state": "battlecommand"
+  },
+  "52": {
+    "state": "preventheal"
+  },
+  "53": {
+    "state": "conversion"
+  },
+  "54": {
+    "state": "uninterruptable"
+  },
+  "55": {
+    "state": "ironmaiden"
+  },
+  "56": {
+    "state": "terror"
+  },
+  "57": {
+    "state": "attract"
+  },
+  "58": {
+    "state": "lifetap"
+  },
+  "59": {
+    "state": "confuse"
+  },
+  "60": {
+    "state": "decrepify"
+  },
+  "61": {
+    "state": "lowerresist"
+  },
+  "62": {
+    "state": "openwounds"
+  },
+  "63": {
+    "state": "dopplezon",
+    "aura": 1
+  },
+  "64": {
+    "state": "criticalstrike"
+  },
+  "65": {
+    "state": "dodge"
+  },
+  "66": {
+    "state": "avoid"
+  },
+  "67": {
+    "state": "penetrate"
+  },
+  "68": {
+    "state": "evade"
+  },
+  "69": {
+    "state": "pierce"
+  },
+  "70": {
+    "state": "warmth"
+  },
+  "71": {
+    "state": "firemastery"
+  },
+  "72": {
+    "state": "lightningmastery"
+  },
+  "73": {
+    "state": "coldmastery"
+  },
+  "74": {
+    "state": "blademastery"
+  },
+  "75": {
+    "state": "axemastery"
+  },
+  "76": {
+    "state": "macemastery"
+  },
+  "77": {
+    "state": "polearmmastery"
+  },
+  "78": {
+    "state": "throwingmastery"
+  },
+  "79": {
+    "state": "spearmastery"
+  },
+  "80": {
+    "state": "increasedstamina"
+  },
+  "81": {
+    "state": "ironskin"
+  },
+  "82": {
+    "state": "increasedspeed"
+  },
+  "83": {
+    "state": "naturalresistance"
+  },
+  "84": {
+    "state": "fingermagecurse"
+  },
+  "85": {
+    "state": "nomanaregen"
+  },
+  "86": {
+    "state": "justhit",
+    "group": 1
+  },
+  "87": {
+    "state": "slowmissiles"
+  },
+  "88": {
+    "state": "shiverarmor",
+    "group": 1
+  },
+  "89": {
+    "state": "battlecry"
+  },
+  "90": {
+    "state": "blue"
+  },
+  "91": {
+    "state": "red"
+  },
+  "92": {
+    "state": "death_delay"
+  },
+  "93": {
+    "state": "valkyrie",
+    "aura": 1
+  },
+  "94": {
+    "state": "frenzy"
+  },
+  "95": {
+    "state": "berserk"
+  },
+  "96": {
+    "state": "revive"
+  },
+  "97": {
+    "state": "skel_mastery"
+  },
+  "98": {
+    "state": "sourceunit"
+  },
+  "99": {
+    "state": "redeemed"
+  },
+  "100": {
+    "state": "healthpot"
+  },
+  "101": {
+    "state": "holyshield",
+    "aura": 1
+  },
+  "102": {
+    "state": "just_portaled"
+  },
+  "103": {
+    "state": "monfrenzy"
+  },
+  "104": {
+    "state": "corpse_nodraw"
+  },
+  "105": {
+    "state": "alignment",
+    "sunderfull": 1
+  },
+  "106": {
+    "state": "manapot"
+  },
+  "107": {
+    "state": "shatter"
+  },
+  "108": {
+    "state": "sync_warped",
+    "sunderfull": 1
+  },
+  "109": {
+    "state": "conversion_save"
+  },
+  "110": {
+    "state": "pregnant"
+  },
+  "111": {
+    "state": "golem_mastery"
+  },
+  "112": {
+    "state": "rabies"
+  },
+  "113": {
+    "state": "defense_curse",
+    "curse": 1
+  },
+  "114": {
+    "state": "blood_mana"
+  },
+  "115": {
+    "state": "burning"
+  },
+  "116": {
+    "state": "dragonflight"
+  },
+  "117": {
+    "state": "maul",
+    "group": 3
+  },
+  "118": {
+    "state": "corpse_noselect",
+    "sunderfull": 1
+  },
+  "119": {
+    "state": "shadowwarrior",
+    "aura": 1
+  },
+  "120": {
+    "state": "feralrage",
+    "group": 3
+  },
+  "121": {
+    "state": "skilldelay"
+  },
+  "122": {
+    "state": "progressive_damage"
+  },
+  "123": {
+    "state": "progressive_steal"
+  },
+  "124": {
+    "state": "progressive_other"
+  },
+  "125": {
+    "state": "progressive_fire"
+  },
+  "126": {
+    "state": "progressive_cold"
+  },
+  "127": {
+    "state": "progressive_lightning"
+  },
+  "128": {
+    "state": "shrine_armor"
+  },
+  "129": {
+    "state": "shrine_combat"
+  },
+  "130": {
+    "state": "shrine_resist_lightning"
+  },
+  "131": {
+    "state": "shrine_resist_fire"
+  },
+  "132": {
+    "state": "shrine_resist_cold"
+  },
+  "133": {
+    "state": "shrine_resist_poison"
+  },
+  "134": {
+    "state": "shrine_skill"
+  },
+  "135": {
+    "state": "shrine_mana_regen"
+  },
+  "136": {
+    "state": "shrine_stamina"
+  },
+  "137": {
+    "state": "shrine_experience"
+  },
+  "138": {
+    "state": "fenris_rage"
+  },
+  "139": {
+    "state": "wolf",
+    "group": 3,
+    "aura": 1
+  },
+  "140": {
+    "state": "bear",
+    "group": 3,
+    "aura": 1
+  },
+  "141": {
+    "state": "bloodlust"
+  },
+  "142": {
+    "state": "changeclass"
+  },
+  "143": {
+    "state": "attached"
+  },
+  "144": {
+    "state": "hurricane"
+  },
+  "145": {
+    "state": "armageddon"
+  },
+  "146": {
+    "state": "invis"
+  },
+  "147": {
+    "state": "barbs"
+  },
+  "148": {
+    "state": "wolverine"
+  },
+  "149": {
+    "state": "oaksage"
+  },
+  "150": {
+    "state": "vine_beast"
+  },
+  "151": {
+    "state": "cyclonearmor"
+  },
+  "152": {
+    "state": "clawmastery"
+  },
+  "153": {
+    "state": "cloak_of_shadows",
+    "restrict": 1
+  },
+  "154": {
+    "state": "recycled"
+  },
+  "155": {
+    "state": "weaponblock"
+  },
+  "156": {
+    "state": "cloaked",
+    "curse": 1
+  },
+  "157": {
+    "state": "quickness",
+    "group": 2
+  },
+  "158": {
+    "state": "bladeshield"
+  },
+  "159": {
+    "state": "fade",
+    "group": 2
+  },
+  "160": {
+    "state": "summonresist"
+  },
+  "161": {
+    "state": "oaksagecontrol"
+  },
+  "162": {
+    "state": "wolverinecontrol"
+  },
+  "163": {
+    "state": "barbscontrol"
+  },
+  "164": {
+    "state": "debugcontrol"
+  },
+  "165": {
+    "state": "itemset1"
+  },
+  "166": {
+    "state": "itemset2"
+  },
+  "167": {
+    "state": "itemset3"
+  },
+  "168": {
+    "state": "itemset4"
+  },
+  "169": {
+    "state": "itemset5"
+  },
+  "170": {
+    "state": "itemset6"
+  },
+  "171": {
+    "state": "runeword"
+  },
+  "172": {
+    "state": "restinpeace"
+  },
+  "173": {
+    "state": "corpseexp"
+  },
+  "174": {
+    "state": "whirlwind"
+  },
+  "175": {
+    "state": "fullsetgeneric"
+  },
+  "176": {
+    "state": "monsterset",
+    "group": 3,
+    "aura": 1
+  },
+  "177": {
+    "state": "delerium",
+    "group": 3,
+    "aura": 1
+  },
+  "178": {
+    "state": "antidote"
+  },
+  "179": {
+    "state": "thawing"
+  },
+  "180": {
+    "state": "staminapot"
+  },
+  "181": {
+    "state": "passive_resistfire"
+  },
+  "182": {
+    "state": "passive_resistcold"
+  },
+  "183": {
+    "state": "passive_resistltng"
+  },
+  "184": {
+    "state": "uberminion"
+  },
+  "185": {
+    "state": "cooldown"
+  },
+  "186": {
+    "state": "sharedstash"
+  },
+  "187": {
+    "state": "hidedead",
+    "sunderfull": 1
+  },
+  "188": {
+    "state": "impale"
+  },
+  "189": {
+    "state": "desecrated"
+  },
+  "190": {
+    "state": "markbear",
+    "group": 4
+  },
+  "191": {
+    "state": "markwolf",
+    "group": 5
+  },
+  "192": {
+    "state": "obelisk"
+  },
+  "193": {
+    "state": "uber"
+  },
+  "194": {
+    "state": "cowkingrset",
+    "group": 3,
+    "aura": 1
+  },
+  "195": {
+    "state": "diablotr",
+    "group": 3,
+    "aura": 1
+  },
+  "196": {
+    "state": "vengeance"
+  },
+  "197": {
+    "state": "dummystate"
+  },
+  "198": {
+    "state": "playerpalstate",
+    "aura": 1
+  },
+  "199": {
+    "state": "playersorstate",
+    "aura": 1
+  },
+  "200": {
+    "state": "playerdrustate",
+    "aura": 1
+  },
+  "201": {
+    "state": "playerassstate",
+    "aura": 1
+  },
+  "202": {
+    "state": "playerbarstate",
+    "aura": 1
+  },
+  "203": {
+    "state": "playernecstate",
+    "aura": 1
+  },
+  "204": {
+    "state": "playeramastate",
+    "aura": 1
+  },
+  "205": {
+    "state": "rednew"
+  }
+}
