@@ -21,7 +21,7 @@
 import { BitWriter } from '../core/binary-writer.js';
 import { GameData } from '../game-data/game-data.js';
 import type { BinaryParsedItem } from './item-parser.js';
-import type { D2IStashPage, ExtendedPageType } from './d2i-reader.js';
+import type { D2IStashPage } from './d2i-reader.js';
 import { writeItemList, type ItemWriteEntry } from './item-writer.js';
 
 // ─── Constants ──────────────────────────────────────────────────

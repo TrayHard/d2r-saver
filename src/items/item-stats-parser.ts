@@ -11,10 +11,10 @@
  * Uses GameData instead of global Data singleton.
  */
 
-import { GameData, type LocaleStore } from '../game-data/game-data.js';
+import { GameData } from '../game-data/game-data.js';
 import type { StatValue } from './item.js';
 import { modsToStats, uniqueStats, runewordStats } from './item.js';
-import { isSubType, itemGetTypes, itemCheckMod, itemGetType } from './item-types.js';
+import { itemGetTypes, itemCheckMod, itemGetType } from './item-types.js';
 
 // ─── Types ──────────────────────────────────────────────────────
 

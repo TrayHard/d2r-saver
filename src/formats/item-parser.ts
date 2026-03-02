@@ -10,7 +10,6 @@
 
 import type { BinaryReader } from '../core/binary-reader.js';
 import type { GameData } from '../game-data/game-data.js';
-import type { ItemQuality } from '../types/constants.js';
 import { itemGetTypes, isSubType, presetItemIds } from '../items/item-types.js';
 import {
   parseParamStats,

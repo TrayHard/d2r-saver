@@ -11,7 +11,7 @@
 import { BitWriter } from '../core/binary-writer.js';
 import { GameData } from '../game-data/game-data.js';
 import type { BinaryParsedItem } from './item-parser.js';
-import { presetItemIds, itemGetTypes, isSubType } from '../items/item-types.js';
+import { presetItemIds, itemGetTypes } from '../items/item-types.js';
 import { modsToStats, runewordStats } from '../items/item.js';
 
 // ─── Constants ──────────────────────────────────────────────────

@@ -11,8 +11,7 @@ import { readD2I, type D2IStashPage } from '../formats/d2i-reader.js';
 import { patchStashPage, type WriteStashPage } from '../formats/d2i-writer.js';
 import type { BinaryParsedItem } from '../formats/item-parser.js';
 import type { ItemWriteEntry, ItemWriteLocation } from '../formats/item-writer.js';
-import { buildGrid, findFreeSlot, canPlaceItem, placeItem } from '../inventory/placement.js';
-import { StashGrid } from '../inventory/grid.js';
+import { buildGrid, findFreeSlot, canPlaceItem } from '../inventory/placement.js';
 import { STASH, INVENTORY, CUBE, type GridSize } from '../inventory/dimensions.js';
 
 // ─── Types ──────────────────────────────────────────────────────
@@ -59,7 +58,7 @@ export function insertItemD2S(
 ): InsertResult {
   const { profile, items } = readD2S(buffer, gd);
 
-  const { size, slots, storageBit } = getTargetInfo(profile, target);
+  const { size, slots } = getTargetInfo(profile, target);
 
   // Build occupancy grid
   const grid = buildGrid(size, slots, items, gd);
@@ -90,7 +89,6 @@ export function insertItemD2S(
 
   // Register item and its sockets in the save's items dict
   items[newId] = newItem;
-  const socketIdMap = new Map<number | string, number>();
   let nextSocketId = newId + 1;
   if (item.socketedItems) {
     const newSocketedIds: number[] = [];
@@ -98,7 +96,6 @@ export function insertItemD2S(
       const sockItem = allItemsForItem[oldSid];
       if (sockItem) {
         items[nextSocketId] = { ...sockItem, itemId: nextSocketId };
-        socketIdMap.set(oldSid, nextSocketId);
         newSocketedIds.push(nextSocketId);
         nextSocketId++;
       }
@@ -221,14 +218,14 @@ export function insertItemD2I(
 function getTargetInfo(
   profile: D2SCharacterProfile,
   target: InsertD2STarget,
-): { size: GridSize; slots: (number | undefined)[]; storageBit: number } {
+): { size: GridSize; slots: (number | undefined)[] } {
   switch (target) {
     case 'stash':
-      return { size: STASH, slots: profile.stash, storageBit: 5 };
+      return { size: STASH, slots: profile.stash };
     case 'inventory':
-      return { size: INVENTORY, slots: profile.inventory, storageBit: 1 };
+      return { size: INVENTORY, slots: profile.inventory };
     case 'cube':
-      return { size: CUBE, slots: profile.cube, storageBit: 4 };
+      return { size: CUBE, slots: profile.cube };
     default:
       throw new Error(`INVALID_TARGET: unknown target '${target}'`);
   }

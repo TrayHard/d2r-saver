@@ -4,13 +4,12 @@
  * @packageDocumentation
  */
 
-import { readFileSync } from 'node:fs';
 import { GameData } from './game-data/game-data.js';
 import type { RawGameData } from './game-data/types.js';
 import type { LocaleArray } from './game-data/loader.js';
 import { detectFormat, type DetectedFormat } from './formats/detect.js';
 import { readD2S, type D2SReadResult } from './formats/d2s-reader.js';
-import { readD2I, type D2IReadResult, type D2IStashPage } from './formats/d2i-reader.js';
+import { readD2I, type D2IReadResult } from './formats/d2i-reader.js';
 import type { BinaryParsedItem } from './formats/item-parser.js';
 import {
   extractItemD2S,
@@ -32,7 +31,7 @@ import {
 } from './items/item-serializer.js';
 import { getItemIconPath, getItemIconSD } from './items/item-icon.js';
 import { toTradeDTO, type TradeItemDTO } from './items/item-dto.js';
-import { canPlaceItem, findFreeSlot, findFreeSlotInStash, buildGrid, type PlacementItem } from './inventory/placement.js';
+import { canPlaceItem, findFreeSlot, findFreeSlotInStash, type PlacementItem } from './inventory/placement.js';
 import { StashGrid } from './inventory/grid.js';
 import { D2RSaverError, ErrorCode } from './types/errors.js';
 

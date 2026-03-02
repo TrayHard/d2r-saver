@@ -8,7 +8,7 @@ import { GameData } from '../game-data/game-data.js';
 import { readD2S, type D2SCharacterProfile } from '../formats/d2s-reader.js';
 import { writeD2S } from '../formats/d2s-writer.js';
 import { readD2I, type D2IStashPage } from '../formats/d2i-reader.js';
-import { patchStashPage, buildStashWritePages, writeStash, type WriteStashPage } from '../formats/d2i-writer.js';
+import { patchStashPage, type WriteStashPage } from '../formats/d2i-writer.js';
 import type { BinaryParsedItem } from '../formats/item-parser.js';
 import type { ItemWriteEntry, ItemWriteLocation } from '../formats/item-writer.js';
 
