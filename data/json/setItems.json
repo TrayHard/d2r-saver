@@ -4280,7 +4280,11 @@
     "amax1a": 3,
     "amax2a": 30,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "knife/banes_spire",
+      "knife/banes_spire",
+      "knife/banes_spire"
+    ]
   },
   "set133": {
     "index": "Bane's Wraithskin",
@@ -4304,7 +4308,11 @@
     "amin2a": 25,
     "amax2a": 25,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "armor/hard_leather_armor",
+      "armor/hard_leather_armor",
+      "armor/hard_leather_armor"
+    ]
   },
   "set134": {
     "index": "Bane's Authority",
@@ -4326,7 +4334,11 @@
     "amin2a": 15,
     "amax2a": 15,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "belt/light_belt",
+      "belt/light_belt",
+      "belt/light_belt"
+    ]
   },
   "set135": {
     "index": "Horazon's Countenance",
@@ -4361,7 +4373,11 @@
     "amax2a": 15,
     "amax3a": 15,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "helmet/horazons_countenance",
+      "helmet/horazons_countenance",
+      "helmet/horazons_countenance"
+    ]
   },
   "set136": {
     "index": "Horazon's Dominion",
@@ -4404,7 +4420,11 @@
     "amax3a": 15,
     "amax5a": 15,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "armor/splint_mail",
+      "armor/splint_mail",
+      "armor/splint_mail"
+    ]
   },
   "set137": {
     "index": "Horazon's Hold",
@@ -4440,7 +4460,11 @@
     "amax2a": 7,
     "amax3a": 7,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "glove/gloves_l",
+      "glove/gloves_l",
+      "glove/gloves_l"
+    ]
   },
   "set138": {
     "index": "Horazon's Legacy",
@@ -4476,7 +4500,11 @@
     "amax1a": 10,
     "amax2a": 5,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "boot/light_plate_boots",
+      "boot/light_plate_boots",
+      "boot/light_plate_boots"
+    ]
   },
   "set139": {
     "index": "Horazon's Secrets",
@@ -4516,6 +4544,10 @@
     "amax2a": 25,
     "amax3a": 15,
     "rarity": 7,
-    "hd": []
+    "hd": [
+      "grimoires/ars_torbaalos",
+      "grimoires/ars_torbaalos",
+      "grimoires/ars_torbaalos"
+    ]
   }
 }

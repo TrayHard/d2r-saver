@@ -4642,7 +4642,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "shard/mote_of_anguish"
   },
   "xa2": {
     "name": "Eastern Worldstone Shard",
@@ -4674,7 +4674,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "shard/mote_of_pain"
   },
   "xa3": {
     "name": "Southern Worldstone Shard",
@@ -4706,7 +4706,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "shard/mote_of_hatred"
   },
   "xa4": {
     "name": "Deep Worldstone Shard",
@@ -4738,7 +4738,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "shard/mote_of_terror"
   },
   "xa5": {
     "name": "Northern Worldstone Shard",
@@ -4770,7 +4770,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "shard/mote_of_destruction"
   },
   "ua1": {
     "name": "Uber Ancient Summon Material Act 1",
@@ -4801,7 +4801,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "shard/talics_anguish"
   },
   "ua2": {
     "name": "Uber Ancient Summon Material Act 2",
@@ -4832,7 +4832,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "shard/korlics_pain"
   },
   "ua3": {
     "name": "Uber Ancient Summon Material Act 3",
@@ -4863,7 +4863,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "shard/madawcs_ire"
   },
   "ua4": {
     "name": "Uber Ancient Summon Material Act 4",
@@ -4894,7 +4894,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "shard/bulkathos_nightmare"
   },
   "ua5": {
     "name": "Uber Ancient Summon Material Act5",
@@ -4925,7 +4925,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "shard/worusks_end"
   },
   "um1": {
     "name": "Uber Ancient Upgrade Material  Fire",
@@ -4954,7 +4954,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "body_part/fragment_cold"
   },
   "um2": {
     "name": "Uber Ancient Upgrade Material Poison",
@@ -4983,7 +4983,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "body_part/fragment_magic"
   },
   "um3": {
     "name": "Uber Ancient Upgrade Material  Cold",
@@ -5012,7 +5012,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "body_part/fragment_lightning"
   },
   "um4": {
     "name": "Uber Ancient Upgrade Material Physical",
@@ -5041,7 +5041,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "body_part/fragment_fire"
   },
   "um5": {
     "name": "Uber Ancient Upgrade Material Lightning",
@@ -5070,7 +5070,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "body_part/fragment_physical"
   },
   "um6": {
     "name": "Uber Ancient Upgrade Material Magic",
@@ -5099,7 +5099,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "body_part/fragment_poison"
   },
   "cjw": {
     "name": "Colossal Jewel",
@@ -5128,7 +5128,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "gem/perfect_diamond"
   },
   "cs2": {
     "name": "Crafted Sunder Charm",
@@ -5157,7 +5157,7 @@
     "invtrans": 8,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "charm/talisman"
   },
   "cm4": {
     "name": "Grand Charm Sunder",
@@ -5583,7 +5583,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": "gem/perfect_diamond"
+    "hd": "quest/jewel_dis"
   },
   "sth": {
     "name": "Heroic Offering",
@@ -5614,7 +5614,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "quest/heroic_offering"
   },
   "p14": {
     "name": "Scroll of Blood",
@@ -5645,7 +5645,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "quest/bark_scroll"
   },
   "p15": {
     "name": "Amulet Diablo 2",
@@ -5674,6 +5674,6 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "amulet/amulet"
   }
 }

@@ -7506,7 +7506,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/oldbook"
   },
   "wa2": {
     "name": "Tome",
@@ -7543,7 +7543,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/tome_book"
   },
   "wa3": {
     "name": "Codex",
@@ -7580,7 +7580,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/codex"
   },
   "wa4": {
     "name": "Compendium",
@@ -7617,7 +7617,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/compendium"
   },
   "wa5": {
     "name": "Grimoire",
@@ -7654,7 +7654,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/grimoire"
   },
   "wa6": {
     "name": "Burnt Text",
@@ -7691,7 +7691,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/oldbook"
   },
   "wa7": {
     "name": "Dark Tome",
@@ -7728,7 +7728,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/tome_book"
   },
   "wa8": {
     "name": "Dark Codex",
@@ -7765,7 +7765,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/codex"
   },
   "wa9": {
     "name": "Possessed Compendium",
@@ -7802,7 +7802,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/compendium"
   },
   "waa": {
     "name": "Possessed Grimoire",
@@ -7839,7 +7839,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/grimoire"
   },
   "wab": {
     "name": "Forgotten Volume",
@@ -7876,7 +7876,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/oldbook"
   },
   "wac": {
     "name": "Occult Tome",
@@ -7913,7 +7913,7 @@
     "maxdam": 0,
     "invtrans": 8,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/tome_book"
   },
   "wad": {
     "name": "Occult Codex",
@@ -7950,7 +7950,7 @@
     "maxdam": 0,
     "invtrans": 0,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/codex"
   },
   "wae": {
     "name": "Blasphemous Compendium",
@@ -7987,7 +7987,7 @@
     "maxdam": 0,
     "invtrans": 8,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/compendium"
   },
   "waf": {
     "name": "Blasphemous Grimoire",
@@ -8024,7 +8024,7 @@
     "maxdam": 0,
     "invtrans": 8,
     "skipname": 0,
-    "hd": []
+    "hd": "grimoires/grimoire"
   },
   "p01": {
     "name": "Monarch 99",
