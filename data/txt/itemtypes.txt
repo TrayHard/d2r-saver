@@ -31,7 +31,7 @@ Axe	axe	mele		1	1	rarm	larm			0	0	0	0		1	0	0	4	25	5	40	6	0	3			0							weap	0
 Club	club	blun		1	1	rarm	larm			0	0	0	0		1	0	0	3	25	4	40	6	0	3			0							weap	0
 Sword	swor	blde		1	1	rarm	larm			0	0	0	0		1	0	0	3	25	4	40	6	0	3			0							weap	0
 Hammer	hamm	blun		1	1	rarm	larm			0	0	0	0		1	0	0	3	25	4	40	6	0	3			0							weap	0
-Knife	knif	blde		1	1	rarm	larm			0	0	0	0		1	0	0	2	25	3	40	3	0	3			0							weap	0
+Knife	knif	blde		1	1	rarm	larm			0	0	0	0		1	0	0	2	25	3	40	3	0	3	war		0							weap	0
 Spear	spea	sppl		1	1	rarm	larm			0	0	0	0		1	0	0	3	25	4	40	6	0	3			0							weap	0
 Polearm	pole	sppl		1	1	rarm	larm			0	0	0	0		1	0	0	3	25	4	40	6	0	3			0							weap	0
 Crossbow	xbow	miss		1	1	rarm	larm	xboq		0	0	0	0		1	0	0	3	25	4	40	6	0	3			0							weap	0
@@ -57,7 +57,7 @@ Second Hand	seco			0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	3			0								0
 Staves And Rods	rod	blun		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	3			0								0
 Missile	misl	misc		0	0					0	0	0	0			0	0	0	25	0	40	0	0	3			0								0
 Blunt	blun	mele		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	3			0								0
-Expansion																																			0
+Expansion																																			
 Jewel	jewl	sock		0	0					0	0	0	0	1	1	0	0	0	25	0	40	0	0	3			6	invjw1	invjw2	invjw3	invjw4	invjw5	invjw6	misc	0
 Class Specific	clas			0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	3			0								0
 Amazon Item	amaz	clas		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	1		ama	0								0
@@ -67,6 +67,7 @@ Paladin Item	pala	clas		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	1		pal	0								0
 Sorceress Item	sorc	clas		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	1		sor	0								0
 Assassin Item	assn	clas		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	2		ass	0								0
 Druid Item	drui	clas		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	1		dru	0								0
+Warlock Item	warl	clas		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	1	war	war	0							armo	0
 Hand to Hand	h2h	mele	assn	1	1	rarm	larm			0	0	0	0		1	0	0	2	25	3	40	3	0	2		ass	0							weap	0
 Orb	orb	weap	sorc	1	1	rarm	larm			0	0	0	0		1	0	0	2	25	3	40	3	0	1	sor	sor	0							weap	0
 Voodoo Heads	head	shld	necr	1	1	rarm	larm			0	0	0	0		1	0	0	2	25	3	40	3	0	1	nec	nec	0							armo	0
@@ -105,5 +106,8 @@ Topaz	gemt	gem		0	0					0	0	0	0			1	0	0	25	0	40	0	0	3			0							misc	0
 Skull	gemz	gem		0	0					0	0	0	0			1	0	0	25	0	40	0	0	3			0							misc	0
 Swords and Knives	blde	mele		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	3			0								0
 Spears and Polearms	sppl	mele		0	0					0	0	0	0		1	0	0	0	25	0	40	0	0	3			0								0
+Grimoire	grim	shld	warl	1	1	rarm	larm			0	0	0	0		1	0	0	2	25	3	40	3	0	1	war	war	0							armo	0
+Colossal Jewel	cjwl	jewl		0	0					0	0	0	0	1	1	0	0	0	25	0	40	0	0	3			6	invjw1	invjw2	invjw3	invjw4	invjw5	invjw6	misc	0
+Crafted Sunder Charm	csch	char		0	0					0	0	0	0	1		0	0	0	25	0	40	0	0	3			3	invp10	invp11	invp12				misc	0
 Bags	BAG			0	0					0	0	0	0			0	0	0	25	0	40	0	0	3			0							misc	0
 Gem Bag	GBAG	BAG		0	0					0	0	0	0			0	0	0	25	0	40	0	0	3			0							misc	0

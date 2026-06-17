@@ -252,9 +252,13 @@
     "saveadd": 0
   },
   "manarecovery": {
+    "descstrpos": "ManaRepPlus",
+    "descstrneg": "ManaRepNeg",
     "id": 26,
-    "savebits": 8,
-    "saveadd": 0
+    "descpriority": 56,
+    "descfunc": 19,
+    "savebits": 9,
+    "saveadd": 250
   },
   "manarecoverybonus": {
     "descstrpos": "ModStr4g",
@@ -714,13 +718,13 @@
   "item_maxmana_percent": {
     "opstat1": "maxmana",
     "descstrpos": "ModStr2h",
-    "descstrneg": "ModStr2h",
+    "descstrneg": "ModStr2hNegative",
     "id": 77,
     "add": 56452,
     "multiply": 204,
     "op": 11,
     "descpriority": 54,
-    "descfunc": 19,
+    "descfunc": 29,
     "savebits": 6,
     "saveadd": 10
   },
@@ -985,9 +989,13 @@
     "saveadd": 0
   },
   "curse_resistance": {
+    "descstrpos": "CurseImm",
+    "descstrneg": "CurseImm",
     "id": 109,
     "add": 159,
     "multiply": 33,
+    "descpriority": 160,
+    "descfunc": 19,
     "savebits": 9,
     "saveadd": 0
   },
@@ -1195,7 +1203,7 @@
     "id": 127,
     "add": 15123,
     "multiply": 4096,
-    "descpriority": 158,
+    "descpriority": 156,
     "descfunc": 19,
     "savebits": 3,
     "saveadd": 0
@@ -1421,7 +1429,7 @@
     "descstrpos": "ModitemAura",
     "descstrneg": "ModitemAura",
     "id": 151,
-    "descpriority": 159,
+    "descpriority": 157,
     "descfunc": 16,
     "savebits": 5,
     "saveadd": 0,
@@ -1631,7 +1639,7 @@
     "id": 187,
     "add": 1432,
     "multiply": 513,
-    "descpriority": 100,
+    "descpriority": 159,
     "descfunc": 19,
     "savebits": 10
   },
@@ -1653,7 +1661,7 @@
     "id": 189,
     "add": 1432,
     "multiply": 513,
-    "descpriority": 100,
+    "descpriority": 159,
     "descfunc": 19,
     "savebits": 10
   },
@@ -1663,7 +1671,7 @@
     "id": 190,
     "add": 1432,
     "multiply": 513,
-    "descpriority": 100,
+    "descpriority": 159,
     "descfunc": 19,
     "savebits": 10
   },
@@ -1673,7 +1681,7 @@
     "id": 191,
     "add": 1432,
     "multiply": 513,
-    "descpriority": 100,
+    "descpriority": 159,
     "descfunc": 19,
     "savebits": 10
   },
@@ -1683,7 +1691,7 @@
     "id": 192,
     "add": 1432,
     "multiply": 513,
-    "descpriority": 100,
+    "descpriority": 159,
     "descfunc": 19,
     "savebits": 10
   },
@@ -1693,7 +1701,7 @@
     "id": 193,
     "add": 1432,
     "multiply": 513,
-    "descpriority": 100,
+    "descpriority": 159,
     "descfunc": 19,
     "savebits": 10
   },
@@ -1711,7 +1719,7 @@
     "add": 190,
     "multiply": 256,
     "damagerelated": 1,
-    "descpriority": 160,
+    "descpriority": 158,
     "descfunc": 15,
     "savebits": 7,
     "saveadd": 0,
@@ -1724,7 +1732,7 @@
     "add": 85,
     "multiply": 19,
     "damagerelated": 1,
-    "descpriority": 160,
+    "descpriority": 158,
     "descfunc": 15,
     "savebits": 7,
     "saveadd": 0,
@@ -1736,7 +1744,7 @@
     "id": 197,
     "add": 11,
     "multiply": 9,
-    "descpriority": 160,
+    "descpriority": 158,
     "descfunc": 15,
     "savebits": 7,
     "saveadd": 0,
@@ -1749,7 +1757,7 @@
     "add": 190,
     "multiply": 256,
     "damagerelated": 1,
-    "descpriority": 160,
+    "descpriority": 158,
     "descfunc": 15,
     "savebits": 7,
     "saveadd": 0,
@@ -1761,7 +1769,7 @@
     "id": 199,
     "add": 7,
     "multiply": 6,
-    "descpriority": 160,
+    "descpriority": 158,
     "descfunc": 15,
     "savebits": 7,
     "saveadd": 0,
@@ -1773,7 +1781,7 @@
     "id": 200,
     "add": 106,
     "multiply": 256,
-    "descpriority": 159,
+    "descpriority": 157,
     "descfunc": 19,
     "savebits": 7,
     "saveadd": 0
@@ -1784,7 +1792,7 @@
     "id": 201,
     "add": 190,
     "multiply": 256,
-    "descpriority": 160,
+    "descpriority": 158,
     "descfunc": 15,
     "savebits": 7,
     "saveadd": 0,
@@ -1793,7 +1801,7 @@
   "modifierlist_castid": {
     "id": 202
   },
-  "unused203": {
+  "passive_mastery_item_req_percent": {
     "id": 203
   },
   "item_charged_skill": {
@@ -1826,32 +1834,24 @@
     "saveadd": 0
   },
   "passive_mastery_replenish_oncrit": {
-    "id": 206,
+    "id": 207,
     "savebits": 8,
     "saveadd": 0
   },
-  "unused208": {
-    "id": 208,
-    "add": 401,
-    "multiply": 256
+  "missile_thorns_percent": {
+    "id": 208
   },
-  "unused209": {
-    "id": 209,
-    "add": 401,
-    "multiply": 256
+  "passive_mastery_item_level_req_percent": {
+    "id": 209
   },
-  "unused210": {
-    "id": 210,
-    "add": 401,
-    "multiply": 256
+  "ua_escalation": {
+    "id": 210
   },
-  "unused211": {
-    "id": 211,
-    "add": 401,
-    "multiply": 256
+  "ua_defeated": {
+    "id": 211
   },
   "passive_mastery_gethit_rate": {
-    "id": 213,
+    "id": 212,
     "savebits": 8,
     "saveadd": 0
   },
@@ -3285,15 +3285,23 @@
     "saveadd": 0
   },
   "passive_mag_mastery": {
+    "descstrpos": "ModStrMagMastery",
+    "descstrneg": "ModStrMagMastery",
     "id": 357,
     "add": 1211,
     "multiply": 431,
+    "descpriority": 88,
+    "descfunc": 19,
     "savebits": 9,
     "saveadd": 50
   },
   "passive_mag_pierce": {
+    "descstrpos": "ModStrMagPierce",
+    "descstrneg": "ModStrMagPierce",
     "id": 358,
     "multiply": 2812,
+    "descpriority": 88,
+    "descfunc": 19,
     "savebits": 8,
     "saveadd": 0
   },
@@ -3303,11 +3311,332 @@
   "skill_missile_damage_scale": {
     "id": 360
   },
+  "psychicward": {
+    "id": 361
+  },
+  "psychicwardmax": {
+    "id": 362
+  },
+  "skill_channeling_tick": {
+    "id": 363
+  },
+  "customization_index": {
+    "id": 364
+  },
+  "item_magic_damagemax_perlevel": {
+    "opbase": "level",
+    "opstat1": "magicmaxdam",
+    "descstrpos": "MaxMagDmgPerLvl",
+    "descstrneg": "MaxMagDmgPerLvl",
+    "descstr2": "increaseswithplaylevelX",
+    "id": 365,
+    "add": 49,
+    "multiply": 128,
+    "op": 2,
+    "opparam": 3,
+    "damagerelated": 1,
+    "descpriority": 100,
+    "descfunc": 19,
+    "savebits": 6,
+    "saveadd": 0
+  },
+  "passive_dmg_pierce": {
+    "descstrpos": "ModStrDamPierce",
+    "descstrneg": "ModStrDamPierce",
+    "id": 366,
+    "multiply": 2812,
+    "descpriority": 88,
+    "descfunc": 19,
+    "savebits": 8,
+    "saveadd": 0
+  },
+  "heraldtier": {
+    "id": 367
+  },
+  "unused368": {
+    "id": 368
+  },
+  "unused369": {
+    "id": 369
+  },
+  "unused370": {
+    "id": 370
+  },
+  "unused371": {
+    "id": 371
+  },
+  "unused372": {
+    "id": 372
+  },
+  "unused373": {
+    "id": 373
+  },
+  "unused374": {
+    "id": 374
+  },
+  "unused375": {
+    "id": 375
+  },
+  "unused376": {
+    "id": 376
+  },
+  "unused377": {
+    "id": 377
+  },
+  "unused378": {
+    "id": 378
+  },
+  "unused379": {
+    "id": 379
+  },
+  "unused380": {
+    "id": 380
+  },
+  "unused381": {
+    "id": 381
+  },
+  "unused382": {
+    "id": 382
+  },
+  "unused383": {
+    "id": 383
+  },
+  "unused384": {
+    "id": 384
+  },
+  "unused385": {
+    "id": 385
+  },
+  "unused386": {
+    "id": 386
+  },
+  "unused387": {
+    "id": 387
+  },
+  "unused388": {
+    "id": 388
+  },
+  "unused389": {
+    "id": 389
+  },
+  "unused390": {
+    "id": 390
+  },
+  "unused391": {
+    "id": 391
+  },
+  "unused392": {
+    "id": 392
+  },
+  "unused393": {
+    "id": 393
+  },
+  "unused394": {
+    "id": 394
+  },
+  "unused395": {
+    "id": 395
+  },
+  "unused396": {
+    "id": 396
+  },
+  "unused397": {
+    "id": 397
+  },
+  "unused398": {
+    "id": 398
+  },
+  "unused399": {
+    "id": 399
+  },
+  "unused400": {
+    "id": 400
+  },
+  "unused401": {
+    "id": 401
+  },
+  "unused402": {
+    "id": 402
+  },
+  "unused403": {
+    "id": 403
+  },
+  "unused404": {
+    "id": 404
+  },
+  "unused405": {
+    "id": 405
+  },
+  "unused406": {
+    "id": 406
+  },
+  "unused407": {
+    "id": 407
+  },
+  "unused408": {
+    "id": 408
+  },
+  "unused409": {
+    "id": 409
+  },
+  "unused410": {
+    "id": 410
+  },
+  "unused411": {
+    "id": 411
+  },
+  "unused412": {
+    "id": 412
+  },
+  "unused413": {
+    "id": 413
+  },
+  "unused414": {
+    "id": 414
+  },
+  "unused415": {
+    "id": 415
+  },
+  "unused416": {
+    "id": 416
+  },
+  "unused417": {
+    "id": 417
+  },
+  "unused418": {
+    "id": 418
+  },
+  "unused419": {
+    "id": 419
+  },
+  "unused420": {
+    "id": 420
+  },
+  "unused421": {
+    "id": 421
+  },
+  "unused422": {
+    "id": 422
+  },
+  "unused423": {
+    "id": 423
+  },
+  "unused424": {
+    "id": 424
+  },
+  "unused425": {
+    "id": 425
+  },
+  "unused426": {
+    "id": 426
+  },
+  "unused427": {
+    "id": 427
+  },
+  "unused428": {
+    "id": 428
+  },
+  "unused429": {
+    "id": 429
+  },
+  "unused430": {
+    "id": 430
+  },
+  "unused431": {
+    "id": 431
+  },
+  "unused432": {
+    "id": 432
+  },
+  "unused433": {
+    "id": 433
+  },
+  "unused434": {
+    "id": 434
+  },
+  "unused435": {
+    "id": 435
+  },
+  "unused436": {
+    "id": 436
+  },
+  "unused437": {
+    "id": 437
+  },
+  "unused438": {
+    "id": 438
+  },
+  "unused439": {
+    "id": 439
+  },
+  "unused440": {
+    "id": 440
+  },
+  "unused441": {
+    "id": 441
+  },
+  "unused442": {
+    "id": 442
+  },
+  "unused443": {
+    "id": 443
+  },
+  "unused444": {
+    "id": 444
+  },
+  "unused445": {
+    "id": 445
+  },
+  "unused446": {
+    "id": 446
+  },
+  "unused447": {
+    "id": 447
+  },
+  "unused448": {
+    "id": 448
+  },
+  "unused449": {
+    "id": 449
+  },
+  "unused450": {
+    "id": 450
+  },
+  "unused451": {
+    "id": 451
+  },
+  "unused452": {
+    "id": 452
+  },
+  "unused453": {
+    "id": 453
+  },
+  "unused454": {
+    "id": 454
+  },
+  "unused455": {
+    "id": 455
+  },
+  "unused456": {
+    "id": 456
+  },
+  "unused457": {
+    "id": 457
+  },
+  "unused458": {
+    "id": 458
+  },
+  "unused459": {
+    "id": 459
+  },
+  "unused460": {
+    "id": 460
+  },
   "Add_one": {
     "descval": 2,
     "descstrpos": "Quantityadd1",
     "descstrneg": "Quantityadd1",
-    "id": 361,
+    "id": 461,
     "add": 170,
     "multiply": 100,
     "descpriority": 7,
@@ -3318,7 +3647,7 @@
   "item_pois_dur_skill": {
     "descstrpos": "Moditempoisdurskill",
     "descstrneg": "Moditempoisdurskill",
-    "id": 362,
+    "id": 462,
     "add": 170,
     "multiply": 100,
     "damagerelated": 1,
@@ -3328,7 +3657,7 @@
     "saveadd": 100
   },
   "torch": {
-    "id": 363,
+    "id": 463,
     "savebits": 8,
     "saveadd": 0
   },
@@ -3336,7 +3665,7 @@
     "opstat1": "maxdurability",
     "descstrpos": "BrokenItem",
     "descstrneg": "BrokenItem",
-    "id": 364,
+    "id": 464,
     "add": 117,
     "multiply": 10,
     "op": 13,
@@ -3348,7 +3677,7 @@
   "item_elemskill_cold": {
     "descstrpos": "ModStrColdskills",
     "descstrneg": "ModStrColdskills",
-    "id": 365,
+    "id": 465,
     "add": 76,
     "multiply": 1024,
     "descpriority": 157,
@@ -3360,7 +3689,7 @@
   "item_elemskill_lightning": {
     "descstrpos": "ModStrLightningskills",
     "descstrneg": "ModStrLightningskills",
-    "id": 366,
+    "id": 466,
     "add": 76,
     "multiply": 1024,
     "descpriority": 157,
@@ -3372,7 +3701,7 @@
   "item_elemskill_poison": {
     "descstrpos": "ModStrPoisonskills",
     "descstrneg": "ModStrPoisonskills",
-    "id": 367,
+    "id": 467,
     "add": 76,
     "multiply": 1024,
     "descpriority": 157,
@@ -3384,7 +3713,7 @@
   "item_elemskill_fire": {
     "descstrpos": "ModStrFireskills",
     "descstrneg": "ModStrFireskills",
-    "id": 368,
+    "id": 468,
     "add": 76,
     "multiply": 1024,
     "descpriority": 157,
@@ -3396,7 +3725,7 @@
   "item_elemskill_magic": {
     "descstrpos": "ModStrMagicskills",
     "descstrneg": "ModStrMagicskills",
-    "id": 369,
+    "id": 469,
     "add": 76,
     "multiply": 1024,
     "descpriority": 157,
@@ -3404,5 +3733,23 @@
     "savebits": 3,
     "saveadd": 0,
     "saveparambits": 3
+  },
+  "plus_echo": {
+    "descstrpos": "PlusEchoesskills",
+    "descstrneg": "PlusEchoesskills",
+    "id": 470,
+    "descpriority": 157,
+    "descfunc": 19,
+    "savebits": 8,
+    "saveadd": 5
+  },
+  "plus_mirror": {
+    "descstrpos": "PlusMirroredskills",
+    "descstrneg": "PlusMirroredskills",
+    "id": 471,
+    "descpriority": 157,
+    "descfunc": 19,
+    "savebits": 8,
+    "saveadd": 5
   }
 }

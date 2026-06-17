@@ -1105,10 +1105,6 @@
     "stat1": "damagepercent",
     "func1": 1
   },
-  "torch": {
-    "stat1": "torch",
-    "func1": 1
-  },
   "dur%_new": {
     "stat1": "item_maxdurability_new",
     "func1": 13
@@ -1140,5 +1136,70 @@
     "val1": 3,
     "func1": 21,
     "func2": 3
+  },
+  "war": {
+    "stat1": "item_addclassskills",
+    "val1": 7,
+    "func1": 21
+  },
+  "dmg-mag/lvl": {
+    "stat1": "item_magic_damagemax_perlevel",
+    "func1": 17
+  },
+  "pierce-mag": {
+    "stat1": "passive_mag_pierce",
+    "func1": 1
+  },
+  "pierce-dmg": {
+    "stat1": "passive_dmg_pierce",
+    "func1": 1
+  },
+  "affix-rand": {
+    "func1": 25
+  },
+  "extra-skill-dmg%-rand": {
+    "stat1": "passive_fire_mastery",
+    "stat2": "passive_ltng_mastery",
+    "stat3": "passive_cold_mastery",
+    "stat4": "passive_pois_mastery",
+    "stat5": "passive_mag_mastery",
+    "stat6": "dmg%",
+    "func1": 1,
+    "func2": 1,
+    "func3": 1,
+    "func4": 1,
+    "func5": 1,
+    "func6": 7
+  },
+  "war-tab-rand": {
+    "stat1": "item_addskill_tab",
+    "stat2": "item_addskill_tab",
+    "stat3": "item_addskill_tab",
+    "val1": 21,
+    "val2": 22,
+    "val3": 23,
+    "func1": 10,
+    "func2": 10,
+    "func3": 10
+  },
+  "extra-mag": {
+    "stat1": "passive_mag_mastery",
+    "func1": 1
+  },
+  "mana-regen": {
+    "stat1": "manarecovery",
+    "func1": 1
+  },
+  "curse-imm": {
+    "stat1": "curse_resistance",
+    "func1": 1
+  },
+  "plusecho": {
+    "stat1": "plus_echo",
+    "func1": 1
+  },
+  "plusmirror": {
+    "stat1": "plus_mirror",
+    "func1": 1
   }
 }

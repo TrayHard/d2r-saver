@@ -25,7 +25,7 @@ maxdamage	22		1	16											94	16		7	0	8	0											1					126	19		ModStr1f	Mod
 secondary_mindamage	23		1	16											97	15		6	0	7	0											1					124	19		ModStr1g	ModStr1g										0
 secondary_maxdamage	24		1	16											85	11		7	0	8	0											1					123	19		ModStr1f	ModStr1f										0
 damagepercent	25		1	12											45	40		8	0	8	0											1					123	19		ModitemDamPer	ModitemDamPer										0
-manarecovery	26																	8	0	8	0																														0
+manarecovery	26																	8	0	9	250																56	19		ManaRepPlus	ManaRepNeg									2	0
 manarecoverybonus	27		1	16														8	0	8	0																52	19		ModStr4g	ModStr4g									2	0
 staminarecoverybonus	28		1	16														8	0	8	0																48	19		ModStr3v	ModStr3v									2	0
 lastexp	29			32																																															0
@@ -76,7 +76,7 @@ maxdurability	73		1	9											9	4		8	0	8	0																														0
 hpregen	74														451	410		6	30	6	30																56	19		ModStr2l	ModStr2w									2	0
 item_maxdurability_percent	75		1	7											117	10		7	20	7	20			13			maxdurability										3	19		ModStr2i	ModStr2i										0
 item_maxhp_percent	76		1	16											32093	204		6	10	6	10			11			maxhp										58	19		ModStr2g	ModStr2g										0
-item_maxmana_percent	77		1	16											56452	204		6	10	6	10			11			maxmana										54	19		ModStr2h	ModStr2h										0
+item_maxmana_percent	77		1	16											56452	204		6	10	6	10			11			maxmana										54	29		ModStr2h	ModStr2hNegative										0
 item_attackertakesdamage	78		1	16							1				112	128		7	0	7	0												attackedinmelee	6			13	19		ModStr1v	ModStr1v									2	0
 item_goldbonus	79		1	10											187	34		9	100	9	100																10	19		ModStr1w	ModStr1w									2	0
 item_magicbonus	80		1	9											577	102		8	100	8	100																8	19		ModStr1x	ModStr1x									2	0
@@ -108,9 +108,9 @@ item_fastercastrate	105	1	1	9											3876	156		7	20	8	100																142	
 skill_bypass_beasts	106			1														7	20																																0
 item_singleskill	107		1	15	9						1			1	181	256		14	0	5	0	9															81	27		ItemModifierClassSkill	ItemModifierClassSkill										0
 item_restinpeace	108			1							1				1987	0		14	0	1	0											1	kill	29			81	19		ModitemSMRIP	ModitemSMRIP									2	0
-curse_resistance	109			9											159	33		14	0	9	0																														0
+curse_resistance	109			9											159	33		14	0	9	0																160	19		CurseImm	CurseImm										0
 item_poisonlengthresist	110		1	9											27	10		8	20	8	100																18	29		ModStr3r	ModStr3rneg									2	0
-item_normaldamage	111		1	8											94	100		7	20	9	20											1					122	19		ModStr5b	ModStr5b									2	0
+item_normaldamage	111		1	8											94	100		7	20	9	20											1					122	19		ModStr5b	ModStr5b										0
 item_howl	112		1	8							1				55	10		7	-1	7	-1											1	domeleedamage	8	domissiledamage	8	79	5		ModStr3u	ModStr3u									2	0
 item_stupidity	113		1	8							1				332	1024		7	0	7	0											1	domeleedamage	9	domissiledamage	9	80	12	2	ModStr6d	ModStr6d									2	0
 item_damagetomana	114		1	7							1				43	20		6	0	6	0												damagedinmelee	13	damagedbymissile	13	11	19		ModStr3w	ModStr3w									2	0
@@ -126,7 +126,7 @@ item_demon_tohit	123		1	13											15	7		10	128	10	128											1					110	19	
 item_undead_tohit	124		1	13											11	7		10	128	10	128											1					106	19		ModStr4k	ModStr4k										0
 item_throwable	125		1	2											82	1024		1	0	1	0																5	19		ModStr5a	ModStr5a										0
 item_elemskill	126		1	3	3						1				76	1024		4	0	3	0	3															1														0
-item_allskills	127		1	8							1				15123	4096		3	0	3	0																158	19		ModStr3k	ModStr3k										0
+item_allskills	127		1	8							1				15123	4096		3	0	3	0																156	19		ModStr3k	ModStr3k										0
 item_attackertakeslightdamage	128		1	6							1				4	102		5	0	5	0												damagedinmelee	10			14	19		ModStr3j	ModStr3j									2	0
 ironmaiden_level	129		1	10																																															0
 lifetap_level	130		1	10																																															0
@@ -150,7 +150,7 @@ item_absorbmagic	147		1	7											1739	204		7	0	7	0																33	19		ModS
 item_absorbcold_percent	148		1	7											5486	102		7	0	7	0																25	19		ModStr5m	ModStr5m									2	0
 item_absorbcold	149		1	7											1739	204		7	0	7	0																31	19		ModStr5n	ModStr5n									2	0
 item_slow	150		1	7							1				101	40		7	0	7	0											1	domeleedamage	19	domissiledamage	19	77	19		ModStr5r	ModStr5r									2	0
-item_aura	151		1								1							7	0	5	0	9															159	16	0	ModitemAura	ModitemAura									2	0
+item_aura	151		1								1							7	0	5	0	9															157	16	0	ModitemAura	ModitemAura									2	0
 item_indesctructible	152		1	1														7	0	1																	160	19		ModStre9s	ModStre9s										0
 item_cannotbefrozen	153		1	2											15011	2048		1		1																	20	19		ModStr5z	ModStr5z									2	0
 item_staminadrainpct	154		1	7											102	20		7	20	7	20											1					49	19		ModStr6e	ModStr6e									2	0
@@ -186,32 +186,32 @@ lasthitreactframe	183																	14	0																																0
 create_season	184																	14	0																																0
 bonus_mindamage	185		1	12																8	0											1																			0
 bonus_maxdamage	186		1	12																8	0											1																			0
-item_pierce_cold_immunity	187			10											1432	513				10																	100	19		ModItemMonColdSunder	ModItemMonColdSunder									2	0
+item_pierce_cold_immunity	187			10											1432	513				10																	159	19		ModItemMonColdSunder	ModItemMonColdSunder									2	0
 item_addskill_tab	188		1	3	6						1				11042	768		10	0	3	0	16															151	14		StrSklTabItem1	StrSklTabItem1										0
-item_pierce_fire_immunity	189			10											1432	513				10																	100	19		ModItemMonFireSunder	ModItemMonFireSunder									2	0
-item_pierce_light_immunity	190			10											1432	513				10																	100	19		ModItemMonLightSunder	ModItemMonLightSunder									2	0
-item_pierce_poison_immunity	191			10											1432	513				10																	100	19		ModItemMonPoisonSunder	ModItemMonPoisonSunder									2	0
-item_pierce_damage_immunity	192			10											1432	513				10																	100	19		ModItemMonPhysicalSunder	ModItemMonPhysicalSunder									2	0
-item_pierce_magic_immunity	193			10											1432	513				10																	100	19		ModItemMonMagicSunder	ModItemMonMagicSunder									2	0
+item_pierce_fire_immunity	189			10											1432	513				10																	159	19		ModItemMonFireSunder	ModItemMonFireSunder									2	0
+item_pierce_light_immunity	190			10											1432	513				10																	159	19		ModItemMonLightSunder	ModItemMonLightSunder									2	0
+item_pierce_poison_immunity	191			10											1432	513				10																	159	19		ModItemMonPoisonSunder	ModItemMonPoisonSunder									2	0
+item_pierce_damage_immunity	192			10											1432	513				10																	159	19		ModItemMonPhysicalSunder	ModItemMonPhysicalSunder									2	0
+item_pierce_magic_immunity	193			10											1432	513				10																	159	19		ModItemMonMagicSunder	ModItemMonMagicSunder									2	0
 item_numsockets	194		1	4											38	170		4	0	4	0																														0
-item_skillonattack	195		1	7	16						1			2	190	256		21	0	7	0	16										1	domeleeattack	20	domissileattack	20	160	15		ItemExpansiveChancX	ItemExpansiveChancX									2	0
-item_skillonkill	196		1	7	16						1			2	85	19		21	0	7	0	16										1	kill	20			160	15		ModitemskonKill	ModitemskonKill									2	0
-item_skillondeath	197		1	7	16						1			2	11	9		21	0	7	0	16											killed	30			160	15		Moditemskondeath	Moditemskondeath									2	0
-item_skillonhit	198		1	7	16						1			2	190	256		21	0	7	0	16										1	domeleedamage	20	domissiledamage	20	160	15		ItemExpansiveChanc1	ItemExpansiveChanc1									2	0
-item_skillonlevelup	199		1	7	16						1			2	7	6		21	0	7	0	16											levelup	30			160	15		ModitemskonLevel	ModitemskonLevel									2	0
-item_charge_noconsume	200			7											106	256				7	0																159	19		ModStr6k	ModStr6k									2	0
-item_skillongethit	201		1	7	16						1			2	190	256		21	0	7	0	16											damagedinmelee	21	damagedbymissile	21	160	15		ItemExpansiveChanc2	ItemExpansiveChanc2									2	0
+item_skillonattack	195		1	7	16						1			2	190	256		21	0	7	0	16										1	domeleeattack	20	domissileattack	20	158	15		ItemExpansiveChancX	ItemExpansiveChancX									2	0
+item_skillonkill	196		1	7	16						1			2	85	19		21	0	7	0	16										1	kill	20			158	15		ModitemskonKill	ModitemskonKill									2	0
+item_skillondeath	197		1	7	16						1			2	11	9		21	0	7	0	16											killed	30			158	15		Moditemskondeath	Moditemskondeath									2	0
+item_skillonhit	198		1	7	16						1			2	190	256		21	0	7	0	16										1	domeleedamage	20	domissiledamage	20	158	15		ItemExpansiveChanc1	ItemExpansiveChanc1									2	0
+item_skillonlevelup	199		1	7	16						1			2	7	6		21	0	7	0	16											levelup	30			158	15		ModitemskonLevel	ModitemskonLevel									2	0
+item_charge_noconsume	200			7											106	256				7	0																157	19		ModStr6k	ModStr6k									2	0
+item_skillongethit	201		1	7	16						1			2	190	256		21	0	7	0	16											damagedinmelee	21	damagedbymissile	21	158	15		ItemExpansiveChanc2	ItemExpansiveChanc2									2	0
 modifierlist_castid	202																																																		0
-unused203	203																	21	0																																0
+passive_mastery_item_req_percent	203		1	8	16						1																																								0
 item_charged_skill	204		1	30							1			3	401	256		30	0	16	0	16															1	24		ModStre10d	ModStre10d										0
 item_noconsume	205		1	7											106	256				7	0											1					4	19		ModStr6j	ModStr6j									2	0
 passive_mastery_noconsume	206		1	9	16															8	0																														0
-passive_mastery_replenish_oncrit	206		1	9	16															8	0																														0
-unused208	208		1	30										3	401	256		30	0																																0
-unused209	209		1	30										3	401	256		30	0																																0
-unused210	210		1	30										3	401	256		30	0																																0
-unused211	211		1	30										3	401	256		30	0																																0
-passive_mastery_gethit_rate	213		1	11	16													8	0	8	0																														0
+passive_mastery_replenish_oncrit	207		1	9	16															8	0																														0
+missile_thorns_percent	208			12																																															0
+passive_mastery_item_level_req_percent	209		1	8	16						1																																								0
+ua_escalation	210			8														8	0																																0
+ua_defeated	211			8														8	0																																0
+passive_mastery_gethit_rate	212		1	11	16													8	0	8	0																														0
 passive_mastery_attack_speed	213		1	11	16													8	0	8	0																														0
 item_armor_perlevel	214		1	6											43	42		6	0	6	0			4	3	level	armorclass										72	19		ModStr1i	ModStr1i	increaseswithplaylevelX									0
 item_armorpercent_perlevel	215		1	6											87	100		6	0	6	0			5	3	level	armorclass										73	19		Modstr2v	Modstr2v	increaseswithplaylevelX									0
@@ -356,16 +356,118 @@ source_unit_type	353			5																																															0
 source_unit_id	354			32																																															0
 shortparam1	355			16																																															0
 questitemdifficulty	356																			2	0																														0
-passive_mag_mastery	357		1	12											1211	431		8	0	9	50																														0
-passive_mag_pierce	358		1	9												2812		8	0	8	0																														0
+passive_mag_mastery	357		1	12											1211	431		8	0	9	50																88	19		ModStrMagMastery	ModStrMagMastery									2	0
+passive_mag_pierce	358		1	9												2812		8	0	8	0																88	19		ModStrMagPierce	ModStrMagPierce									2	0
 skill_cooldown	359																																																		0
 skill_missile_damage_scale	360			32	16																																														0
-Add_one	361			16											170	100		10	10	11	10																7	19	2	Quantityadd1	Quantityadd1										0
-item_pois_dur_skill	362		1	16											170	100		10	10	8	100											1					131	29		Moditempoisdurskill	Moditempoisdurskill									2	0
-torch	363			16														10	10	8	0																														0
-item_maxdurability_new	364		1	7											117	10		7	20	7	100			13			maxdurability										200	19		BrokenItem	BrokenItem										0
-item_elemskill_cold	365		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrColdskills	ModStrColdskills										0
-item_elemskill_lightning	366		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrLightningskills	ModStrLightningskills										0
-item_elemskill_poison	367		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrPoisonskills	ModStrPoisonskills										0
-item_elemskill_fire	368		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrFireskills	ModStrFireskills										0
-item_elemskill_magic	369		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrMagicskills	ModStrMagicskills										0
+psychicward	361		1	32																																															0
+psychicwardmax	362		1	32																																															0
+skill_channeling_tick	363																																																		0
+customization_index	364			32																																															0
+item_magic_damagemax_perlevel	365		1	6											49	128		6	0	6	0			2	3	level	magicmaxdam					1					100	19		MaxMagDmgPerLvl	MaxMagDmgPerLvl	increaseswithplaylevelX									0
+passive_dmg_pierce	366		1	9												2812		8	0	8	0																88	19		ModStrDamPierce	ModStrDamPierce									2	0
+heraldtier	367		1	32							1																																								0
+unused368	368																																																		0
+unused369	369																																																		0
+unused370	370																																																		0
+unused371	371																																																		0
+unused372	372																																																		0
+unused373	373																																																		0
+unused374	374																																																		0
+unused375	375																																																		0
+unused376	376																																																		0
+unused377	377																																																		0
+unused378	378																																																		0
+unused379	379																																																		0
+unused380	380																																																		0
+unused381	381																																																		0
+unused382	382																																																		0
+unused383	383																																																		0
+unused384	384																																																		0
+unused385	385																																																		0
+unused386	386																																																		0
+unused387	387																																																		0
+unused388	388																																																		0
+unused389	389																																																		0
+unused390	390																																																		0
+unused391	391																																																		0
+unused392	392																																																		0
+unused393	393																																																		0
+unused394	394																																																		0
+unused395	395																																																		0
+unused396	396																																																		0
+unused397	397																																																		0
+unused398	398																																																		0
+unused399	399																																																		0
+unused400	400																																																		0
+unused401	401																																																		0
+unused402	402																																																		0
+unused403	403																																																		0
+unused404	404																																																		0
+unused405	405																																																		0
+unused406	406																																																		0
+unused407	407																																																		0
+unused408	408																																																		0
+unused409	409																																																		0
+unused410	410																																																		0
+unused411	411																																																		0
+unused412	412																																																		0
+unused413	413																																																		0
+unused414	414																																																		0
+unused415	415																																																		0
+unused416	416																																																		0
+unused417	417																																																		0
+unused418	418																																																		0
+unused419	419																																																		0
+unused420	420																																																		0
+unused421	421																																																		0
+unused422	422																																																		0
+unused423	423																																																		0
+unused424	424																																																		0
+unused425	425																																																		0
+unused426	426																																																		0
+unused427	427																																																		0
+unused428	428																																																		0
+unused429	429																																																		0
+unused430	430																																																		0
+unused431	431																																																		0
+unused432	432																																																		0
+unused433	433																																																		0
+unused434	434																																																		0
+unused435	435																																																		0
+unused436	436																																																		0
+unused437	437																																																		0
+unused438	438																																																		0
+unused439	439																																																		0
+unused440	440																																																		0
+unused441	441																																																		0
+unused442	442																																																		0
+unused443	443																																																		0
+unused444	444																																																		0
+unused445	445																																																		0
+unused446	446																																																		0
+unused447	447																																																		0
+unused448	448																																																		0
+unused449	449																																																		0
+unused450	450																																																		0
+unused451	451																																																		0
+unused452	452																																																		0
+unused453	453																																																		0
+unused454	454																																																		0
+unused455	455																																																		0
+unused456	456																																																		0
+unused457	457																																																		0
+unused458	458																																																		0
+unused459	459																																																		0
+unused460	460																																																		0
+Add_one	461			16											170	100		10	10	11	10																7	19	2	Quantityadd1	Quantityadd1										0
+item_pois_dur_skill	462		1	16											170	100		10	10	8	100											1					131	29		Moditempoisdurskill	Moditempoisdurskill									2	0
+torch	463			16														10	10	8	0																														0
+item_maxdurability_new	464		1	7											117	10		7	20	7	100			13			maxdurability										200	19		BrokenItem	BrokenItem										0
+item_elemskill_cold	465		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrColdskills	ModStrColdskills										0
+item_elemskill_lightning	466		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrLightningskills	ModStrLightningskills										0
+item_elemskill_poison	467		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrPoisonskills	ModStrPoisonskills										0
+item_elemskill_fire	468		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrFireskills	ModStrFireskills										0
+item_elemskill_magic	469		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrMagicskills	ModStrMagicskills										0
+plus_echo	470			16														10	10	8	5																157	19		PlusEchoesskills	PlusEchoesskills										0
+plus_mirror	471			16														10	10	8	5																157	19		PlusMirroredskills	PlusMirroredskills										0
