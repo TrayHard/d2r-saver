@@ -37,13 +37,45 @@ export interface D2SCharacterProfile {
   mercName?: number;
   merc?: string;
   mercLevel?: number;
-  items: Record<string, number>;
-  mercItems: Record<string, number>;
-  inventory: (number | undefined)[];
-  cube: (number | undefined)[];
-  stash: (number | undefined)[];
-  belt: (number | undefined)[];
-  ironGolem?: number;
+  /**
+   * Slot maps and arrays carry either numeric item IDs OR string base codes
+   * (for preset items like runes / gems / potions, which are keyed by base
+   * code in the items dict).
+   */
+  items: Record<string, number | string>;
+  mercItems: Record<string, number | string>;
+  inventory: (number | string | undefined)[];
+  cube: (number | string | undefined)[];
+  stash: (number | string | undefined)[];
+  belt: (number | string | undefined)[];
+  /** Gold carried in the character's inventory (the `gold` stat). */
+  gold?: number;
+  /** Gold in the character's personal stash (the `goldbank` stat). */
+  goldStash?: number;
+  ironGolem?: number | string;
+  /**
+   * Raw bytes of the v105 "extra sections" tail (typically the 0x666c warlock
+   * demon block). Preserved verbatim from the source file so the writer can
+   * round-trip them unchanged.
+   */
+  extraSections?: number[];
+  /**
+   * Parsed warlock bind-demon descriptor when the 0x666c extras block
+   * decodes successfully. Optional and best-effort.
+   */
+  bindDemon?: {
+    revive: 'bind';
+    id: string;
+    monsterType: string;
+    monster: string;
+    area: number;
+    level: number;
+    unit: string;
+    group: string;
+    minion: boolean;
+    skill: string;
+    mods?: string[];
+  };
 }
 
 export interface D2SReadResult {
@@ -152,6 +184,8 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     vit: charStats.vitality - ((classStats?.vit as number) || 0),
   };
   result.level = charStats.level;
+  result.gold = charStats.gold ?? 0;
+  result.goldStash = charStats.goldbank ?? 0;
 
   // Skills
   if (reader.read16() !== 0x6669) throw Error('invalid skills header');
@@ -204,7 +238,79 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     if (!reader.eof()) {
       if (reader.read16() !== 0x666b) throw Error('invalid iron golem header');
       if (reader.read8()) {
-        ctx.parseItem(ctx.nextId(), id => { result.ironGolem = id; });
+        ctx.parseItem(ctx.nextId(), id => { result.ironGolem = typeof id === 'number' ? id : 0; });
+      }
+    }
+
+    // Preserve extra sections (0x666c warlock demon data) as raw bytes,
+    // and best-effort parse the bind-demon descriptor.
+    if (!reader.eof()) {
+      const bytePos = reader.bitpos >> 3;
+      result.extraSections = Array.from(reader.buffer.subarray(bytePos));
+      try {
+        if (reader.read16() === 1 && reader.read16() === 0x666c) {
+          const count = reader.read16();
+          if (count > 0) {
+            reader.read16(); // entrySize
+            const idType = reader.read16(); // 1=normal monster by hcidx, 2=super unique
+            const binaryId = reader.read16();
+            const monId = binaryId - 1; // hcidx (1-indexed in binary)
+            reader.read16(); // skip
+            const monType = reader.read16(); // 8=unique, 12=champion
+            reader.read16(); // skip
+            reader.read8(); // diff
+            reader.skip(11);
+            const area = reader.read32();
+            const level = reader.read32();
+            reader.skip(48);
+            let monClass: string | undefined;
+            let demonId: string | undefined;
+            let monsterType: string | undefined;
+            if (idType === 2) {
+              const su = gd.superUniques?.[String(monId)];
+              monClass = su?.class;
+              demonId = String(monId);
+              monsterType = 'super';
+            } else if (idType === 1) {
+              const entry = Object.entries(gd.monsters).find(
+                ([, v]) => (v as { hcidx?: number })?.hcidx === monId,
+              );
+              monClass = entry?.[0];
+              demonId = monClass;
+              monsterType = monType === 12 ? 'champion' : 'unique';
+            }
+            if (monClass && demonId && monsterType) {
+              result.bindDemon = {
+                revive: 'bind',
+                id: demonId,
+                monsterType,
+                monster: monClass,
+                area,
+                level,
+                unit: `bind_${monClass}`,
+                group: 'binddemon',
+                minion: monType !== 16,
+                skill: '382',
+              };
+              const presetMods = idType === 2
+                ? [
+                  (gd.uniqueMods?.[(gd.superUniques?.[String(monId)] as { mod1?: string })?.mod1 ?? ''] as { uniquemod?: string } | undefined)?.uniquemod,
+                  (gd.uniqueMods?.[(gd.superUniques?.[String(monId)] as { mod2?: string })?.mod2 ?? ''] as { uniquemod?: string } | undefined)?.uniquemod,
+                  (gd.uniqueMods?.[(gd.superUniques?.[String(monId)] as { mod3?: string })?.mod3 ?? ''] as { uniquemod?: string } | undefined)?.uniquemod,
+                ].filter(Boolean)
+                : [];
+              const allMods = new Set<string>();
+              for (let m = 0; m < 8; m++) {
+                const um = (gd.uniqueMods?.[String(reader.read8())] as { uniquemod?: string } | undefined)?.uniquemod;
+                if (um) allMods.add(um);
+              }
+              const demonMods = [...allMods].filter(m => !presetMods.includes(m));
+              if (demonMods.length) result.bindDemon.mods = demonMods;
+            }
+          }
+        }
+      } catch {
+        // best-effort; non-critical
       }
     }
   } catch (e) {
