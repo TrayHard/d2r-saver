@@ -166,12 +166,14 @@ function lookupName(key: string, gd: GameData): string | null {
   const direct = gd.locale.strings[key];
   if (direct) return direct;
 
-  // Try uniqueItems / setItems tables if available
+  // Try uniqueItems / setItems tables if available. The name key lives in the `index`
+  // column (e.g. unique117.index = "Nokozan Relic"), NOT `namestr` — without this every
+  // unique/set fell through to its base name ("Amulet", "Ring", …).
   const tables = ['uniqueItems', 'setItems'] as const;
   for (const table of tables) {
     const dict = (gd as unknown as Record<string, Record<string, Record<string, unknown>>>)[table];
     if (dict?.[key]) {
-      const nameStr = dict[key].namestr as string | undefined;
+      const nameStr = (dict[key].index ?? dict[key].namestr ?? dict[key].name) as string | undefined;
       if (nameStr) {
         const localized = gd.locale.strings[nameStr];
         if (localized) return localized;
