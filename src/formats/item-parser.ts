@@ -589,15 +589,25 @@ export function createItemParser(
           item.mods = {};
           item.custom = true;
         } else {
-          const parsed = parseModStatsHelper(
-            gd,
-            item as { base: string; quality: number; unique?: string },
-            null,
-            null,
-            null,
-            getStats,
-            mods,
-          );
+          // The brute-force affix solver can THROW on Blizzless data (e.g. a missing mod table
+          // like `crafted`, or an unhandled staffmod). A throw here used to abort the WHOLE
+          // item list (one bad item hid every item after it). Treat any solver failure as
+          // "unsolved" → the item keeps its raw stats (the backend rebuilds mods from those),
+          // it just isn't marked with reconstructed affixes.
+          let parsed: ReturnType<typeof parseModStatsHelper> | null = null;
+          try {
+            parsed = parseModStatsHelper(
+              gd,
+              item as { base: string; quality: number; unique?: string },
+              null,
+              null,
+              null,
+              getStats,
+              mods,
+            );
+          } catch {
+            parsed = null;
+          }
           if (parsed) {
             Object.assign(item, parsed);
           } else {

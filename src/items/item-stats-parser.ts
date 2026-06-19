@@ -231,7 +231,7 @@ function parseMods(
       modsrc.n_suffix = { min: 1, max: 1 };
       modsrc.n_affix = { min: 1, max: 1 };
     }
-    if ((gd.crafted as Record<string, unknown>)[id]) {
+    if ((gd.crafted as Record<string, unknown> | undefined)?.[id]) {
       modsrc.n_crafted = { min: 1, max: 1 };
     }
     if ((gd.autoMagic as Record<string, unknown>)[id]) {
@@ -530,13 +530,17 @@ export function parseParamStats(
 
 /**
  * Determine the variable values for a unique/set item by analyzing binary stats.
- * Returns array of uniqueValues or null if stats don't match.
+ * Returns `{uniqueValues, propertyIndex}` (matching d2planner HEAD) or null
+ * when the stats don't match the definition.
+ *
+ * `propertyIndex` maps each propertyGroup property name to the picked option
+ * index (warlock items use this for "pick a skill tab" style rolls).
  */
 export function parseUniqueStats(
   gd: GameData,
   item: ParsedItem,
   getStats: StatsGetter,
-): number[] | null {
+): { uniqueValues: number[]; propertyIndex: Record<string, number> } | null {
   const uniq = (gd.uniqueItems[item.unique!] || gd.setItems[item.unique!]) as Record<string, unknown> | undefined;
   if (!uniq) return null;
 
@@ -551,6 +555,7 @@ export function parseUniqueStats(
   const statsSrc = uniqueStats(gd, {}, uniq, values, item as { base: string; ilvl?: number });
 
   const uniqueValues: number[] = [];
+  const propertyIndex: Record<string, number> = {};
   const stats = getStats(statsSrc);
   if (!stats) return null;
 
@@ -590,14 +595,34 @@ export function parseUniqueStats(
     }
   }
 
-  // Fill non-variable slots with max values
+  // Fill non-variable slots. For propertyGroup props (pg), pick the actual
+  // option index by scanning the group's mods for one whose mod1 stat is
+  // present in `stats`; otherwise default to the def's `max`.
   for (let i = 0; i < 12; ++i) {
-    if (!uniq[`prop${i + 1}`]) continue;
+    const prop = uniq[`prop${i + 1}`] as string | undefined;
+    if (!prop) continue;
     if (uniqueValues[i] != null) continue;
-    uniqueValues[i] = uniq[`max${i + 1}`] as number;
+
+    const pg = gd.propertyGroups?.[prop];
+    if (pg) {
+      let foundOptIdx = 0;
+      for (let j = 1; (gd.mods as Record<string, unknown>)[`${prop}:${j}`]; j++) {
+        const m = gd.mods[`${prop}:${j}`] as Record<string, unknown>;
+        const baseStat = (gd.properties[m.mod1code as string]?.stat1 as string | undefined);
+        const key = m.mod1param != null ? `${baseStat}#${m.mod1param}` : baseStat;
+        if (baseStat && key != null && (stats as Record<string, unknown>)[key] != null) {
+          foundOptIdx = j - 1;
+          break;
+        }
+      }
+      propertyIndex[prop] = foundOptIdx;
+      uniqueValues[i] = foundOptIdx;
+    } else {
+      uniqueValues[i] = uniq[`max${i + 1}`] as number;
+    }
   }
 
-  return uniqueValues;
+  return { uniqueValues, propertyIndex };
 }
 
 // ─── parseRunewordStats ─────────────────────────────────────────
