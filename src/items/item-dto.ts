@@ -93,7 +93,9 @@ export function toTradeDTO(
     baseCode: item.base,
     displayName,
     quality: item.quality as ItemQuality,
-    ilvl: item.ilvl,
+    // Simple items (gems, runes, potions, scrolls) carry no ilvl in the binary
+    // format — surface 0 in the DTO so downstream consumers can rely on `number`.
+    ilvl: item.ilvl ?? 0,
     ethereal: item.ethereal,
     sockets: item.sockets,
     uniqueId: item.unique,
@@ -125,16 +127,36 @@ function resolveDisplayName(item: BinaryParsedItem, gd: GameData): string {
     if (name) return name;
   }
 
-  // Fall back to base item name from locale
-  const baseEntry = gd.items[item.base];
-  const base = baseEntry ? baseEntry as unknown as Record<string, unknown> : undefined;
-  const namestr = base?.namestr as string | undefined;
-  if (namestr) {
-    const localized = gd.locale.strings[namestr];
-    if (localized) return localized;
-    return namestr;
+  const base = localizedBaseName(item, gd);
+
+  // Magic items: in-game name is "<prefix> <base> <suffix>" (e.g. "Glowing Ring of the
+  // Whale"). The affix codes are read straight from the binary, so this works even when
+  // the stat solver fails to reconstruct the actual mods.
+  if (item.magicPrefixCode || item.magicSuffixCode) {
+    const prefix = affixWord(gd.magicPrefix?.[item.magicPrefixCode ?? ''], gd);
+    const suffix = affixWord(gd.magicSuffix?.[item.magicSuffixCode ?? ''], gd);
+    const full = [prefix, base, suffix].filter(Boolean).join(' ').trim();
+    if (full) return full;
   }
 
+  return base;
+}
+
+/** Resolve a magic affix entry's localized display word (e.g. "Glowing", "of the Whale"). */
+function affixWord(entry: { name?: string } | undefined, gd: GameData): string {
+  const key = entry?.name;
+  if (!key) return '';
+  return gd.locale.strings[key] || key;
+}
+
+/** Localized base-item name from the locale, falling back to the raw base code. */
+function localizedBaseName(item: BinaryParsedItem, gd: GameData): string {
+  const baseEntry = gd.items[item.base];
+  const base = baseEntry ? (baseEntry as unknown as Record<string, unknown>) : undefined;
+  const namestr = base?.namestr as string | undefined;
+  if (namestr) {
+    return gd.locale.strings[namestr] || namestr;
+  }
   return item.base;
 }
 
