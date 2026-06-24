@@ -52,6 +52,13 @@ export interface D2SCharacterProfile {
   gold?: number;
   /** Gold in the character's personal stash (the `goldbank` stat). */
   goldStash?: number;
+  /**
+   * Raw character stat map straight from the save (stat name → value), e.g.
+   * strength, dexterity, vitality, energy, level, experience, maxhp, maxmana,
+   * maxstamina, statpts, newskills. Life/mana/stamina are 8.8 fixed-point
+   * (divide by 256 for the displayed integer).
+   */
+  attributes?: Record<string, number>;
   ironGolem?: number | string;
   /**
    * Raw bytes of the v105 "extra sections" tail (typically the 0x666c warlock
@@ -186,6 +193,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   result.level = charStats.level;
   result.gold = charStats.gold ?? 0;
   result.goldStash = charStats.goldbank ?? 0;
+  result.attributes = charStats;
 
   // Skills
   if (reader.read16() !== 0x6669) throw Error('invalid skills header');
