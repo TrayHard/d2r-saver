@@ -86,6 +86,12 @@ export interface BinaryParsedItem {
    * solver fails on Blizzless data and clears the `mods` map. */
   magicPrefixCode?: string;
   magicSuffixCode?: string;
+  /** ALL prefix affix codes (mp###), in binary order. Magic items carry one; rare/crafted up to
+   * three. Persisted so the backend can fill the create-form Prefix slots (names only — the stats
+   * always live in the flat mod list, NEVER attributed back to an affix). */
+  prefixCodes?: string[];
+  /** ALL suffix affix codes (ms###), in binary order (magic: one; rare/crafted: up to three). */
+  suffixCodes?: string[];
   uniqueValues?: number[];
   /** Selected pg option index per property key (warlock property-group items). */
   propertyIndex?: Record<string, number>;
@@ -388,9 +394,9 @@ export function createItemParser(
           break;
         case QUALITY_MAGIC: {
           const p = reader.bits(11);
-          if (p) { const c = `mp${mkid(p)}`; mods.push(c); item.magicPrefixCode = c; }
+          if (p) { const c = `mp${mkid(p)}`; mods.push(c); item.magicPrefixCode = c; (item.prefixCodes ??= []).push(c); }
           const s = reader.bits(11);
-          if (s) { const c = `ms${mkid(s)}`; mods.push(c); item.magicSuffixCode = c; }
+          if (s) { const c = `ms${mkid(s)}`; mods.push(c); item.magicSuffixCode = c; (item.suffixCodes ??= []).push(c); }
           break;
         }
         case QUALITY_SET:
@@ -405,12 +411,18 @@ export function createItemParser(
           const name2 = (gd.rareSuffix as Record<string, { name?: string }>)[reader.bits(8) - 1]?.name;
           item.name = `${gd.locale.strings[name1!] || name1 || ''} ${gd.locale.strings[name2!] || name2 || ''}`.trim();
 
-          if (reader.bits(1)) mods.push(`mp${mkid(reader.bits(11))}`);
-          if (reader.bits(1)) mods.push(`ms${mkid(reader.bits(11))}`);
-          if (reader.bits(1)) mods.push(`mp${mkid(reader.bits(11))}`);
-          if (reader.bits(1)) mods.push(`ms${mkid(reader.bits(11))}`);
-          if (reader.bits(1)) mods.push(`mp${mkid(reader.bits(11))}`);
-          if (reader.bits(1)) mods.push(`ms${mkid(reader.bits(11))}`);
+          // Up to 3 prefix + 3 suffix affix ids, interleaved. Capture every one into ordered
+          // code arrays so the backend can fill the Prefix/Suffix NAME slots (the stats stay flat
+          // in lot.mods — affixes are never re-attributed). magicPrefix/SuffixCode stay unset for
+          // rares (multi-affix), so single-code consumers must read prefixCodes/suffixCodes.
+          const pushPrefix = () => { const c = `mp${mkid(reader.bits(11))}`; mods.push(c); (item.prefixCodes ??= []).push(c); };
+          const pushSuffix = () => { const c = `ms${mkid(reader.bits(11))}`; mods.push(c); (item.suffixCodes ??= []).push(c); };
+          if (reader.bits(1)) pushPrefix();
+          if (reader.bits(1)) pushSuffix();
+          if (reader.bits(1)) pushPrefix();
+          if (reader.bits(1)) pushSuffix();
+          if (reader.bits(1)) pushPrefix();
+          if (reader.bits(1)) pushSuffix();
           break;
         }
       }

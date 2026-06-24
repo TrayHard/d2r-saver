@@ -57,9 +57,12 @@ describe('Item serializer', () => {
   // ─── Roundtrip: synthetic items ────────────────────────────────
 
   describe('roundtrip: synthetic items', () => {
-    it('roundtrips a normal-quality rune (preset)', () => {
+    it('roundtrips a normal-quality preset (stackable quiver)', () => {
+      // Runes/gems/potions are NON-stackable preset items; in d2planner-HEAD
+      // layout the binary carries no quantity field for them, so round-trip
+      // drops it. Use a stackable preset (arrow quiver) instead.
       const item: BinaryParsedItem = {
-        itemId: 0, base: 'r22', quality: 2, ilvl: 1,
+        itemId: 0, base: 'aqv', quality: 2, ilvl: 1,
         unidentified: false, ethereal: false, socketed: false,
         sockets: 0, socketedItems: [], stats: {},
         binaryOffset: { start: 0, end: 0 }, quantity: 5,
@@ -67,7 +70,7 @@ describe('Item serializer', () => {
       const token = serializeItem(item, { 0: item }, gd);
       const result = deserializeItem(token, gd);
 
-      expect(result.item.base).toBe('r22');
+      expect(result.item.base).toBe('aqv');
       expect(result.item.quantity).toBe(5);
     });
 

@@ -415,6 +415,39 @@ export interface BeltEntry {
   [key: string]: unknown;
 }
 
+// ─── Property groups (Blizzless v105) ───────────────────────────
+
+/**
+ * A property group entry — represents a set of randomly-picked properties
+ * (e.g. "skilltab-war" picks a random Warlock skill tab to grant).
+ *
+ * The group is expanded at load time into `mods["<name>:1"]`,
+ * `mods["<name>:2"]`, ..., one per concrete option.
+ */
+export interface PropertyGroupEntry {
+  pickmode?: number;
+  [key: string]: unknown; // prop1..propN, parmin1..parminN, parmax1..parmaxN, modmin1..modminN, modmax1..modmaxN, chance1..chanceN
+}
+
+// ─── Unique mods (Blizzless v105, warlock bind-demon) ───────────
+
+export interface UniqueModEntry {
+  weight?: number;
+  mod?: string;
+  uniquemod?: string;
+  [key: string]: unknown;
+}
+
+// ─── Super uniques ──────────────────────────────────────────────
+
+export interface SuperUniqueEntry {
+  class?: string;
+  mod1?: string;
+  mod2?: string;
+  mod3?: string;
+  [key: string]: unknown;
+}
+
 // ─── Info ───────────────────────────────────────────────────────
 
 export interface GridDimensions {
@@ -465,6 +498,9 @@ export interface RawGameData {
   rareSuffix: Record<string, RareAffixEntry>;
   experience: Record<string, ExperienceEntry>;
   belts: Record<string, BeltEntry>;
+  propertyGroups?: Record<string, PropertyGroupEntry>;
+  uniqueMods?: Record<string, UniqueModEntry>;
+  superUniques?: Record<string, SuperUniqueEntry>;
   info: GameInfo;
   strings: Record<string, string>;
   [key: string]: unknown;

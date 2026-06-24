@@ -106,7 +106,7 @@ export class StashGrid {
    * @param gd GameData for item base dimensions.
    */
   populate(
-    slots: (number | undefined)[],
+    slots: (number | string | undefined)[],
     items: Record<number | string, { base: string }>,
     gd: GameData,
   ): void {
@@ -125,7 +125,12 @@ export class StashGrid {
       const x = slot % this.columns;
       const y = Math.floor(slot / this.columns);
 
-      this.occupy(x, y, w, h, id);
+      // Grid stores numeric IDs; map preset string codes to a hashed numeric
+      // sentinel so the grid can still mark cells occupied.
+      const numericId = typeof id === 'number'
+        ? id
+        : (id as string).split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 1) & 0x7fffffff;
+      this.occupy(x, y, w, h, numericId);
     }
   }
 }

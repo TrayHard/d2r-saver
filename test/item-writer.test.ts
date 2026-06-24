@@ -259,9 +259,13 @@ describe('Item writer', () => {
 
   describe('simple item roundtrip', () => {
     it('preserves quantity for preset items', () => {
+      // Use a stackable preset (arrow quiver). The d2planner-HEAD layout only
+      // writes the simple-item quantity field when the base is stackable —
+      // non-stackable presets (runes, hp/mp potions, scrolls) carry no
+      // quantity in the binary at all.
       const item: BinaryParsedItem = {
         itemId: 0,
-        base: 'r22',
+        base: 'aqv',
         quality: 2,
         ilvl: 1,
         unidentified: false,
@@ -289,7 +293,7 @@ describe('Item writer', () => {
 
       const reItems = Object.values(ctx.items);
       expect(reItems.length).toBe(1);
-      expect(reItems[0].base).toBe('r22');
+      expect(reItems[0].base).toBe('aqv');
       expect(reItems[0].quantity).toBe(15);
     });
 

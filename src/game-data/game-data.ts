@@ -31,6 +31,9 @@ import type {
   CharStatEntry,
   RareAffixEntry,
   QualityItemEntry,
+  PropertyGroupEntry,
+  UniqueModEntry,
+  SuperUniqueEntry,
   GameInfo,
 } from './types.js';
 import { loadDataFromFile, type LocaleArray, type LoadedData } from './loader.js';
@@ -72,6 +75,12 @@ export class GameData {
   charStats!: Record<string, CharStatEntry>;
   rarePrefix!: Record<string, RareAffixEntry>;
   rareSuffix!: Record<string, RareAffixEntry>;
+  /** Property groups (e.g. random skill-tab grants). Expanded into `mods["<group>:N"]` at load. */
+  propertyGroups?: Record<string, PropertyGroupEntry>;
+  /** Unique-mod table (used by warlock bind-demon parsing). */
+  uniqueMods?: Record<string, UniqueModEntry>;
+  /** Super-unique monster table. */
+  superUniques?: Record<string, SuperUniqueEntry>;
   info!: GameInfo;
   strings!: Record<string, string>;
 
@@ -219,6 +228,47 @@ export class GameData {
 
     // 11. Mod fixups
     this.fixupMods();
+
+    // 11b. Expand propertyGroups into mods (matches d2planner data/load.js).
+    // Each group `<name>` produces one mod per concrete option, keyed `<name>:<n>`.
+    if (this.propertyGroups) {
+      for (const [name, pg] of Object.entries(this.propertyGroups)) {
+        let v = 0;
+        for (let i = 1; i <= 8; i++) {
+          const prop = (pg as Record<string, unknown>)[`prop${i}`];
+          if (!prop) continue;
+          const parmin = (pg as Record<string, unknown>)[`parmin${i}`] as number | undefined;
+          const parmax = (pg as Record<string, unknown>)[`parmax${i}`] as number | undefined;
+          const w = (pg as Record<string, unknown>)[`modmin${i}`] as number | undefined;
+          const M = (pg as Record<string, unknown>)[`modmax${i}`] as number | undefined;
+          if (parmin != null && parmax != null && parmin < parmax) {
+            for (let p = parmin; p <= parmax; p++) {
+              (this.mods as Record<string, MagicAffixEntry>)[`${name}:${++v}`] = {
+                name: `${name}:${v}`,
+                version: 100,
+                level: 1,
+                levelreq: 0,
+                mod1code: prop as string,
+                mod1param: p,
+                mod1min: w,
+                mod1max: M,
+              } as MagicAffixEntry;
+            }
+          } else {
+            (this.mods as Record<string, MagicAffixEntry>)[`${name}:${++v}`] = {
+              name: `${name}:${v}`,
+              version: 100,
+              level: 1,
+              levelreq: 0,
+              mod1code: prop as string,
+              mod1param: parmax,
+              mod1min: w,
+              mod1max: M,
+            } as MagicAffixEntry;
+          }
+        }
+      }
+    }
 
     // 12. Lookup maps
     this.buildLookupMaps();

@@ -202,9 +202,16 @@ export function writeD2S(opts: WriteD2SOptions): Uint8Array {
   writer.writeUInt8(0);
 
   // ═══════════ V105 EXTRA SECTIONS ═══════════
-  writer.writeUInt16(1);       // unknown flag/count
-  writer.writeUInt16(0x666c);  // v105 section marker
-  writer.writeUInt16(0);       // empty section data
+  // Preserve the source file's extra sections verbatim when they were captured
+  // by the reader (e.g. warlock 0x666c bind-demon block). Otherwise write an
+  // empty 0x666c marker.
+  if (profile.extraSections && profile.extraSections.length) {
+    writer.writeBytes(new Uint8Array(profile.extraSections));
+  } else {
+    writer.writeUInt16(1);       // unknown flag/count
+    writer.writeUInt16(0x666c);  // v105 section marker
+    writer.writeUInt16(0);       // empty section data
+  }
 
   // ═══════════ FINALIZE ═══════════
   fixHeader(writer);

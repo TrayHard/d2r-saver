@@ -218,7 +218,7 @@ export function insertItemD2I(
 function getTargetInfo(
   profile: D2SCharacterProfile,
   target: InsertD2STarget,
-): { size: GridSize; slots: (number | undefined)[] } {
+): { size: GridSize; slots: (number | string | undefined)[] } {
   switch (target) {
     case 'stash':
       return { size: STASH, slots: profile.stash };

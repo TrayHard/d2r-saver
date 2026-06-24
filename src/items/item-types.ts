@@ -102,6 +102,7 @@ export const presetItemIds = new Set([
   'xa1', 'xa2', 'xa3', 'xa4', 'xa5',
   'ua1', 'ua2', 'ua3', 'ua4', 'ua5',
   'cr1', 'cr2', 'cr3',
+  'jwd', // Disenchanted Jewel (blizzless)
 ]);
 
 /**

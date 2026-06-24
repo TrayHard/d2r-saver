@@ -174,7 +174,7 @@ function collectItemAndSockets(
 
 /** Remove item IDs from a slot array (set matching slots to undefined). */
 function removeFromSlotArray(
-  slots: (number | undefined)[],
+  slots: (number | string | undefined)[],
   removeIds: Set<number | string>,
 ): void {
   for (let i = 0; i < slots.length; i++) {
@@ -186,7 +186,7 @@ function removeFromSlotArray(
 
 /** Remove item IDs from a string-keyed record (profile.items / profile.mercItems). */
 function removeFromStringRecord(
-  record: Record<string, number>,
+  record: Record<string, number | string>,
   removeIds: Set<number | string>,
 ): void {
   for (const [key, val] of Object.entries(record)) {

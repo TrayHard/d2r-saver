@@ -104,8 +104,19 @@ export function writeItem(
   gd: GameData,
 ): Uint8Array {
   const writer = new BitWriter();
-  const isSimple = isItemSimple(item);
+  // Determine simple flag from item type (matches maxroll behaviour): potions,
+  // gems, scrolls, runes have no stat block.
+  const baseTypes = itemGetTypes(gd, item.base);
+  const isSimple = !!item.ear
+    || isItemSimple(item)
+    || baseTypes.has('poti') || baseTypes.has('gem')
+    || baseTypes.has('scro') || baseTypes.has('rune');
   const runeword = item.unique?.startsWith('runeword') ?? false;
+  /**
+   * A runeword struck on a superior base — d2planner writes quality=3 (SUPERIOR)
+   * + the 3-bit superior mod, instead of quality=2 (NORMAL).
+   */
+  const isSuperiorBase = runeword && item.superior != null;
 
   // ═══════════ FLAGS (35 bits) ═══════════
   writeZeroBits(writer, 4);
@@ -142,26 +153,16 @@ export function writeItem(
   const socketedCount = item.socketedItems?.filter(Boolean).length || 0;
   writer.writeUInt8(socketedCount, isSimple ? 1 : 3);
 
-  // ═══════════ SIMPLE ITEMS: post-base fields ═══════════
+  // ═══════════ COMPLEX ITEM FIELDS (skipped for simple) ═══════════
   if (isSimple) {
-    // v105 simple items: quantity (1 flag bit + 8-bit quantity if 1)
-    if (item.quantity != null && item.quantity > 0) {
-      writer.writeBit(1);
-      writer.writeUInt8(item.quantity, 8);
-    } else {
-      writer.writeBit(0);
-    }
-    writer.align();
-
-    // Write socketed sub-items
-    writeSocketedItems(writer, item, allItems, gd);
-    return writer.toArray();
-  }
-
-  // ═══════════ COMPLEX ITEM FIELDS ═══════════
+    // Simple items go straight to the post-stats quantity field below.
+  } else {
+  // (closed before V105 post-stats quantity block)
   writer.writeUInt32(item.itemId || 0, 32); // item ID
   writer.writeUInt8(item.ilvl, 7); // item level
-  const quality = runeword ? 2 : (qualityToFileBits[item.quality] || 0);
+  // Runeword: quality field stores SUPERIOR (3) for a superior runeword base,
+  // NORMAL (2) otherwise.
+  const quality = runeword ? (isSuperiorBase ? 3 : 2) : (qualityToFileBits[item.quality] || 0);
   writer.writeUInt8(quality, 4); // quality
 
   // Custom icon
@@ -175,9 +176,11 @@ export function writeItem(
   // Class-specific
   writer.writeUInt8(0, 1);
 
-  // Quality-specific data
-  const qualityRaw = item.quality === 9 ? 2 : item.quality; // runeword uses NORMAL
+  // Quality-specific data. Runeword on a superior base also writes the
+  // SUPERIOR 3-bit mod (0) after the quality byte.
+  const qualityRaw = item.quality === 9 ? 2 : item.quality;
   writeQualityData(writer, item, qualityRaw, gd);
+  if (runeword && isSuperiorBase) writer.writeUInt8(0, 3);
 
   // Runeword ID
   if (runeword) {
@@ -219,30 +222,26 @@ export function writeItem(
     }
   }
 
-  // v105: unknown bit after durability
-  writer.writeBit(0);
-
-  // Stackable quantity (pre-stats)
-  const baseItem = gd.items[item.base] as unknown as Record<string, unknown>;
-  if (baseItem && 'stackable' in baseItem && baseItem.stackable) {
-    writer.writeUInt16(item.quantity || 1, 9);
-  }
+  // V105 pre-stats quantity: 1-bit flag + 9-bit value. Always written for V105,
+  // gated by the base item being stackable (matches d2planner-HEAD writeItem).
+  const baseItem = gd.items[item.base] as unknown as Record<string, unknown> | undefined;
+  const stackable = !!baseItem?.stackable;
+  writer.writeBit(stackable ? 1 : 0);
+  if (stackable) writer.writeUInt16(item.quantity || 1, 9);
 
   // Socket count (4-bit)
   if (item.sockets > 0) {
     writer.writeUInt8(item.sockets, 4);
   }
 
-  // Set property list flags
+  // Set property list flags — write the actual setflags field rather than
+  // synthesising it from stats.length.
   if (qualityRaw === 5) { // SET
-    const setAttrCount = item.stats != null ? Object.keys(item.stats).length : 0;
-    const plistFlag = (1 << setAttrCount) - 1;
-    writer.writeUInt8(plistFlag & 0x1f, 5);
+    writer.writeUInt8(item.setflags || 0, 5);
   }
 
   // ═══════════ STATS ═══════════
   if (runeword) {
-    // Runeword: write base stats + runeword stats as two blocks
     const runewordData = gd.runes[item.unique!];
     const rwStats: Record<string, number> = {};
     if (runewordData) {
@@ -258,10 +257,21 @@ export function writeItem(
     writeItemStats(writer, rwStats, gd);
   } else {
     writeItemStats(writer, item.stats || {}, gd);
+    // Empty set-bonus stat sections for each active setflag bit — terminator only.
+    if (qualityRaw === 5 && item.setflags) {
+      for (let bit = 0; bit < 5; bit++) {
+        if (item.setflags & (1 << bit)) writeItemStats(writer, {}, gd);
+      }
+    }
   }
+  } // end if(!isSimple) — complex item body
 
-  // v105: unknown bit after stats
-  writer.writeBit(0);
+  // ═══════════ V105 POST-STATS QUANTITY (both simple + complex) ═══════════
+  // 1-bit flag + 8-bit value, gated by base.stackable && item.quantity.
+  const _postBase = gd.items[item.base] as unknown as Record<string, unknown> | undefined;
+  const _postQty = (_postBase?.stackable && item.quantity) ? item.quantity : 0;
+  writer.writeBit(_postQty ? 1 : 0);
+  if (_postQty) writer.writeUInt8(_postQty, 8);
 
   writer.align();
 
@@ -619,6 +629,7 @@ export function buildWriteEntries(
     (profile.inventory || []).forEach((id, i) =>
       push(id, { loc: 0, equip: 0, x: i % 10, y: (i / 10) | 0, storage: 1 }),
     );
+    // cube: location=0, storage=4 (matches d2planner-HEAD: loc:0 storage:4)
     (profile.cube || []).forEach((id, i) =>
       push(id, { loc: 0, equip: 0, x: i % 3, y: (i / 3) | 0, storage: 4 }),
     );

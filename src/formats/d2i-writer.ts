@@ -233,7 +233,7 @@ function writeStashSector(
  * Build item write entries from a normal stash page's slot array.
  */
 function buildStashEntries(
-  stash: (number | undefined)[],
+  stash: (number | string | undefined)[],
   allItems: Record<number | string, BinaryParsedItem>,
   gd: GameData,
 ): ItemWriteEntry[] {

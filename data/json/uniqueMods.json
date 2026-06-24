@@ -1,0 +1,220 @@
+{
+  "1": {
+    "weight": 1,
+    "mod": "rndname"
+  },
+  "2": {
+    "weight": 1,
+    "mod": "hpmultiply"
+  },
+  "3": {
+    "weight": 1,
+    "mod": "light"
+  },
+  "4": {
+    "weight": 1,
+    "mod": "leveladd"
+  },
+  "5": {
+    "weight": 4,
+    "mod": "strong",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "6": {
+    "weight": 5,
+    "mod": "fast",
+    "fpick": 3,
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "7": {
+    "weight": 4,
+    "mod": "curse",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "8": {
+    "weight": 3,
+    "mod": "resist",
+    "upickn": 6,
+    "upickh": 6
+  },
+  "9": {
+    "weight": 4,
+    "mod": "fire",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "10": {
+    "weight": 1,
+    "mod": "poisondead"
+  },
+  "11": {
+    "weight": 1,
+    "mod": "durieldead"
+  },
+  "12": {
+    "weight": 1,
+    "mod": "bloodraven"
+  },
+  "13": {
+    "weight": 1,
+    "mod": "rage"
+  },
+  "14": {
+    "weight": 1,
+    "mod": "spcdamage"
+  },
+  "15": {
+    "weight": 1,
+    "mod": "partydead"
+  },
+  "16": {
+    "weight": 1,
+    "mod": "champion"
+  },
+  "17": {
+    "weight": 5,
+    "mod": "lightning",
+    "exclude1": "sandleaper",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "18": {
+    "weight": 4,
+    "mod": "cold",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "19": {
+    "weight": 1,
+    "mod": "hireable"
+  },
+  "20": {
+    "weight": 1,
+    "mod": "scarab"
+  },
+  "21": {
+    "weight": 1,
+    "mod": "killself"
+  },
+  "22": {
+    "weight": 1,
+    "mod": "questcomplete"
+  },
+  "23": {
+    "weight": 1,
+    "mod": "poisonhit"
+  },
+  "24": {
+    "weight": 1,
+    "mod": "thief"
+  },
+  "25": {
+    "weight": 4,
+    "mod": "manahit",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "26": {
+    "weight": 5,
+    "mod": "teleport",
+    "fpick": 1,
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "27": {
+    "weight": 4,
+    "mod": "spectralhit",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "28": {
+    "weight": 4,
+    "mod": "stoneskin",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "29": {
+    "weight": 5,
+    "mod": "multishot",
+    "fpick": 2,
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "30": {
+    "weight": 4,
+    "mod": "aura",
+    "upick": 6,
+    "upickn": 6,
+    "upickh": 6
+  },
+  "31": {
+    "weight": 1,
+    "mod": "goboom"
+  },
+  "32": {
+    "weight": 1,
+    "mod": "firespike_explode"
+  },
+  "33": {
+    "weight": 1,
+    "mod": "suicideminion_explode"
+  },
+  "34": {
+    "weight": 1,
+    "mod": "ai_after_death"
+  },
+  "35": {
+    "weight": 1,
+    "mod": "shatter_on_death"
+  },
+  "36": {
+    "weight": 1,
+    "mod": "ghostly"
+  },
+  "37": {
+    "weight": 1,
+    "mod": "fanatic"
+  },
+  "38": {
+    "weight": 1,
+    "mod": "possessed"
+  },
+  "39": {
+    "weight": 1,
+    "mod": "berserk"
+  },
+  "40": {
+    "weight": 1,
+    "mod": "worms_on_death"
+  },
+  "41": {
+    "weight": 1,
+    "mod": "always_run_ai"
+  },
+  "42": {
+    "weight": 1,
+    "mod": "lightningdeath"
+  },
+  "43": {
+    "weight": 1,
+    "mod": "thinkonce_on_death"
+  },
+  "44": {
+    "weight": 1,
+    "mod": "hidedead"
+  }
+}

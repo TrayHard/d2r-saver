@@ -1,2 +1,7 @@
 node_modules/
 dist/
+# tsc artifacts must live in dist/; never in src/
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+src/**/*.d.ts.map

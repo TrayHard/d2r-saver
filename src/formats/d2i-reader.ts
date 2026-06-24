@@ -32,7 +32,7 @@ export interface D2IStashPage {
   /** Gold on this page (only the first virtual sub-page inherits gold from extended). */
   gold: number;
   /** Slot array: `stash[slot] = itemId`. Slots use `row * columns + col`. */
-  stash: (number | undefined)[];
+  stash: (number | string | undefined)[];
   /** Per-slot quantities for extended page items (keyed by slot index). */
   quantities?: Record<number, number> | number[];
   /** Number of rows for the misc virtual page. */
@@ -130,7 +130,7 @@ function parseNormalPage(
   warnings: string[],
   nextItemId: number,
 ): void {
-  const stash: (number | undefined)[] = [];
+  const stash: (number | string | undefined)[] = [];
   const ctx = createItemParser(reader, gd, nextItemId);
   try {
     ctx.parseItemList((id, location, slot) => {
@@ -168,9 +168,9 @@ function parseExtendedPage(
   warnings: string[],
   nextItemId: number,
 ): void {
-  const gems: number[] = [];
-  const runes: number[] = [];
-  const misc: Array<{ id: number; qty: number }> = [];
+  const gems: (number | string)[] = [];
+  const runes: (number | string)[] = [];
+  const misc: Array<{ id: number | string; qty: number }> = [];
   const gemQty: number[] = [];
   const runeQty: number[] = [];
 
@@ -205,14 +205,14 @@ function parseExtendedPage(
   }
 
   // Pack misc items into a grid respecting actual item sizes
-  const miscStash: (number | undefined)[] = [];
+  const miscStash: (number | string | undefined)[] = [];
   const miscQty: Record<number, number> = {};
   const miscCols = 10;
   const occupied = new Set<number>();
   let miscMaxRow = 0;
 
   for (const { id, qty } of misc) {
-    const baseCode = allItems[id]?.base;
+    const baseCode = (allItems as Record<number | string, BinaryParsedItem>)[id]?.base;
     const baseItem = baseCode
       ? (gd.items[baseCode] as unknown as Record<string, unknown> | undefined)
       : undefined;

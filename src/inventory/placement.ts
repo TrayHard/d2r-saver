@@ -118,7 +118,7 @@ export function removeItem(
  */
 export function buildGrid(
   size: GridSize,
-  slots: (number | undefined)[],
+  slots: (number | string | undefined)[],
   items: Record<number | string, PlacementItem>,
   gd: GameData,
 ): StashGrid {

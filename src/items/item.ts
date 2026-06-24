@@ -73,8 +73,40 @@ export function addProp(
   min: number,
   max: number,
   value: StatValue,
-  item?: { ilvl?: number; base?: string },
+  item?: { ilvl?: number; base?: string; propertyIndex?: Record<string, number> },
 ): void {
+  // propertyGroups: id refers to a group (e.g. "skilltab-war"). Expand it to
+  // the concrete picked option from `item.propertyIndex` (parser-recovered)
+  // or default to option 1, then recurse with the resolved mod's mod1code.
+  const pg = id && gd.propertyGroups?.[id];
+  if (pg) {
+    // Value-based pg pick template (e.g. "{0}" or "{1}") — preserve as marker.
+    if (typeof value === 'string' && /{(\d+)}/.test(value as string)) {
+      const m = (value as string).match(/{(\d+)}/)!;
+      stats[`pgpick#${m[1]}`] = 1;
+      return;
+    }
+    const optIdx = item?.propertyIndex?.[id] ?? (typeof value === 'number' ? Math.round(value) : 0);
+    const mod = (gd.mods as Record<string, unknown>)[`${id}:${optIdx + 1}`] as Record<string, unknown> | undefined;
+    if (mod) {
+      const statValue: StatValue =
+        item?.propertyIndex != null && typeof value === 'number'
+          ? value
+          : (mod.mod1max as number);
+      addProp(
+        gd,
+        stats,
+        mod.mod1code as string,
+        mod.mod1param,
+        mod.mod1min as number,
+        mod.mod1max as number,
+        statValue,
+        item,
+      );
+    }
+    return;
+  }
+
   const prop = gd.properties[id];
   if (!prop) return;
 
