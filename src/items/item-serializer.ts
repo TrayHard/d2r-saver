@@ -9,7 +9,6 @@
  * for insertion into any save file.
  */
 
-import { Buffer } from 'node:buffer';
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { TOKEN_PREFIX } from '../types/constants.js';
@@ -105,11 +104,22 @@ export interface DeserializedItem {
 
 // ─── Base64 helpers ─────────────────────────────────────────────
 
+// Browser-safe base64 (no node:buffer). btoa/atob operate on binary strings;
+// items are at most a few hundred bytes so the char-by-char loop is fine.
+// atob/btoa are globals in the Tauri webview and in Node 18+.
 function uint8ToBase64(bytes: Uint8Array): string {
-  // Node.js environment
-  return Buffer.from(bytes).toString('base64');
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
 }
 
 function base64ToUint8(base64: string): Uint8Array {
-  return new Uint8Array(Buffer.from(base64, 'base64'));
+  const binary = atob(base64);
+  const out = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    out[i] = binary.charCodeAt(i);
+  }
+  return out;
 }

@@ -3,8 +3,6 @@
  * Reads from the local filesystem — no browser / HTTP dependencies.
  */
 
-import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
 import type { RawGameData } from './types.js';
 
 /** Locale entry: [key, value] tuples array. */
@@ -22,6 +20,12 @@ export interface LoadedData {
  * @param stringsPath  Path to `strings.json` (locale array).
  */
 export async function loadDataFromFile(dataPath: string, stringsPath: string): Promise<LoadedData> {
+  // Lazy-load node builtins INSIDE the function so this module carries no
+  // top-level node: import. That keeps loader.ts import-safe in browser
+  // bundlers (Vite/Rollup/Webpack) — the node: deps resolve only at runtime
+  // when a Node consumer actually calls this (browser consumers use fromRaw).
+  const { readFile } = await import('node:fs/promises');
+  const { resolve } = await import('node:path');
   const [rawText, localeText] = await Promise.all([
     readFile(resolve(dataPath), 'utf-8'),
     readFile(resolve(stringsPath), 'utf-8'),

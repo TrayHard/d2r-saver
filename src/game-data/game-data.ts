@@ -36,7 +36,10 @@ import type {
   SuperUniqueEntry,
   GameInfo,
 } from './types.js';
-import { loadDataFromFile, type LocaleArray, type LoadedData } from './loader.js';
+// Type-only import: keeps the node:fs-based loader OUT of the static import
+// graph so bundlers (Vite/Rollup/Webpack) can tree-shake it for browser
+// consumers. The value `loadDataFromFile` is pulled in lazily inside fromFile().
+import type { LocaleArray, LoadedData } from './loader.js';
 
 // ─── Locale store (module-level, shared) ────────────────────────
 
@@ -149,6 +152,9 @@ export class GameData {
    * Create GameData by loading from file system.
    */
   static async fromFile(dataPath: string, stringsPath: string): Promise<GameData> {
+    // Lazy import so node:fs/promises + node:path only load when fromFile is
+    // actually called (Node contexts). Browser consumers use fromRaw/fromData.
+    const { loadDataFromFile } = await import('./loader.js');
     const loaded = await loadDataFromFile(dataPath, stringsPath);
     return GameData.fromLoaded(loaded);
   }

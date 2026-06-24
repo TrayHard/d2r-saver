@@ -6,9 +6,24 @@
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./data/data.json": "./data/data.json",
+    "./data/strings.json": "./data/strings.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "data/data.json",
+    "data/strings.json"
+  ],
   "scripts": {
     "build": "tsc",
     "build:data": "tsx src/data-parser/index.ts",
+    "prepare": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint src --ext .ts"
