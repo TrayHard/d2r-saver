@@ -67,6 +67,17 @@ export interface D2SCharacterProfile {
    */
   extraSections?: number[];
   /**
+   * Raw bytes [0, 833) of the fixed v105 header, captured verbatim. Lets the
+   * writer round-trip every header field (name, class, merc header, quests,
+   * waypoints, appearance, difficulty, skill hotkeys, timestamps, progression)
+   * without recomputing them. Only filesize + checksum are re-derived on write.
+   */
+  rawHeader?: number[];
+  /** Raw bytes of the corpse section (0x4d4a marker + corpse item lists). */
+  rawCorpse?: number[];
+  /** Raw bytes of the iron-golem section (0x666b marker + optional golem item). */
+  rawGolem?: number[];
+  /**
    * Parsed warlock bind-demon descriptor when the 0x666c extras block
    * decodes successfully. Optional and best-effort.
    */
@@ -108,6 +119,10 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   reader.seek(16);
 
   const result: Partial<D2SCharacterProfile> = {};
+
+  // Preserve the fixed 833-byte v105 header verbatim for lossless round-tripping.
+  // (The stats section always starts at offset 833 in this format.)
+  result.rawHeader = Array.from(data.subarray(0, 833));
 
   // v105: 4 zero bytes at offset 0x10
   reader.skip(4);
@@ -223,13 +238,15 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
       if (location === 'belt') result.belt![slot as number] = id;
     });
 
-    // Corpses
+    // Corpses — captured verbatim so the writer preserves corpse items.
+    const corpseStart = reader.bitpos >> 3;
     if (reader.read16() !== 0x4d4a) throw Error('invalid item table header');
     const corpses = reader.read16();
     reader.skip(corpses * 12);
     for (let i = 0; i < corpses; ++i) {
       ctx.parseItemList(() => null);
     }
+    result.rawCorpse = Array.from(reader.buffer.subarray(corpseStart, reader.bitpos >> 3));
 
     // Hireling items
     if (!reader.eof()) {
@@ -242,12 +259,14 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
       }
     }
 
-    // Iron golem
+    // Iron golem — captured verbatim so the writer preserves the golem item.
     if (!reader.eof()) {
+      const golemStart = reader.bitpos >> 3;
       if (reader.read16() !== 0x666b) throw Error('invalid iron golem header');
       if (reader.read8()) {
         ctx.parseItem(ctx.nextId(), id => { result.ironGolem = typeof id === 'number' ? id : 0; });
       }
+      result.rawGolem = Array.from(reader.buffer.subarray(golemStart, reader.bitpos >> 3));
     }
 
     // Preserve extra sections (0x666c warlock demon data) as raw bytes,
