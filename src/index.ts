@@ -8,9 +8,16 @@ import { GameData } from './game-data/game-data.js';
 import type { RawGameData } from './game-data/types.js';
 import type { LocaleArray } from './game-data/loader.js';
 import { detectFormat, type DetectedFormat } from './formats/detect.js';
-import { readD2S, type D2SReadResult } from './formats/d2s-reader.js';
-import { readD2I, type D2IReadResult } from './formats/d2i-reader.js';
+import { readD2S, type D2SReadResult, type D2SCharacterProfile } from './formats/d2s-reader.js';
+import { readD2I, type D2IReadResult, type D2IStashPage } from './formats/d2i-reader.js';
 import type { BinaryParsedItem } from './formats/item-parser.js';
+import { writeD2S, type WriteD2SOptions } from './formats/d2s-writer.js';
+import {
+  writeStash,
+  buildStashWritePages,
+  patchStashPage,
+  type WriteStashPage,
+} from './formats/d2i-writer.js';
 import {
   extractItemD2S,
   extractItemD2I,
@@ -50,6 +57,8 @@ export type { DeserializedItem } from './items/item-serializer.js';
 export type { TradeItemDTO, ItemQuality } from './items/item-dto.js';
 export type { PlacementItem } from './inventory/placement.js';
 export { StashGrid } from './inventory/grid.js';
+export type { WriteD2SOptions } from './formats/d2s-writer.js';
+export type { WriteStashPage } from './formats/d2i-writer.js';
 
 // ─── D2RSaver facade ────────────────────────────────────────────
 
@@ -231,6 +240,47 @@ export class D2RSaver {
     target?: { pageIndex: number; x: number; y: number },
   ): InsertD2IResult {
     return insertItemD2I(buffer, item, allItemsForItem, this.gd, target);
+  }
+
+  // ── Writing ─────────────────────────────────────────────────
+
+  /**
+   * Re-serialise a complete .d2s from a (possibly edited) profile + items.
+   * Lossless: the parsed profile must carry rawHeader/attributes (from readD2S);
+   * apply edits by mutating `profile.attributes` (raw values) before calling.
+   */
+  writeD2S(
+    profile: D2SCharacterProfile,
+    items: Record<number | string, BinaryParsedItem>,
+    name?: string,
+  ): Uint8Array {
+    return writeD2S({ profile, items, gd: this.gd, name });
+  }
+
+  /** Convert parsed stash pages back to writable pages (for writeStash). */
+  buildStashWritePages(
+    pages: D2IStashPage[],
+    allItems: Record<number | string, BinaryParsedItem>,
+  ): WriteStashPage[] {
+    return buildStashWritePages(pages, allItems, this.gd);
+  }
+
+  /** Re-serialise a complete .d2i shared stash from writable pages. */
+  writeStash(
+    pages: WriteStashPage[],
+    allItems: Record<number | string, BinaryParsedItem>,
+  ): Uint8Array {
+    return writeStash(pages, allItems, this.gd);
+  }
+
+  /** Patch a single .d2i sector (e.g. to change its gold) by raw sector index. */
+  patchStashPage(
+    buffer: Uint8Array,
+    pageIndex: number,
+    newPage: WriteStashPage,
+    allItems: Record<number | string, BinaryParsedItem>,
+  ): Uint8Array {
+    return patchStashPage(buffer, pageIndex, newPage, allItems, this.gd);
   }
 
   // ── Icons ───────────────────────────────────────────────────
