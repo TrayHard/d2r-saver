@@ -1,8 +1,29 @@
 {
   "name": "d2r-saver",
   "version": "0.1.0",
-  "description": "Blizzless D2R save file reader/writer library",
-  "private": true,
+  "description": "Blizzless D2R (Diablo II: Resurrected v105) save file reader/writer for .d2s characters and .d2i shared stashes. Lossless writes preserve all save sections; supports item insert/extract and gold/attribute edits.",
+  "license": "MIT",
+  "author": "TrayHard",
+  "homepage": "https://github.com/TrayHard/d2r-saver#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrayHard/d2r-saver.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TrayHard/d2r-saver/issues"
+  },
+  "keywords": [
+    "diablo",
+    "diablo2",
+    "d2r",
+    "blizzless",
+    "save-file",
+    "save-editor",
+    "d2s",
+    "d2i",
+    "binary-parser",
+    "game-data"
+  ],
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -18,15 +39,24 @@
   "files": [
     "dist",
     "data/data.json",
-    "data/strings.json"
+    "data/strings.json",
+    "README.md",
+    "LICENSE"
   ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "build": "tsc",
     "build:data": "tsx src/data-parser/index.ts",
     "prepare": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src --ext .ts",
+    "prepublishOnly": "npm test && npm run build",
+    "release:patch": "npm version patch -m \"release: %s\" && npm publish && git push --follow-tags",
+    "release:minor": "npm version minor -m \"release: %s\" && npm publish && git push --follow-tags",
+    "release:major": "npm version major -m \"release: %s\" && npm publish && git push --follow-tags"
   },
   "devDependencies": {
     "@types/node": "^22.19.13",
