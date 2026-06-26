@@ -85,6 +85,13 @@ export function writeD2S(opts: WriteD2SOptions): Uint8Array {
   if (classId < 0) throw new Error(`unknown class: ${profile.class}`);
 
   // ═══════════ HEADER ═══════════
+  // Lossless path: copy the original fixed 833-byte v105 header verbatim when it
+  // was captured by the reader. This preserves name, class, merc header, quests,
+  // waypoints, appearance, difficulty, skill hotkeys, progression and timestamps
+  // exactly. filesize + checksum (offsets 8/12) are re-patched by fixHeader.
+  if (profile.rawHeader && profile.rawHeader.length >= 833) {
+    writer.writeBytes(new Uint8Array(profile.rawHeader.slice(0, 833)));
+  } else {
   writer.writeUInt32(0xaa55aa55);            // 0x0000: magic
   writer.writeUInt32(105);                   // 0x0004: version
   writer.writeUInt32(0);                     // 0x0008: filesize (patched by fixHeader)
@@ -167,6 +174,7 @@ export function writeD2S(opts: WriteD2SOptions): Uint8Array {
   writer.writeBytes(new Uint8Array([0x01, 0x77]));
   writer.writeUInt16(0x34);
   writer.writeBytes(new Uint8Array(0x30)); // blank NPC data
+  } // end synthesised-header fallback
 
   // ═══════════ STATS ═══════════
   const statsBytes = writeCharacterStats(profile, gd, opts.charStats);
@@ -186,8 +194,13 @@ export function writeD2S(opts: WriteD2SOptions): Uint8Array {
   writer.writeBytes(playerItemBytes);
 
   // ═══════════ CORPSE ═══════════
-  writer.writeUInt16(0x4d4a); // "JM"
-  writer.writeUInt16(0);      // 0 corpses
+  // Preserve corpse items verbatim when captured; otherwise emit "no corpse".
+  if (profile.rawCorpse && profile.rawCorpse.length) {
+    writer.writeBytes(new Uint8Array(profile.rawCorpse));
+  } else {
+    writer.writeUInt16(0x4d4a); // "JM"
+    writer.writeUInt16(0);      // 0 corpses
+  }
 
   // ═══════════ MERC ITEMS ═══════════
   writer.writeUInt16(0x666a);
@@ -198,8 +211,13 @@ export function writeD2S(opts: WriteD2SOptions): Uint8Array {
   }
 
   // ═══════════ IRON GOLEM ═══════════
-  writer.writeUInt16(0x666b);
-  writer.writeUInt8(0);
+  // Preserve the iron golem verbatim when captured; otherwise emit "no golem".
+  if (profile.rawGolem && profile.rawGolem.length) {
+    writer.writeBytes(new Uint8Array(profile.rawGolem));
+  } else {
+    writer.writeUInt16(0x666b);
+    writer.writeUInt8(0);
+  }
 
   // ═══════════ V105 EXTRA SECTIONS ═══════════
   // Preserve the source file's extra sections verbatim when they were captured
@@ -232,6 +250,24 @@ function writeCharacterStats(
   const writer = new BitWriter();
   writer.writeString('gf', 2);
 
+  // ── Faithful path ──────────────────────────────────────────────
+  // When the parsed raw attribute map is available, re-emit every stat verbatim
+  // (same stat id, csvbits width, and raw value — including the 8.8 fixed-point
+  // life/mana/stamina) so gold, experience and all attributes round-trip exactly.
+  // Targeted edits are applied by mutating profile.attributes before writeD2S.
+  if (profile.attributes && Object.keys(profile.attributes).length) {
+    for (const key of Object.keys(profile.attributes)) {
+      const st = gd.itemStatCost[key] as { id: number; csvbits?: number } | undefined;
+      if (!st) continue;
+      writer.writeUInt16(st.id, 9);
+      writer.writeUInt32(profile.attributes[key] || 0, st.csvbits ?? 0);
+    }
+    writer.writeUInt16(0x1ff, 9);
+    writer.align();
+    return writer.toArray();
+  }
+
+  // ── Legacy synth path (brand-new characters without a parsed stat map) ──
   const classId = GameData.classes.indexOf(profile.class as typeof GameData.classes[number]);
   const base = gd.charStats[profile.class] as Record<string, number> | undefined;
 
