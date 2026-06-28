@@ -13,6 +13,13 @@ import { detectFormat } from './detect.js';
 import { createItemParser, type BinaryParsedItem, type ItemHandler } from './item-parser.js';
 import { isSubType } from '../items/item-types.js';
 
+// Minimum bytes a single D2I page occupies (header + item-list start at byte 64). A sector
+// smaller than this can't be a real page; we treat it as corruption and stop. This also
+// guarantees the page cursor strictly advances each iteration — without it a malformed file
+// reporting sectorSize 0 (or any value < 64) would loop forever (CPU/hang DoS). Mirrors the
+// identical guard in the writer (`d2i-writer.ts`).
+const PAGE_HEADER_SIZE = 64;
+
 // ─── Types ──────────────────────────────────────────────────────
 
 /** Extended page item category. */
@@ -70,7 +77,7 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
   let nextItemId = 1;
 
   while (offset < buffer.length) {
-    if (offset + 64 > buffer.length) break;
+    if (offset + PAGE_HEADER_SIZE > buffer.length) break;
 
     const pageData = buffer.subarray(offset);
     const reader = new BinaryReader(pageData);
@@ -83,6 +90,16 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
     const gold = reader.read32();
     const sectorSize = reader.read32();
     const pageType = reader.read8();
+
+    // Guard against a malformed/hostile sector size: a value below one page header would
+    // never advance `offset`, hanging the parser in an infinite loop (CPU/hang DoS). Stop
+    // and surface a warning instead — we keep whatever pages parsed cleanly before it.
+    if (sectorSize < PAGE_HEADER_SIZE) {
+      warnings.push(
+        `Malformed D2I page at offset ${offset}: sectorSize ${sectorSize} < ${PAGE_HEADER_SIZE}; stopping parse.`,
+      );
+      break;
+    }
 
     if (pageType === 2) {
       // Metadata page — skip entirely
