@@ -46,6 +46,18 @@ function mkid(n: number): string {
 }
 
 /**
+ * Blizzless mod custom runewords whose in-game stored ID falls OUTSIDE the vanilla Eye() ranges
+ * handled below, so the range-offset mapping would leave them unmapped (→ dropped as "unknown
+ * runeword"). Map the raw stored ID → runes.json index explicitly. Extend as more custom runewords
+ * are confirmed from real saves (read the raw `bits(12)` value the game stores, map it to the
+ * `runeword###` key `runesToJson` derives from that runeword's `Runeword###` name).
+ *   1396 → 325: "Nightfall" (Runeword300, El+Zod, necro head).
+ */
+const CUSTOM_RUNEWORD_IDS: Record<number, number> = {
+  1396: 325,
+};
+
+/**
  * Stats followed by N consecutive stat IDs in the binary stream.
  * (e.g. item_maxdamage_percent followed by 1 stat, coldmindam by 2.)
  */
@@ -431,6 +443,8 @@ export function createItemParser(
         let rwid = reader.bits(12);
         // Eye() mapping (maxroll): stored D2S runeword ID → sequential index.
         if (rwid === 2718) rwid = 48;
+        // Blizzless mod custom runewords with IDs outside the vanilla ranges (e.g. Nightfall=1396).
+        else if (CUSTOM_RUNEWORD_IDS[rwid] != null) rwid = CUSTOM_RUNEWORD_IDS[rwid];
         else if (rwid > 3194) rwid -= 3194;
         else if (rwid > 2869) rwid -= 2869;
         else if (rwid > 2588) rwid -= 2588;

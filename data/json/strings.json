@@ -11672,6 +11672,518 @@
     "Black Cleft"
   ],
   [
+    "wa1",
+    "Old Book"
+  ],
+  [
+    "wa2",
+    "Tome"
+  ],
+  [
+    "wa3",
+    "Codex"
+  ],
+  [
+    "wa4",
+    "Compendium"
+  ],
+  [
+    "wa5",
+    "Grimoire"
+  ],
+  [
+    "wa6",
+    "Burnt Text"
+  ],
+  [
+    "wa7",
+    "Dark Tome"
+  ],
+  [
+    "wa8",
+    "Dark Codex"
+  ],
+  [
+    "wa9",
+    "Possessed Compendium"
+  ],
+  [
+    "waa",
+    "Possessed Grimoire"
+  ],
+  [
+    "wab",
+    "Forgotten Volume"
+  ],
+  [
+    "wac",
+    "Occult Tome"
+  ],
+  [
+    "wad",
+    "Occult Codex"
+  ],
+  [
+    "wae",
+    "Blasphemous Compendium"
+  ],
+  [
+    "waf",
+    "Blasphemous Grimoire"
+  ],
+  [
+    "ua1",
+    "Talic's Anguish"
+  ],
+  [
+    "ua2",
+    "Korlic's Pain"
+  ],
+  [
+    "ua3",
+    "Madawc's Ire"
+  ],
+  [
+    "ua4",
+    "Bul-Kathos' Nightmare"
+  ],
+  [
+    "ua5",
+    "Worusk's End"
+  ],
+  [
+    "um3",
+    "Protector's Frost"
+  ],
+  [
+    "um6",
+    "Guardian's Light"
+  ],
+  [
+    "um5",
+    "Guardian's Thunder"
+  ],
+  [
+    "um1",
+    "Defender's Fire"
+  ],
+  [
+    "um4",
+    "Protector's Stone"
+  ],
+  [
+    "um2",
+    "Defender's Bile"
+  ],
+  [
+    "Ars Al'Diablolos",
+    "Ars Al'Diabolos"
+  ],
+  [
+    "Ars Tor'Baalos",
+    "Ars Tor'Baalos"
+  ],
+  [
+    "Ars Dul'Mephistos",
+    "Ars Dul'Mephistos"
+  ],
+  [
+    "Measured Wrath",
+    "Measured Wrath"
+  ],
+  [
+    "Dreadfang",
+    "Dreadfang"
+  ],
+  [
+    "Wraithstep",
+    "Wraithstep"
+  ],
+  [
+    "Bloodpact Shard",
+    "Bloodpact Shard"
+  ],
+  [
+    "Sling",
+    "Sling"
+  ],
+  [
+    "Opalvein",
+    "Opalvein"
+  ],
+  [
+    "Entropy Locket",
+    "Entropy Locket"
+  ],
+  [
+    "Gheed's Wager",
+    "Gheed's Wager"
+  ],
+  [
+    "Unique Warlock Helm",
+    "Hellwarden's Will"
+  ],
+  [
+    "Bane's Oathmaker",
+    "Bane's Oathmaker"
+  ],
+  [
+    "Bane's Wraithskin",
+    "Bane's Wraithskin"
+  ],
+  [
+    "Bane's Authority",
+    "Bane's Authority"
+  ],
+  [
+    "Horazon's Countenance",
+    "Horazon's Countenance"
+  ],
+  [
+    "Horazon's Dominion",
+    "Horazon's Dominion"
+  ],
+  [
+    "Horazon's Hold",
+    "Horazon's Hold"
+  ],
+  [
+    "Horazon's Legacy",
+    "Horazon's Legacy"
+  ],
+  [
+    "Horazon's Secrets",
+    "Horazon's Secrets"
+  ],
+  [
+    "Horazon's Splendor",
+    "Horazon's Splendor"
+  ],
+  [
+    "Bane's Garments",
+    "Bane's Garments"
+  ],
+  [
+    "helms",
+    "Helms"
+  ],
+  [
+    "armor",
+    "Armor"
+  ],
+  [
+    "shlds",
+    "Shields"
+  ],
+  [
+    "glove",
+    "Gloves"
+  ],
+  [
+    "boots",
+    "Boots"
+  ],
+  [
+    "belts",
+    "Belts"
+  ],
+  [
+    "barbh",
+    "Barbarian"
+  ],
+  [
+    "druid",
+    "Druid"
+  ],
+  [
+    "palad",
+    "Paladin"
+  ],
+  [
+    "necro",
+    "Necromancer"
+  ],
+  [
+    "warlo",
+    "Warlock"
+  ],
+  [
+    "axes",
+    "Axes"
+  ],
+  [
+    "bows",
+    "Bows"
+  ],
+  [
+    "xbows",
+    "Crossbows"
+  ],
+  [
+    "daggs",
+    "Daggers"
+  ],
+  [
+    "javel",
+    "Javelins"
+  ],
+  [
+    "maces",
+    "Maces"
+  ],
+  [
+    "poles",
+    "Polearms"
+  ],
+  [
+    "scept",
+    "Scepters"
+  ],
+  [
+    "spear",
+    "Spears"
+  ],
+  [
+    "stave",
+    "Staves"
+  ],
+  [
+    "sword",
+    "Swords"
+  ],
+  [
+    "throw",
+    "Throwing"
+  ],
+  [
+    "wands",
+    "Wands"
+  ],
+  [
+    "amazo",
+    "Amazon"
+  ],
+  [
+    "assas",
+    "Assassin"
+  ],
+  [
+    "sorce",
+    "Sorceress"
+  ],
+  [
+    "charm",
+    "Charms"
+  ],
+  [
+    "amule",
+    "Amulets"
+  ],
+  [
+    "rings",
+    "Rings"
+  ],
+  [
+    "jewel",
+    "Jewels"
+  ],
+  [
+    "potis",
+    "Potions"
+  ],
+  [
+    "keysr",
+    "Keys (Regular)"
+  ],
+  [
+    "scrlt",
+    "Scrolls and Tomes"
+  ],
+  [
+    "ammo",
+    "Ammunition"
+  ],
+  [
+    "uberr",
+    "Uber Rewards"
+  ],
+  [
+    "uberm",
+    "Uber Materials"
+  ],
+  [
+    "terrt",
+    "Terrorize Tokens"
+  ],
+  [
+    "absol",
+    "Essence / Token of Absolution"
+  ],
+  [
+    "runes",
+    "Runes"
+  ],
+  [
+    "gems",
+    "Gems"
+  ],
+  [
+    "armo",
+    "Armor"
+  ],
+  [
+    "weap",
+    "Weapons"
+  ],
+  [
+    "acce",
+    "Accessories"
+  ],
+  [
+    "misc",
+    "Misc"
+  ],
+  [
+    "r_hel",
+    "Helmet"
+  ],
+  [
+    "r_arm",
+    "Body Armor"
+  ],
+  [
+    "r_off",
+    "Offhand"
+  ],
+  [
+    "r_mel",
+    "Melee"
+  ],
+  [
+    "r_mis",
+    "Missile"
+  ],
+  [
+    "Defender's Bile",
+    "Defender's Bile"
+  ],
+  [
+    "Guardian's Thunder",
+    "Guardian's Thunder"
+  ],
+  [
+    "Protector's Frost",
+    "Protector's Frost"
+  ],
+  [
+    "Defender's Fire",
+    "Defender's Fire"
+  ],
+  [
+    "Protector's Stone",
+    "Protector's Stone"
+  ],
+  [
+    "Guardian's Light",
+    "Guardian's Light"
+  ],
+  [
+    "circl",
+    "Circlets"
+  ],
+  [
+    "PreCrafted Cold Rupture",
+    "Latent Cold Rupture"
+  ],
+  [
+    "Crafted Cold Rupture",
+    "Renewed Cold Rupture"
+  ],
+  [
+    "PreCrafted Flame Rift",
+    "Latent Flame Rift"
+  ],
+  [
+    "Crafted Flame Rift",
+    "Renewed Flame Rift"
+  ],
+  [
+    "PreCrafted Crack of the Heavens",
+    "Latent Crack of the Heavens"
+  ],
+  [
+    "Crafted Crack of the Heavens",
+    "Renewed Crack of the Heavens"
+  ],
+  [
+    "PreCrafted Rotting Fissure",
+    "Latent Rotting Fissure"
+  ],
+  [
+    "Crafted Rotting Fissure",
+    "Renewed Rotting Fissure"
+  ],
+  [
+    "PreCrafted Bone Break",
+    "Latent Bone Break"
+  ],
+  [
+    "Crafted Bone Break",
+    "Renewed Bone Break"
+  ],
+  [
+    "PreCrafted Black Cleft",
+    "Latent Black Cleft"
+  ],
+  [
+    "Crafted Black Cleft",
+    "Renewed Black Cleft"
+  ],
+  [
+    "gemsAbbrev",
+    "Gems"
+  ],
+  [
+    "cr1",
+    "Blacksmith Ingot"
+  ],
+  [
+    "cr2",
+    "Horadric Sphere"
+  ],
+  [
+    "cr3",
+    "Resplendent Spark"
+  ],
+  [
+    "xa1",
+    "Western Worldstone Shard"
+  ],
+  [
+    "xa2",
+    "Eastern Worldstone Shard"
+  ],
+  [
+    "xa3",
+    "Southern Worldstone Shard"
+  ],
+  [
+    "xa4",
+    "Deep Worldstone Shard"
+  ],
+  [
+    "xa5",
+    "Northern Worldstone Shard"
+  ],
+  [
+    "jwd",
+    "Disenchanted Jewel"
+  ],
+  [
+    "sth",
+    "Heroic Offering"
+  ],
+  [
     "r16",
     "Io Rune"
   ],
@@ -24337,7 +24849,7 @@
   ],
   [
     "Skillname385",
-    "Diablo Clone"
+    "The Butcher"
   ],
   [
     "Skillld385",
@@ -24366,18 +24878,6 @@
   [
     "BrokenItem",
     "Failure"
-  ],
-  [
-    "cr1",
-    "Blacksmith Ingot"
-  ],
-  [
-    "cr2",
-    "Horadric Sphere"
-  ],
-  [
-    "cr3",
-    "Resplendent Spark"
   ],
   [
     "Seraph's Hymn Cr",
@@ -24446,10 +24946,6 @@
   [
     "skillld126New",
     "powerful blow that increases the damage done\nto enemies and crush them"
-  ],
-  [
-    "jwd",
-    "Disenchanted Jewel"
   ],
   [
     "cont_jwd",
@@ -24521,19 +25017,19 @@
   ],
   [
     "StrSkillParamNew",
-    "%+d to Parameter per Base Level"
+    "(%+d to Parameter per Base Level)"
   ],
   [
     "TrappDoorNew",
     "???"
   ],
   [
-    "player99sc1",
-    "lvl 99 in S1 of SC\nBiggie - the 1st character"
+    "player99sc1sor",
+    "Season 1\nDRAGON (rDRAGON)"
   ],
   [
-    "player99hc1",
-    "lvl 99 in S1 of HC\nEnclaveBSTHCsrc - the 1st character"
+    "player99hc1sor",
+    "Season 1\nEnclaveBSTHCsrc (Enclavexl70)"
   ],
   [
     "Message Board H",
@@ -24570,6 +25066,590 @@
   [
     "Skillld387",
     "transform into a Cow King"
+  ],
+  [
+    "player99sc2sor",
+    "Season 2\nБуся (Well)"
+  ],
+  [
+    "player99hc2sor",
+    "Season 2\nGM_NonaGaprinda (Saigakov)"
+  ],
+  [
+    "player99sc1bar",
+    "Season 1\nBomIIjah (Skif-226)"
+  ],
+  [
+    "player99hc1bar",
+    "Season 1\nTROYnoy (kislotniy)"
+  ],
+  [
+    "player99sc1pal",
+    "Season 1\nsedoy (snimukarmu)"
+  ],
+  [
+    "player99hc1pal",
+    "Season 1\nSvyatopolkHC (Standberg)"
+  ],
+  [
+    "player99sc1nec",
+    "Season 1\nStriped_Necro (noodlik)"
+  ],
+  [
+    "player99hc1nec",
+    "Season 1\nStandbergHC (Standberg)"
+  ],
+  [
+    "player99sc1ama",
+    "Season 1\nStandberg (Standberg)"
+  ],
+  [
+    "player99hc1ama",
+    "Season 1\nSellaSadden (Pavel_PeM)"
+  ],
+  [
+    "player99sc1dru",
+    "Season 1\nпппер (sterva)"
+  ],
+  [
+    "player99hc1dru",
+    "Season 1\nSponHC (Spon)"
+  ],
+  [
+    "player99sc1ass",
+    "Season 1\nAnnihilatexOr (annihilatexor)"
+  ],
+  [
+    "player99hc1ass",
+    "Season 1\nWellDeadIsDead (Wheelcah)"
+  ],
+  [
+    "player99sc2bar",
+    "Season 2\nBeastmaster (Higan)"
+  ],
+  [
+    "player99hc2bar",
+    "Season 2\nquaZar (nero4eyes)"
+  ],
+  [
+    "player99sc2pal",
+    "Season 2\nStandbergSC (Standberg)"
+  ],
+  [
+    "player99hc2pal",
+    "Season 2\npalomania (baals)"
+  ],
+  [
+    "player99sc2nec",
+    "Season 2\nUltranagibator (YbuBaKa)"
+  ],
+  [
+    "player99hc2nec",
+    "Season 2\nStandbergHCL (Standberg)"
+  ],
+  [
+    "player99sc2ama",
+    "Season 2\nCANDY (Ghapkin)"
+  ],
+  [
+    "player99hc2ama",
+    "Season 2\nМимоза (dexter)"
+  ],
+  [
+    "player99sc2dru",
+    "Season 2\nVolchik (Chaos_Mage)"
+  ],
+  [
+    "player99hc2dru",
+    "Season 2\nTroyNik (kislotniy)"
+  ],
+  [
+    "player99sc2ass",
+    "Season 2\nSara (mace)"
+  ],
+  [
+    "player99hc2ass",
+    "Season 2\nWhySheAlwaysDie (2002nt7)"
+  ],
+  [
+    "player99sc3sor",
+    ""
+  ],
+  [
+    "player99hc3sor",
+    ""
+  ],
+  [
+    "player99sc3bar",
+    ""
+  ],
+  [
+    "player99hc3bar",
+    ""
+  ],
+  [
+    "player99sc3pal",
+    ""
+  ],
+  [
+    "player99hc3pal",
+    ""
+  ],
+  [
+    "player99sc3nec",
+    ""
+  ],
+  [
+    "player99hc3nec",
+    ""
+  ],
+  [
+    "player99sc3ama",
+    ""
+  ],
+  [
+    "player99hc3ama",
+    ""
+  ],
+  [
+    "player99sc3dru",
+    ""
+  ],
+  [
+    "player99hc3dru",
+    ""
+  ],
+  [
+    "player99sc3ass",
+    ""
+  ],
+  [
+    "player99hc3ass",
+    ""
+  ],
+  [
+    "player99sc4sor",
+    ""
+  ],
+  [
+    "player99hc4sor",
+    ""
+  ],
+  [
+    "player99sc4bar",
+    ""
+  ],
+  [
+    "player99hc4bar",
+    ""
+  ],
+  [
+    "player99sc4pal",
+    ""
+  ],
+  [
+    "player99hc4pal",
+    ""
+  ],
+  [
+    "player99sc4nec",
+    ""
+  ],
+  [
+    "player99hc4nec",
+    ""
+  ],
+  [
+    "player99sc4ama",
+    ""
+  ],
+  [
+    "player99hc4ama",
+    ""
+  ],
+  [
+    "player99sc4dru",
+    ""
+  ],
+  [
+    "player99hc4dru",
+    ""
+  ],
+  [
+    "player99sc4ass",
+    ""
+  ],
+  [
+    "player99hc4ass",
+    ""
+  ],
+  [
+    "player99sc5sor",
+    ""
+  ],
+  [
+    "player99hc5sor",
+    ""
+  ],
+  [
+    "player99sc5bar",
+    ""
+  ],
+  [
+    "player99hc5bar",
+    ""
+  ],
+  [
+    "player99sc5pal",
+    ""
+  ],
+  [
+    "player99hc5pal",
+    ""
+  ],
+  [
+    "player99sc5nec",
+    ""
+  ],
+  [
+    "player99hc5nec",
+    ""
+  ],
+  [
+    "player99sc5ama",
+    ""
+  ],
+  [
+    "player99hc5ama",
+    ""
+  ],
+  [
+    "player99sc5dru",
+    ""
+  ],
+  [
+    "player99hc5dru",
+    ""
+  ],
+  [
+    "player99sc5ass",
+    ""
+  ],
+  [
+    "player99hc5ass",
+    ""
+  ],
+  [
+    "Pawned Soul",
+    "Pawned Soul"
+  ],
+  [
+    "ManaRepPlus",
+    "Replenish Mana %+d"
+  ],
+  [
+    "ManaRepNeg",
+    "Drain Mana %d"
+  ],
+  [
+    "skillnameCallofTheWild",
+    "Call of The Wild"
+  ],
+  [
+    "skillldCallofTheWild",
+    "Forces your allies to teleport to and attack an enemy"
+  ],
+  [
+    "skillnameFocusMinions",
+    "Focus Minions"
+  ],
+  [
+    "skillldFocusMinions",
+    "Forces your allies to teleport to and attack an enemy"
+  ],
+  [
+    "skilltargetlifered",
+    "Target's Maximum Life Reduced by %d%%"
+  ],
+  [
+    "StrSkill40mag",
+    "Absorbs %d physical damage"
+  ],
+  [
+    "Rainbow Facet a",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet b",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet c",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet d",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet e",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet f",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet g",
+    "Rainbow Facet"
+  ],
+  [
+    "Rainbow Facet h",
+    "Rainbow Facet"
+  ],
+  [
+    "StrSkillRangeSingularStun",
+    "Range: %+d"
+  ],
+  [
+    "KingLeoric",
+    "King Leoric"
+  ],
+  [
+    "Tristram Cathedral",
+    "The Tristram Cathedral"
+  ],
+  [
+    "To The Tristram Cathedral",
+    "To The Tristram Cathedral"
+  ],
+  [
+    "EnteringTheTristramCathedral",
+    "Entering The Tristram Cathedral"
+  ],
+  [
+    "Leoric's Crown",
+    "Leoric's Crown"
+  ],
+  [
+    "Butcher's Cleaver",
+    "Butcher's Cleaver"
+  ],
+  [
+    "tls",
+    "Talisman"
+  ],
+  [
+    "Talisman of the Lich",
+    "Talisman of the Lich"
+  ],
+  [
+    "Talisman of the Bone Lord",
+    "Talisman of the Bone Lord"
+  ],
+  [
+    "cont_sth",
+    "Heroic Offering"
+  ],
+  [
+    "ContUseTerrorTokenAct1",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nRight Click to terrorize Act 1"
+  ],
+  [
+    "ContUseTerrorTokenAct2",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nRight Click to terrorize Act 2"
+  ],
+  [
+    "ContUseTerrorTokenAct3",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nRight Click to terrorize Act 3"
+  ],
+  [
+    "ContUseTerrorTokenAct4",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nRight Click to terrorize Act 4"
+  ],
+  [
+    "ContUseTerrorTokenAct5",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nRight Click to terrorize Act 5"
+  ],
+  [
+    "ContUseTerrorTokenAct1Controller",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nHold  to terrorize Act 1"
+  ],
+  [
+    "ContUseTerrorTokenAct2Controller",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nHold  to terrorize Act 2"
+  ],
+  [
+    "ContUseTerrorTokenAct3Controller",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nHold  to terrorize Act 3"
+  ],
+  [
+    "ContUseTerrorTokenAct4Controller",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nHold  to terrorize Act 4"
+  ],
+  [
+    "ContUseTerrorTokenAct5Controller",
+    "create container with this item inside\nTransmute alone in the Horadric Cube to\nHold  to terrorize Act 5"
+  ],
+  [
+    "cont_uaa",
+    "Talic's Anguish"
+  ],
+  [
+    "cont_uab",
+    "Korlic's Pain"
+  ],
+  [
+    "cont_uac",
+    "Madawc's Ire"
+  ],
+  [
+    "cont_uad",
+    "Bul-Kathos' Nightmare"
+  ],
+  [
+    "cont_uae",
+    "Worusk's End"
+  ],
+  [
+    "cont_xaa",
+    "Western Worldstone Shard"
+  ],
+  [
+    "cont_xab",
+    "Eastern Worldstone Shard"
+  ],
+  [
+    "cont_xac",
+    "Southern Worldstone Shard"
+  ],
+  [
+    "cont_xad",
+    "Deep Worldstone Shard"
+  ],
+  [
+    "cont_xae",
+    "Northern Worldstone Shard"
+  ],
+  [
+    "The Throne of Terror",
+    "The Throne of Terror"
+  ],
+  [
+    "To The Throne of Terror",
+    "To The Throne of Terror"
+  ],
+  [
+    "EnteringThroneofTerror",
+    "Entering Throne of Terror"
+  ],
+  [
+    "CurseImm",
+    "Immunity to Curses"
+  ],
+  [
+    "Haunted",
+    "Haunted"
+  ],
+  [
+    "Horrible Thing",
+    "Horrible Thing"
+  ],
+  [
+    "Triumph of Rakkis",
+    "Triumph of Rakkis"
+  ],
+  [
+    "Wicked Tool",
+    "Wicked Tool"
+  ],
+  [
+    "Hiram's Treason",
+    "Hiram's Treason"
+  ],
+  [
+    "Worusk's Toothpicks",
+    "Worusk's Toothpicks"
+  ],
+  [
+    "Forbidden Ceremony",
+    "Forbidden Ceremony"
+  ],
+  [
+    "Ruler of Darkness",
+    "Ruler of Darkness"
+  ],
+  [
+    "Doomglass",
+    "Doomglass"
+  ],
+  [
+    "Master Leonard",
+    "Master Leonard"
+  ],
+  [
+    "Crisp",
+    "Crisp"
+  ],
+  [
+    "Order of Excesses",
+    "Order of Excesses"
+  ],
+  [
+    "PlusEchoesskills",
+    "%+d Echoes"
+  ],
+  [
+    "PlusMirroredskills",
+    "%+d Mirrored Weapons Created"
+  ],
+  [
+    "BindDemonLife",
+    "Physical resistance of your demon: %+d%%"
+  ],
+  [
+    "p14",
+    "Tattered Scroll"
+  ],
+  [
+    "ReadBloodScroll",
+    "Warlord of Blood...Claws...Blood of Stone...Portal...Later"
+  ],
+  [
+    "skillnameOrderToMercenary",
+    "Order to Mercenary"
+  ],
+  [
+    "skillldOrderToMercenary",
+    "Causes your mercenary to teleport to the specified location\n\nCasting Delay: 2 seconds"
+  ],
+  [
+    "StrDurParamNew",
+    "Effect applies to all attacks during %d second"
+  ],
+  [
+    "MercNewString",
+    "Reminder\nBarbarian Axe Mercenaries have the rightmost skill:"
+  ],
+  [
+    "ModStr2hNegative",
+    "Reduce Maximum Mana %d%%"
+  ],
+  [
+    "DiabloTransform",
+    "transform into a Diablo"
+  ],
+  [
+    "unu",
+    "Unused"
+  ],
+  [
+    "Atma's Scarab Cr",
+    "Atma's Scarab"
+  ],
+  [
+    "The Rising Sun Cr",
+    "The Rising Sun"
   ],
   [
     "WarrivAct1IntroPalGossip1",
