@@ -1,6 +1,6 @@
 {
   "name": "d2r-saver",
-  "version": "0.1.3",
+  "version": "0.2.0",
   "description": "Blizzless D2R (Diablo II: Resurrected v105) save file reader/writer for .d2s characters and .d2i shared stashes. Lossless writes preserve all save sections; supports item insert/extract and gold/attribute edits.",
   "license": "MIT",
   "author": "TrayHard",

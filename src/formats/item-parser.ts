@@ -661,12 +661,18 @@ export function createItemParser(
 
     // ── Post-stats: D2R extras + chronicle + V105 quantity ───
     if (extras) {
-      reader.skipbits(52);
-      // Blizzless: SET/UNIQUE/RUNEWORD items carry an extra 64-bit
-      // chronicle-tracking field after the extras block.
-      if (item.quality === QUALITY_SET || item.quality === QUALITY_UNIQUE || item.quality === QUALITY_RUNEWORD) {
-        reader.skipbits(64);
-      }
+      // Blizzless D2R "extras" block: a fixed 52-bit field whose bit 48 flags whether a 64-bit
+      // chronicle-tracking record (a "found/identified by" stamp) follows. The chronicle's presence
+      // is governed ONLY by that flag — NOT by quality or identified status: an unidentified misc
+      // unique can carry it while an identified armor unique does not. The old "skip 64 for every
+      // SET/UNIQUE/RUNEWORD" heuristic over-consumed 64 bits whenever the flag was 0, silently
+      // misaligning EVERY following item in the list — later items were read as garbage or dropped
+      // (e.g. an unidentified Eschuta's Temper vanishing from the save import). Verified against
+      // real saves: the flag predicts 52 vs 116 bits for every observed extras=1 item.
+      reader.skipbits(48);
+      const hasChronicle = reader.bits(1); // bit 48 of the 52-bit extras block
+      reader.skipbits(3); // remainder of the extras block
+      if (hasChronicle) reader.skipbits(64);
     }
     // V105: post-stats quantity (1-bit flag + 8-bit value).
     if (reader.bits(1)) item.quantity = reader.bits(8);
