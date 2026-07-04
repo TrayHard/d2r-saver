@@ -27,6 +27,13 @@ export type ItemQuality =
 export interface TradeItemDTO {
   /** Base64 token for full item reconstruction: `d2r1:<base64>` */
   token: string;
+  /**
+   * The item's persistent 32-bit D2 id (GUID) as a lowercase 8-char hex string, or `null` for simple
+   * items (runes/gems/potions) and ears that carry no such id. Stable across saves/moves/trades, so
+   * it uniquely and durably identifies THIS physical item — unlike `token` (a re-serialization of the
+   * whole item binary). Use it to link a listed item back to the save it came from.
+   */
+  guid: string | null;
   /** 3-character item base code. */
   baseCode: string;
   /** Human-readable display name. */
@@ -90,6 +97,8 @@ export function toTradeDTO(
 
   return {
     token,
+    // Stable per-item identity: the persistent 32-bit item id as 8-char hex (null for simple items).
+    guid: typeof item.guid === "number" ? (item.guid >>> 0).toString(16).padStart(8, "0") : null,
     baseCode: item.base,
     displayName,
     quality: item.quality as ItemQuality,

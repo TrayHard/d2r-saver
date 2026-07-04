@@ -75,6 +75,13 @@ const followStats: Record<string, number> = {
 /** Parsed item representation from the binary reader. */
 export interface BinaryParsedItem {
   itemId: number;
+  /**
+   * The item's persistent 32-bit D2 id (a.k.a. GUID), read straight from the extended-item binary.
+   * Assigned by the game at item creation and preserved across saves/moves/trades, so it is a STABLE
+   * per-item identity — unlike `itemId`, which is just the parse-order index. Present only for
+   * extended (non-simple) items; `undefined` for simple items (runes/gems/potions) and ears.
+   */
+  guid?: number;
   base: string;
   quality: number;
   ilvl: number;
@@ -378,7 +385,10 @@ export function createItemParser(
 
       const types = itemGetTypes(gd, baseId);
 
-      reader.skipbits(32); // item ID
+      // Persistent 32-bit D2 item id (GUID). `bits(32)` needs `>>> 0` because the accumulator is a
+      // signed int32, so a high-bit-set value would come out negative. Same bit-advance as the old
+      // `skipbits(32)`, so parser alignment is unchanged.
+      item.guid = reader.bits(32) >>> 0; // item ID (persistent GUID)
       item.ilvl = reader.bits(7);
       const qualityRaw = gameQualityMap[reader.bits(4)];
       item.quality = runeword ? QUALITY_RUNEWORD : qualityRaw;
