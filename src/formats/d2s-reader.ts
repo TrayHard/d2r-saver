@@ -237,6 +237,10 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
       if (location === 'stash') result.stash![slot as number] = id;
       if (location === 'belt') result.belt![slot as number] = id;
     });
+    // A mid-list item failure truncates the MAIN list silently (worn/inventory/stash/cube items
+    // after the bad one are lost) and usually desyncs the sections below — surface the precise
+    // per-item reason so consumers can log/diagnose it instead of showing a silently-short list.
+    if (ctx.error) warnings.push(`Main item list truncated: ${ctx.error}`);
 
     // Corpses — captured verbatim so the writer preserves corpse items.
     const corpseStart = reader.bitpos >> 3;
@@ -245,6 +249,9 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     reader.skip(corpses * 12);
     for (let i = 0; i < corpses; ++i) {
       ctx.parseItemList(() => null);
+      // Same invariant as the main/hireling lists: a silent mid-list break desyncs everything
+      // after it (and rawCorpse below would capture a garbage byte range) — surface it.
+      if (ctx.error) warnings.push(`Corpse ${i + 1}/${corpses} item list truncated: ${ctx.error}`);
     }
     result.rawCorpse = Array.from(reader.buffer.subarray(corpseStart, reader.bitpos >> 3));
 
@@ -256,6 +263,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
         ctx.parseItemList((id, location, slot) => {
           if (mercId && location === 'body') result.mercItems![slot as string] = id;
         });
+        if (ctx.error) warnings.push(`Hireling item list truncated: ${ctx.error}`);
       }
     }
 

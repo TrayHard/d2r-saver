@@ -749,12 +749,16 @@ export function createItemParser(
   }
 
   function parseItemList(handler: ItemHandler): void {
+    listError = null; // per-call: a stale error from a previous list must not leak into this one
     if (reader.read16() !== 0x4d4a) throw Error('invalid item table header');
     const count = reader.read16();
     for (let i = 0; i < count; ++i) {
       try {
         parseItem(itemId++, handler);
       } catch (e) {
+        // A bitstream desync cannot be resynced safely mid-list — stop here. Every item after
+        // this one is LOST for this list, so callers MUST surface `error` (see readers) or the
+        // truncation is invisible to users (e.g. an entire character import coming up short).
         listError = `item ${i + 1}/${count}: ${(e as Error).message}`;
         break;
       }

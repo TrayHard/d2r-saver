@@ -155,6 +155,9 @@ function parseNormalPage(
         stash[slot as number] = id;
       }
     });
+    // A mid-list failure truncates this page's items SILENTLY (parseItemList swallows it into
+    // `error`) — surface it so consumers can log the exact item/reason.
+    if (ctx.error) warnings.push(`Stash page ${pages.length}: item list truncated: ${ctx.error}`);
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     const warning = `Stash page ${pages.length} parsing error: ${msg}`;
@@ -213,6 +216,9 @@ function parseExtendedPage(
       }
     };
     ctx.parseItemList(handler);
+    if (ctx.error) {
+      warnings.push(`Stash page ${pages.length} (extended): item list truncated: ${ctx.error}`);
+    }
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     const warning = `Stash page ${pages.length} (extended) parsing error: ${msg}`;
