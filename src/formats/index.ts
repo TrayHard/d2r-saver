@@ -4,12 +4,23 @@ export {
   type BinaryParsedItem,
   type ItemHandler,
   type ItemParserContext,
+  type ByteRange,
+  type ItemListReport,
+  type ParsedItemTrace,
+  type ParserOptions,
+  type ParseItemListOptions,
 } from './item-parser.js';
-export { readD2S, type D2SReadResult, type D2SCharacterProfile } from './d2s-reader.js';
+export {
+  readD2S,
+  type D2SReadResult,
+  type D2SCharacterProfile,
+  type D2SItemLists,
+} from './d2s-reader.js';
 export {
   readD2I,
   type D2IReadResult,
   type D2IStashPage,
+  type D2ISectorSummary,
   type ExtendedPageType,
 } from './d2i-reader.js';
 export {

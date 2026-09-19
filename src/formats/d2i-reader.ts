@@ -10,7 +10,12 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { detectFormat } from './detect.js';
-import { createItemParser, type BinaryParsedItem, type ItemHandler } from './item-parser.js';
+import {
+  createItemParser,
+  type BinaryParsedItem,
+  type ItemHandler,
+  type ItemListReport,
+} from './item-parser.js';
 import { isSubType } from '../items/item-types.js';
 
 // Minimum bytes a single D2I page occupies (header + item-list start at byte 64). A sector
@@ -48,6 +53,28 @@ export interface D2IStashPage {
   offset: number;
   /** Byte size of the raw sector. */
   sectorSize: number;
+  /**
+   * Parse report of this sector's `JM` list (0.3.0). The three virtual sub-pages of one
+   * extended sector share the same report object. `null` only when the list header itself
+   * was not `JM` (the page then carries a parsing-error warning).
+   */
+  list: ItemListReport | null;
+  /** The raw sector type byte (0 normal, 1 extended), unlike `pageType` which is virtualised. */
+  rawType: number;
+}
+
+/** One raw sector of a `.d2i` as laid out in the file. */
+export interface D2ISectorSummary {
+  /** Absolute byte offset of the sector header. */
+  offset: number;
+  /** `sectorSize` from the header: bytes including the 64-byte header. */
+  size: number;
+  /** Sector type byte: 0 normal, 1 extended (gems/runes/materials), 2 metadata. */
+  type: number;
+  /** Gold from the header. */
+  gold: number;
+  /** List report; `null` for a metadata sector (not parsed) or when the list header was not `JM`. */
+  list: ItemListReport | null;
 }
 
 /** Result of parsing a .d2i shared stash file. */
@@ -58,6 +85,18 @@ export interface D2IReadResult {
   items: Record<number, BinaryParsedItem>;
   /** Warnings from parsing (e.g. unknown stats, partial failures). */
   warnings: string[];
+  /** Every sector the reader recognised, in file order, including metadata sectors (0.3.0). */
+  sectors: D2ISectorSummary[];
+  /**
+   * The sector sizes add up to exactly the buffer length: no trailing bytes outside a sector
+   * and no sector claiming bytes past the end.
+   */
+  tiled: boolean;
+  /**
+   * The sector loop ran to the end of the buffer without stopping on an unrecognised or
+   * malformed sector. `tiled && reachedEof` means every byte of the file belongs to a sector.
+   */
+  reachedEof: boolean;
 }
 
 // ─── Reader ─────────────────────────────────────────────────────
@@ -73,17 +112,19 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
   const pages: D2IStashPage[] = [];
   const allItems: Record<number, BinaryParsedItem> = {};
   const warnings: string[] = [];
+  const sectors: D2ISectorSummary[] = [];
   let offset = 0;
   let nextItemId = 1;
+  let stoppedEarly = false;
 
   while (offset < buffer.length) {
-    if (offset + PAGE_HEADER_SIZE > buffer.length) break;
+    if (offset + PAGE_HEADER_SIZE > buffer.length) { stoppedEarly = true; break; }
 
     const pageData = buffer.subarray(offset);
     const reader = new BinaryReader(pageData);
 
     const fmt = detectFormat(pageData);
-    if (!fmt || fmt.type !== 'd2i') break;
+    if (!fmt || fmt.type !== 'd2i') { stoppedEarly = true; break; }
 
     // D2I page header: magic(4) + ?(4) + version(4) + gold(4) + sectorSize(4) + pageType(1)
     reader.seek(12);
@@ -98,8 +139,12 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
       warnings.push(
         `Malformed D2I page at offset ${offset}: sectorSize ${sectorSize} < ${PAGE_HEADER_SIZE}; stopping parse.`,
       );
+      stoppedEarly = true;
       break;
     }
+
+    const sector: D2ISectorSummary = { offset, size: sectorSize, type: pageType, gold, list: null };
+    sectors.push(sector);
 
     if (pageType === 2) {
       // Metadata page — skip entirely
@@ -112,7 +157,7 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
 
     if (pageType === 1) {
       // Extended page: split into 3 virtual tabs (gems, runes, materials)
-      parseExtendedPage(reader, gd, gold, offset, sectorSize, pages, allItems, warnings, nextItemId);
+      sector.list = parseExtendedPage(reader, gd, gold, offset, sectorSize, pages, allItems, warnings, nextItemId);
       // Update nextItemId from the items that were just parsed
       for (const key of Object.keys(allItems)) {
         const id = Number(key);
@@ -120,7 +165,7 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
       }
     } else {
       // Normal stash page
-      parseNormalPage(reader, gd, gold, pageType, offset, sectorSize, pages, allItems, warnings, nextItemId);
+      sector.list = parseNormalPage(reader, gd, gold, pageType, offset, sectorSize, pages, allItems, warnings, nextItemId);
       for (const key of Object.keys(allItems)) {
         const id = Number(key);
         if (id >= nextItemId) nextItemId = id + 1;
@@ -130,7 +175,14 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
     offset += sectorSize;
   }
 
-  return { pages, items: allItems, warnings };
+  return {
+    pages,
+    items: allItems,
+    warnings,
+    sectors,
+    tiled: sectors.length > 0 && offset === buffer.length && !stoppedEarly,
+    reachedEof: !stoppedEarly,
+  };
 }
 
 // ─── Normal page ────────────────────────────────────────────────
@@ -146,15 +198,19 @@ function parseNormalPage(
   allItems: Record<number, BinaryParsedItem>,
   warnings: string[],
   nextItemId: number,
-): void {
+): ItemListReport | null {
   const stash: (number | string | undefined)[] = [];
-  const ctx = createItemParser(reader, gd, nextItemId);
+  // `baseOffset` makes the item byte ranges and the report absolute even though the reader
+  // wraps `buffer.subarray(offset)`; `expectedEnd` lets the report tell a fully parsed list
+  // (reader stopped exactly at the sector end) from one that merely counted to `declared`.
+  const ctx = createItemParser(reader, gd, nextItemId, { baseOffset: offset });
+  let list: ItemListReport | null = null;
   try {
-    ctx.parseItemList((id, location, slot) => {
+    list = ctx.parseItemList((id, location, slot) => {
       if (location === 'stash' && slot !== undefined) {
         stash[slot as number] = id;
       }
-    });
+    }, { expectedEnd: offset + sectorSize });
     // A mid-list failure truncates this page's items SILENTLY (parseItemList swallows it into
     // `error`) — surface it so consumers can log the exact item/reason.
     if (ctx.error) warnings.push(`Stash page ${pages.length}: item list truncated: ${ctx.error}`);
@@ -172,7 +228,10 @@ function parseNormalPage(
     stash,
     offset,
     sectorSize,
+    list,
+    rawType: pageType,
   });
+  return list;
 }
 
 // ─── Extended page ──────────────────────────────────────────────
@@ -187,14 +246,15 @@ function parseExtendedPage(
   allItems: Record<number, BinaryParsedItem>,
   warnings: string[],
   nextItemId: number,
-): void {
+): ItemListReport | null {
   const gems: (number | string)[] = [];
   const runes: (number | string)[] = [];
   const misc: Array<{ id: number | string; qty: number }> = [];
   const gemQty: number[] = [];
   const runeQty: number[] = [];
 
-  const ctx = createItemParser(reader, gd, nextItemId);
+  const ctx = createItemParser(reader, gd, nextItemId, { baseOffset: offset });
+  let list: ItemListReport | null = null;
   try {
     const handler: ItemHandler = (id, location, _slot, item) => {
       if (location === 'stash') {
@@ -215,7 +275,7 @@ function parseExtendedPage(
         }
       }
     };
-    ctx.parseItemList(handler);
+    list = ctx.parseItemList(handler, { expectedEnd: offset + sectorSize });
     if (ctx.error) {
       warnings.push(`Stash page ${pages.length} (extended): item list truncated: ${ctx.error}`);
     }
@@ -276,6 +336,8 @@ function parseExtendedPage(
     quantities: gemQty,
     offset,
     sectorSize,
+    list,
+    rawType: 1,
   });
   pages.push({
     index: pages.length,
@@ -285,6 +347,8 @@ function parseExtendedPage(
     quantities: runeQty,
     offset,
     sectorSize,
+    list,
+    rawType: 1,
   });
   pages.push({
     index: pages.length,
@@ -295,5 +359,8 @@ function parseExtendedPage(
     rows: miscRows,
     offset,
     sectorSize,
+    list,
+    rawType: 1,
   });
+  return list;
 }

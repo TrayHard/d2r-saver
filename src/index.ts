@@ -47,9 +47,17 @@ import { D2RSaverError, ErrorCode } from './types/errors.js';
 export { GameData } from './game-data/game-data.js';
 export { D2RSaverError, ErrorCode } from './types/errors.js';
 export type { DetectedFormat } from './formats/detect.js';
-export type { D2SReadResult, D2SCharacterProfile } from './formats/d2s-reader.js';
-export type { D2IReadResult, D2IStashPage, ExtendedPageType } from './formats/d2i-reader.js';
-export type { BinaryParsedItem, ItemHandler } from './formats/item-parser.js';
+export type { D2SReadResult, D2SCharacterProfile, D2SItemLists } from './formats/d2s-reader.js';
+export type { D2IReadResult, D2IStashPage, D2ISectorSummary, ExtendedPageType } from './formats/d2i-reader.js';
+export type {
+  BinaryParsedItem,
+  ItemHandler,
+  ByteRange,
+  ItemListReport,
+  ParsedItemTrace,
+  ParserOptions,
+  ParseItemListOptions,
+} from './formats/item-parser.js';
 export type { ExtractResult } from './operations/extract-item.js';
 export type { InsertResult, InsertD2IResult, InsertD2STarget } from './operations/insert-item.js';
 export type { ReadSaveResult, ReadSaveD2SResult, ReadSaveD2IResult } from './operations/read-save.js';

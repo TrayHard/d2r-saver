@@ -10,7 +10,7 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { detectFormat } from './detect.js';
-import { createItemParser, type BinaryParsedItem } from './item-parser.js';
+import { createItemParser, type BinaryParsedItem, type ItemListReport } from './item-parser.js';
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -96,10 +96,28 @@ export interface D2SCharacterProfile {
   };
 }
 
+/**
+ * Per-list parse reports of a `.d2s`, in file order. A list the reader never reached (because
+ * an earlier section failed) is `null` / missing; a list it reached but could not finish has
+ * `truncated = true` and an `error`.
+ */
+export interface D2SItemLists {
+  /** The main list (worn, inventory, cube, stash, belt). */
+  main: ItemListReport | null;
+  /** One report per corpse list. */
+  corpses: ItemListReport[];
+  /** The hireling list; `null` when absent or not reached. */
+  merc: ItemListReport | null;
+  /** The iron-golem section is a flag plus one item, not a `JM` list. */
+  golem: { headerOffset: number; present: boolean } | null;
+}
+
 export interface D2SReadResult {
   profile: D2SCharacterProfile;
   items: Record<number, BinaryParsedItem>;
   warnings: string[];
+  /** What each `JM` list declared versus what parsed (0.3.0). */
+  lists: D2SItemLists;
 }
 
 // ─── Reader ─────────────────────────────────────────────────────
@@ -222,6 +240,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
 
   // Items
   const ctx = createItemParser(reader, gd);
+  const lists: D2SItemLists = { main: null, corpses: [], merc: null, golem: null };
 
   result.items = {};
   result.inventory = [];
@@ -230,7 +249,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   result.belt = [];
 
   try {
-    ctx.parseItemList((id, location, slot) => {
+    lists.main = ctx.parseItemList((id, location, slot) => {
       if (location === 'body') result.items![slot as string] = id;
       if (location === 'inventory') result.inventory![slot as number] = id;
       if (location === 'cube') result.cube![slot as number] = id;
@@ -248,7 +267,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     const corpses = reader.read16();
     reader.skip(corpses * 12);
     for (let i = 0; i < corpses; ++i) {
-      ctx.parseItemList(() => null);
+      lists.corpses.push(ctx.parseItemList(() => null));
       // Same invariant as the main/hireling lists: a silent mid-list break desyncs everything
       // after it (and rawCorpse below would capture a garbage byte range) — surface it.
       if (ctx.error) warnings.push(`Corpse ${i + 1}/${corpses} item list truncated: ${ctx.error}`);
@@ -260,7 +279,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
       if (reader.read16() !== 0x666a) throw Error('invalid hireling header');
       result.mercItems = {};
       if (reader.byte(0) === 0x4a && reader.byte(1) === 0x4d) {
-        ctx.parseItemList((id, location, slot) => {
+        lists.merc = ctx.parseItemList((id, location, slot) => {
           if (mercId && location === 'body') result.mercItems![slot as string] = id;
         });
         if (ctx.error) warnings.push(`Hireling item list truncated: ${ctx.error}`);
@@ -271,7 +290,9 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     if (!reader.eof()) {
       const golemStart = reader.bitpos >> 3;
       if (reader.read16() !== 0x666b) throw Error('invalid iron golem header');
-      if (reader.read8()) {
+      const golemPresent = reader.read8() !== 0;
+      lists.golem = { headerOffset: golemStart, present: golemPresent };
+      if (golemPresent) {
         ctx.parseItem(ctx.nextId(), id => { result.ironGolem = typeof id === 'number' ? id : 0; });
       }
       result.rawGolem = Array.from(reader.buffer.subarray(golemStart, reader.bitpos >> 3));
@@ -357,5 +378,6 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     profile: result as D2SCharacterProfile,
     items: ctx.items,
     warnings,
+    lists,
   };
 }

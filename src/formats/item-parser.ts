@@ -9,6 +9,7 @@
 
 import type { BinaryReader } from '../core/binary-reader.js';
 import type { GameData } from '../game-data/game-data.js';
+import { D2RSaverError, ErrorCode } from '../types/errors.js';
 import { itemGetTypes, isSubType, presetItemIds } from '../items/item-types.js';
 import {
   parseParamStats,
@@ -72,6 +73,81 @@ const followStats: Record<string, number> = {
 
 // ─── Types ──────────────────────────────────────────────────────
 
+/**
+ * Half-open byte range `[start, end)` in ABSOLUTE file offsets (the parser adds its
+ * `baseOffset`, so ranges of `.d2i` items already include the sector offset).
+ */
+export interface ByteRange {
+  start: number;
+  end: number;
+}
+
+/**
+ * What one `JM` item list looked like to the parser. Produced by `parseItemList` and surfaced
+ * by the readers (`D2SReadResult.lists`, `D2IStashPage.list`) and by the walker.
+ * All offsets are absolute bytes in the file buffer.
+ */
+export interface ItemListReport {
+  /** Absolute byte offset of the `JM` marker. */
+  headerOffset: number;
+  /** 16-bit item count from the list header. */
+  declared: number;
+  /** Items consumed without error (top-level; socketed children are inside their parent). */
+  parsed: number;
+  /** Absolute byte offset of the first item (`headerOffset + 4`). */
+  firstItemOffset: number;
+  /**
+   * Reader position right after the last successfully parsed item, byte-aligned. Equals
+   * `firstItemOffset` when nothing parsed. This is where the next item (or the next section)
+   * starts; on a truncated list it is the exact point up to which the bytes are understood.
+   */
+  endOffset: number;
+  /** Where the caller expects the list to end (sector end for `.d2i`); `null` when unknown. */
+  expectedEnd: number | null;
+  /** `endOffset === expectedEnd`; `null` when `expectedEnd` is unknown. */
+  reachedEnd: boolean | null;
+  /** `parsed < declared`: the list was cut short (see `error` for the reason). */
+  truncated: boolean;
+  /**
+   * The list is fully understood: `parsed === declared`, no error, and (when the expected end
+   * is known) the reader stopped exactly there. Only a complete list is safe to write into.
+   */
+  complete: boolean;
+  /** `item <n>/<declared>: <reason>` for the item that failed, or `null`. */
+  error: string | null;
+  /** `BUFFER_OVERRUN` when the failure was a read past the end, otherwise `PARSE_ERROR`; `null` without error. */
+  errorCode: ErrorCode | null;
+}
+
+/**
+ * Trace record handed to `ParserOptions.onItem` once per parsed item (top-level AND socketed,
+ * registered in `items` or dropped), after its socketed children were consumed.
+ */
+export interface ParsedItemTrace {
+  item: BinaryParsedItem;
+  /** 0 for a list-level item, 1 for a socketed child, and so on. */
+  depth: number;
+  /**
+   * Key under which the item was stored in `items` (numeric id, or the base code for preset
+   * items), or `null` when the parser dropped it (unknown unique/set/runeword, or a base type
+   * outside the tradeable filter). Dropped items are still fully parsed and byte-ranged.
+   */
+  registeredKey: number | string | null;
+}
+
+/** Options for `createItemParser`. */
+export interface ParserOptions {
+  forceStackable?: boolean;
+  /**
+   * Byte offset of `reader.buffer[0]` inside the whole file. Added to every `ByteRange` and to
+   * the `ItemListReport` offsets so they are absolute even when the reader wraps a sub-array
+   * (the `.d2i` reader parses each sector through `buffer.subarray(offset)`). Default 0.
+   */
+  baseOffset?: number;
+  /** Called for every item the parser finishes, including ones it does not register. */
+  onItem?: (trace: ParsedItemTrace) => void;
+}
+
 /** Parsed item representation from the binary reader. */
 export interface BinaryParsedItem {
   itemId: number;
@@ -129,8 +205,25 @@ export interface BinaryParsedItem {
   custom?: boolean;
   /** Active set-bonus property bits (5-bit field for SET quality items). */
   setflags?: number;
-  /** Bit range in the original buffer. */
+  /**
+   * Bit range in the reader's buffer (relative to `reader.buffer[0]`, so relative to the
+   * SECTOR for `.d2i`). `end` is set BEFORE the socketed children are parsed, i.e. it covers
+   * the item alone. Kept as-is for compatibility; prefer the byte ranges below.
+   */
   binaryOffset: { start: number; end: number };
+  /**
+   * Absolute byte range of the item alone (without socketed children). Always set by the
+   * parser; optional in the type only so hand-built items (tests, the legacy writer) still
+   * type-check.
+   */
+  byteRange?: ByteRange;
+  /** Absolute byte range of the item PLUS its socketed children (what a raw cut/paste moves). */
+  fullByteRange?: ByteRange;
+  /**
+   * Absolute byte range of each socketed child in stream order, whether or not the child was
+   * registered in `items` (an unknown socketed unique still occupies bytes).
+   */
+  socketedByteRanges?: ByteRange[];
 }
 
 /** Callback for item placement during parsing. */
@@ -141,10 +234,21 @@ export type ItemHandler = (
   item?: BinaryParsedItem,
 ) => void;
 
+/** Options for `parseItemList`. */
+export interface ParseItemListOptions {
+  /** Absolute byte offset where the list must end (sector end for `.d2i`), if known. */
+  expectedEnd?: number;
+}
+
 /** Return type of createItemParser. */
 export interface ItemParserContext {
   parseItem: (itemId: number, handler: ItemHandler) => void;
-  parseItemList: (handler: ItemHandler) => void;
+  /**
+   * Parse one `JM` list from the current reader position. Throws only when the header is not
+   * `JM`; an item failure mid-list is swallowed into the report (`error`, `truncated`) and the
+   * reader stays positioned wherever the failed item stopped.
+   */
+  parseItemList: (handler: ItemHandler, options?: ParseItemListOptions) => ItemListReport;
   items: Record<number | string, BinaryParsedItem>;
   nextId: () => number;
   readonly currentId: number;
@@ -275,12 +379,17 @@ export function createItemParser(
   reader: BinaryReader,
   gd: GameData,
   initialId = 0,
-  options?: { forceStackable?: boolean },
+  options?: ParserOptions,
 ): ItemParserContext {
   const forceStackable = options?.forceStackable ?? false;
+  const baseOffset = options?.baseOffset ?? 0;
+  const onItem = options?.onItem;
   const items: Record<number | string, BinaryParsedItem> = {};
   let itemId = initialId;
   let listError: string | null = null;
+
+  /** Current reader position as an absolute byte offset (the reader is byte-aligned here). */
+  const absBytePos = (): number => baseOffset + (reader.bitpos >> 3);
 
   // Build stat map: numeric id → stat key
   const statMap = new Map<number, string>();
@@ -303,8 +412,9 @@ export function createItemParser(
 
   const stashColumns = gd.info?.stash?.columns || 16;
 
-  function parseItem(idIn: number | string, handler: ItemHandler): void {
+  function parseItem(idIn: number | string, handler: ItemHandler, depth = 0): void {
     const startBit = reader.bitpos;
+    const startByte = absBytePos();
 
     // ── Flags (35 bits, D2R v105) ─────────────────────────────
     reader.skipbits(4);
@@ -356,9 +466,14 @@ export function createItemParser(
       item.quality = QUALITY_NORMAL;
       reader.align();
       item.binaryOffset!.end = reader.bitpos;
+      // An ear never has socketed children, so its own range is also its full range.
+      item.byteRange = { start: startByte, end: absBytePos() };
+      item.fullByteRange = { start: startByte, end: absBytePos() };
+      item.socketedByteRanges = [];
 
       const earId = typeof idIn === 'number' ? idIn : 0;
       items[earId] = item as BinaryParsedItem;
+      onItem?.({ item: item as BinaryParsedItem, depth, registeredKey: earId });
       emitLocation(earId, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);
       return;
     }
@@ -679,44 +794,51 @@ export function createItemParser(
 
     reader.align();
     item.binaryOffset!.end = reader.bitpos;
+    // The item's own bytes end here; the socketed children follow and extend `fullByteRange`.
+    item.byteRange = { start: startByte, end: absBytePos() };
+    item.socketedByteRanges = [];
 
     // ── Socketed sub-items (recursive) ────────────────────────
     if (socketedItemsCount > 0) {
       item.socketedItems = [];
       for (let i = 0; i < socketedItemsCount; ++i) {
+        const childStart = absBytePos();
         parseItem(itemId++, (sockId) => {
           // Preset items (runes/gems) emit their base code as id; non-preset
           // sub-items emit numeric ids. Both are valid.
           item.socketedItems!.push(sockId as number | string);
-        });
+        }, depth + 1);
+        // Recorded from the reader, not from the handler: a child the parser drops (unknown
+        // unique in a socket) never reaches the handler but still occupies these bytes.
+        item.socketedByteRanges.push({ start: childStart, end: absBytePos() });
       }
     }
+    item.fullByteRange = { start: startByte, end: absBytePos() };
 
     // ── Validate / store / emit ───────────────────────────────
+    let registeredKey: number | string | null = null;
     if (item.unique && !(gd.uniqueItems[item.unique] || gd.setItems[item.unique] || gd.runes[item.unique])) {
       // Unknown unique/set/runeword: drop without registering, but the stream
       // has already been consumed correctly via socketed-item recursion above.
-      return;
-    }
-
-    let effectiveId: number | string = idIn;
-    if (presetItemIds.has(item.base!) && !item.unique) {
+    } else if (presetItemIds.has(item.base!) && !item.unique) {
       // Preset items (runes, gems, potions, etc.) are keyed by their base code
       // so the items dict can identify them by type. This matches the d2r-saver
       // convention and lets callers find e.g. r01 via items['r01'].
-      effectiveId = item.base!;
-      items[effectiveId] = item as BinaryParsedItem;
+      registeredKey = item.base!;
+      items[registeredKey] = item as BinaryParsedItem;
     } else if (
       (gd.items[item.base!] && itemTypeTreeFilter((gd.items[item.base!] as unknown as Record<string, unknown>).type as string)) ||
       item.unique ||
       location === 6
     ) {
-      items[effectiveId] = item as BinaryParsedItem;
-    } else {
-      return;
+      registeredKey = idIn;
+      items[registeredKey] = item as BinaryParsedItem;
     }
 
-    emitLocation(effectiveId, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);
+    onItem?.({ item: item as BinaryParsedItem, depth, registeredKey });
+    if (registeredKey === null) return;
+
+    emitLocation(registeredKey, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);
   }
 
   function emitLocation(
@@ -748,21 +870,46 @@ export function createItemParser(
     }
   }
 
-  function parseItemList(handler: ItemHandler): void {
+  function parseItemList(handler: ItemHandler, listOptions?: ParseItemListOptions): ItemListReport {
     listError = null; // per-call: a stale error from a previous list must not leak into this one
+    let errorCode: ErrorCode | null = null;
+    const headerOffset = absBytePos();
     if (reader.read16() !== 0x4d4a) throw Error('invalid item table header');
     const count = reader.read16();
+    const firstItemOffset = absBytePos();
+    let parsed = 0;
+    let endOffset = firstItemOffset;
     for (let i = 0; i < count; ++i) {
       try {
         parseItem(itemId++, handler);
+        parsed++;
+        endOffset = absBytePos();
       } catch (e) {
         // A bitstream desync cannot be resynced safely mid-list — stop here. Every item after
         // this one is LOST for this list, so callers MUST surface `error` (see readers) or the
         // truncation is invisible to users (e.g. an entire character import coming up short).
         listError = `item ${i + 1}/${count}: ${(e as Error).message}`;
+        errorCode = e instanceof D2RSaverError && e.code === ErrorCode.BUFFER_OVERRUN
+          ? ErrorCode.BUFFER_OVERRUN
+          : ErrorCode.PARSE_ERROR;
         break;
       }
     }
+    const expectedEnd = listOptions?.expectedEnd ?? null;
+    const reachedEnd = expectedEnd === null ? null : endOffset === expectedEnd;
+    return {
+      headerOffset,
+      declared: count,
+      parsed,
+      firstItemOffset,
+      endOffset,
+      expectedEnd,
+      reachedEnd,
+      truncated: parsed < count,
+      complete: parsed === count && listError === null && reachedEnd !== false,
+      error: listError,
+      errorCode,
+    };
   }
 
   function nextId(): number {
@@ -770,7 +917,7 @@ export function createItemParser(
   }
 
   return {
-    parseItem,
+    parseItem: (id: number, handler: ItemHandler) => parseItem(id, handler, 0),
     parseItemList,
     items,
     nextId,
