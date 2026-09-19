@@ -41,6 +41,15 @@ import { toTradeDTO, type TradeItemDTO } from './items/item-dto.js';
 import { canPlaceItem, findFreeSlot, findFreeSlotInStash, type PlacementItem } from './inventory/placement.js';
 import { StashGrid } from './inventory/grid.js';
 import { D2RSaverError, ErrorCode } from './types/errors.js';
+import {
+  walkD2I,
+  walkItemList,
+  type D2IParseReport,
+  type WalkItemListOptions,
+  type WalkResult,
+} from './formats/item-walker.js';
+import { buildRawGrid } from './inventory/raw-grid.js';
+import type { GridSize } from './inventory/dimensions.js';
 
 // ─── Re-exports ─────────────────────────────────────────────────
 
@@ -176,6 +185,29 @@ export class D2RSaver {
   /** Auto-detect format and read a save file. */
   readSave(buffer: Uint8Array): ReadSaveResult {
     return readSave(buffer, this.gd);
+  }
+
+  // ── In-place editing: walking ───────────────────────────────
+
+  /**
+   * Walk every sector of a .d2i shared stash and record byte-exact item ranges (0.3.0).
+   * Nothing is re-encoded; see `walkD2I` for the report shape.
+   */
+  walkD2I(buffer: Uint8Array): D2IParseReport {
+    return walkD2I(buffer, this.gd);
+  }
+
+  /** Walk one `JM` item list that starts at absolute byte `headerOffset` (0.3.0). */
+  walkItemList(buffer: Uint8Array, headerOffset: number, options?: WalkItemListOptions): WalkResult {
+    return walkItemList(buffer, headerOffset, this.gd, options);
+  }
+
+  /**
+   * Occupancy grid of a walked stash sector from the items' position bits (0.3.0).
+   * @throws {D2RSaverError} UNKNOWN_BASE, INVALID_PAGE — see `buildRawGrid`.
+   */
+  buildRawGrid(walk: WalkResult, size?: GridSize): StashGrid {
+    return buildRawGrid(walk, this.gd, size);
   }
 
   // ── Item serialization ──────────────────────────────────────

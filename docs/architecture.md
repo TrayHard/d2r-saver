@@ -19,6 +19,7 @@
   - [BinaryParsedItem](#binaryparseditem)
   - [Алгоритм чтения предмета](#алгоритм-чтения-предмета)
   - [Система статов](#система-статов)
+- [Обход списков и правка позиции (0.3.0)](#обход-списков-и-правка-позиции-030)
 - [Запись предметов](#запись-предметов)
 - [GameData — регистр игровых данных](#gamedata--регистр-игровых-данных)
   - [Загрузка](#загрузка)
@@ -93,6 +94,7 @@ d2r-saver/
 │   │   ├── d2i-reader.ts       — Чтение .d2i (сундук)
 │   │   ├── d2i-writer.ts       — Запись .d2i
 │   │   ├── item-parser.ts      — Парсер предметов из бинарного формата
+│   │   ├── item-walker.ts      — Обход списков с точными байтовыми диапазонами, заголовок предмета, правка позиции (0.3.0)
 │   │   └── item-writer.ts      — Запись предметов в бинарный формат
 │   ├── items/                  — Логика работы с предметами
 │   │   ├── item-serializer.ts  — Токены сериализации (d2r1:)
@@ -108,6 +110,7 @@ d2r-saver/
 │   ├── inventory/              — Инвентарная сетка и размещение
 │   │   ├── grid.ts             — StashGrid (Float64Array сетка занятости)
 │   │   ├── placement.ts        — canPlaceItem, findFreeSlot, buildGrid
+│   │   ├── raw-grid.ts         — buildRawGrid: занятость по битам позиции обойдённых предметов (0.3.0)
 │   │   └── dimensions.ts       — GridSize, STASH/INVENTORY/CUBE размеры
 │   └── data-parser/            — Пайплайн генерации данных
 │       ├── index.ts            — Точка входа (npm run build:data)
@@ -172,6 +175,9 @@ const saver = D2RSaver.fromData(rawData, locale);
 | `findFreeSlot(grid, item)` | Поиск свободного места |
 | `findFreeSlotInStash(grids, item)` | Поиск через несколько страниц |
 | `getItemSize(item)` | Размер предмета в ячейках |
+| `walkD2I(buffer)` | Обход всех секторов сундука с байтовыми диапазонами предметов (0.3.0) |
+| `walkItemList(buffer, headerOffset, options?)` | Обход одного списка `JM` по абсолютному смещению (0.3.0) |
+| `buildRawGrid(walk, size?)` | Сетка занятости сектора по битам позиции (0.3.0) |
 
 ### Ре-экспорты
 
@@ -209,6 +215,8 @@ byte[bitpos >> 3]  →  бит (bitpos & 7)
 ```
 
 При чтении N бит, биты накапливаются сдвигом влево.
+
+**Границы буфера (0.3.0).** Каждое чтение (`bits`, `bit`, `read8/16/32`, `byte`, `string`, `utf8`, `char`) сначала проверяет, что нужные биты есть в буфере, иначе бросает `D2RSaverError` с кодом `BUFFER_OVERRUN` и точной позицией. Раньше чтение за концом возвращало нули, и парсер предметов на обрезанном файле крутился секундами по фантомным статам (`WarlockTest.d2s`, обрезанный до 1100 байт: около 13 с против 4 мс). Навигация (`seek`, `skip`, `skipbits`, `align`) не проверяется: ошибку даст следующее чтение.
 
 ### Huffman-кодирование
 
@@ -334,14 +342,19 @@ function createItemParser(
   reader: BinaryReader,
   gd: GameData,
   initialId?: number,
+  options?: { forceStackable?: boolean; baseOffset?: number; onItem?: (trace) => void },
 ): ItemParserContext
 ```
 
 Возвращает:
 - `parseItem(id, handler)` — парсинг одного предмета
-- `parseItemList(handler)` — парсинг списка (читает `JM` хедер + count)
+- `parseItemList(handler, { expectedEnd? })` — парсинг списка (читает `JM` хедер + count), возвращает `ItemListReport` (0.3.0)
 - `items` — словарь всех распарсенных предметов
 - `nextId()` / `currentId` — управление ID
+
+**`ItemListReport` (0.3.0).** Что список заявил и что разобралось: `headerOffset` (абсолютное смещение `JM`), `declared` (16-битный счётчик), `parsed`, `firstItemOffset`, `endOffset` (позиция после последнего удачно разобранного предмета), `expectedEnd` и `reachedEnd` (если вызывающая сторона знает конец списка, для `.d2i` это конец сектора), `truncated` (`parsed < declared`), `complete` (`parsed === declared`, без ошибки, читатель остановился ровно на ожидаемом конце), `error` и `errorCode` (`BUFFER_OVERRUN` при выходе за буфер, иначе `PARSE_ERROR`). Читатели кладут отчёты в `D2SReadResult.lists` (`main`, `corpses[]`, `merc`, `golem`) и в `D2IReadResult.sectors[]` (плюс `tiled`, `reachedEof`) и `D2IStashPage.list`.
+
+**Опции парсера (0.3.0).** `baseOffset` — смещение `reader.buffer[0]` в файле; прибавляется к байтовым диапазонам и к отчёту, поэтому для `.d2i`, где читатель создаётся над `subarray(offset)`, диапазоны абсолютные. `onItem` — хук, который вызывается для каждого разобранного предмета (верхнего уровня и вложенного, зарегистрированного и отброшенного) после его вложений; на нём построен обходчик.
 
 ### BinaryParsedItem
 
@@ -368,7 +381,10 @@ interface BinaryParsedItem {
   personalized?: string;  // Имя персонализации
   iconIndex?: number;     // Индекс варианта иконки
   custom?: boolean;       // Не удалось сопоставить с таблицами
-  binaryOffset: { start, end }; // Диапазон бит в буфере
+  binaryOffset: { start, end }; // Диапазон бит в буфере читателя (для .d2i относительно сектора), end до вложений
+  byteRange?: ByteRange;         // 0.3.0: сам предмет, абсолютные байты файла
+  fullByteRange?: ByteRange;     // 0.3.0: предмет вместе с вложениями в сокеты
+  socketedByteRanges?: ByteRange[]; // 0.3.0: диапазон каждого вложения, даже отброшенного парсером
 
   // Мод-слоты (заполняются item-stats-parser)
   uniqueValues?: number[];          // Значения для unique/set
@@ -433,6 +449,26 @@ interface BinaryParsedItem {
 **Skill-оn-event статы:** Кодируются как `stat#param` или `stat#param#value` в ключах. Например `item_singleskill#42 = 3` означает +3 к навыку 42.
 
 **addStat()** — аккумулятор: суммирует значения (кроме `item_maxdamage_percent` — берёт max).
+
+---
+
+## Обход списков и правка позиции (0.3.0)
+
+Файлы: `src/formats/item-walker.ts`, `src/inventory/raw-grid.ts`.
+
+Основа для правки байтов на месте: файл не пересобирается, предмет переносится своими байтами. Парсер используется как оракул длины: диапазон предмета вместе с вложениями равен позиции читателя до и после `parseItem`. Факты формата, проверенные на фикстурах: предмет начинается и заканчивается на границе байта; биты 0–34 флаги; биты 35–52 позиция (`loc` 3, `bodyloc` 4, `col` 4, `row` 4, `storage` 3); код базы Хаффманом с бита 53; вложения идут сразу за родителем и потребляются его `parseItem`.
+
+| Функция | Что делает |
+|---|---|
+| `walkItemList(buffer, headerOffset, gd, { initialId?, expectedEnd? })` | Обход одного списка `JM`: `report: ItemListReport` и `entries: WalkedItem[]` (`entries.length === report.parsed`). У записи `own` (сам предмет), `full` (с вложениями), `children`, `head`, `item`, `registeredKey` (`null`, если парсер предмет отбросил), `hasQuantity` |
+| `walkD2I(buffer, gd)` | Обход всех секторов по байтовому смещению из заголовка: `sectors[{ offset, size, type, gold, walk }]`, `tiled`, `reachedEof`; у сектора типа 2 `walk === null`; идентификаторы предметов в каждом секторе начинаются с 1 |
+| `readItemHead(bytes, offset?)` | Флаги, позиция и код базы из первых байт без разбора статов; `base === null` у уха |
+| `readItemPosition(bytes, offset?)` | Только биты 35–52 |
+| `patchItemPosition(bytes, pos)` | Копия с новыми битами 35–52; остальные байты, включая вложения, без изменений; `INVALID_ARGUMENT` при выходе за диапазон полей |
+| `zeroItemPosition(bytes)` | Копия с обнулёнными битами 35–52 для отпечатка, не зависящего от клетки |
+| `buildRawGrid(walk, gd, size?)` | `StashGrid` по битам позиции каждой записи обхода; клетка хранит `index + 1`; `UNKNOWN_BASE` вместо подстановки 1×1, `INVALID_PAGE` для предмета вне сетки сундука или при перекрытии (расширенный сектор перекрывается по построению) |
+
+Ключевое отличие от словаря `items`: словарь ключует простые предметы по коду базы и хранит только последний экземпляр (четыре `hp1` в `WarlockShards.d2s` дают одну запись), а обход даёт четыре записи по 10 байт с точными диапазонами.
 
 ---
 
@@ -751,6 +787,13 @@ enum ErrorCode {
   WRITE_ERROR          // Ошибка записи
   INVALID_TOKEN        // Невалидный токен сериализации
   DATA_NOT_LOADED      // Данные не загружены
+  // 0.3.0, правка на месте
+  BUFFER_OVERRUN       // Чтение за концом буфера (обрезанный файл)
+  LIST_TRUNCATED       // Операции нужен полностью разобранный список
+  RANGE_MISMATCH       // Байтовый дифф не равен заявленному
+  UNKNOWN_BASE         // Нет размера в GameData для кода базы
+  INVALID_PAGE         // Сектор не годится: тип, предмет вне сетки, перекрытие
+  INVALID_ARGUMENT     // Аргумент вне диапазона (биты позиции, смещение)
 }
 ```
 
