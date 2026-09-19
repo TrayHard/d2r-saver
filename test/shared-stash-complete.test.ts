@@ -96,7 +96,7 @@ describe('SharedStashComplete.d2i numbers', () => {
     expect(full.entries[5].item.guid).toBe(4198596071);
   });
 
-  it('the raw grid of the complete sector marks 10 cells (ci2 is 2x2) with no overlap', () => {
+  it('the raw grid of the complete sector marks 12 cells (ci2 is 2x2) with no overlap', () => {
     const walk = walkD2I(committed, gd).sectors[2].walk!;
     const grid = buildRawGrid(walk, gd);
     const cells: string[] = [];

@@ -222,7 +222,8 @@ export function readItemHead(bytes: Uint8Array, offset = 0): ItemHead {
 /**
  * Return a copy of `bytes` with the top-level item's position bits (35–52) replaced. The rest of
  * the bytes, including any socketed children after the item, are copied untouched. The input is
- * not modified.
+ * not modified, whatever `Uint8Array` subclass it is (a Node `Buffer` included), and the result
+ * never shares memory with it.
  *
  * @throws {D2RSaverError} `INVALID_ARGUMENT` when a field is out of range or the buffer is
  *   shorter than the position block.
@@ -240,7 +241,10 @@ export function patchItemPosition(bytes: Uint8Array, pos: ItemPosition): Uint8Ar
   requireInt('row', pos.row, 15);
   requireInt('storage', pos.storage, 7);
 
-  const out = bytes.slice();
+  // `new Uint8Array(view)` always copies into a fresh ArrayBuffer. `bytes.slice()` would not:
+  // Node's `Buffer#slice` returns a view of the caller's memory, so the writes below would land
+  // in the input (`fs.readFile`, HTTP bodies, `Buffer.from(base64)` all hand out Buffers).
+  const out = new Uint8Array(bytes);
   setBitsAt(out, ITEM_POSITION_BIT, 3, pos.loc);
   setBitsAt(out, ITEM_POSITION_BIT + 3, 4, pos.bodyloc);
   setBitsAt(out, ITEM_POSITION_BIT + 7, 4, pos.col);
@@ -252,7 +256,8 @@ export function patchItemPosition(bytes: Uint8Array, pos: ItemPosition): Uint8Ar
 /**
  * Return a copy of `bytes` with the top-level item's position bits (35–52) cleared. Use it to
  * fingerprint an item independently of the cell it sits in: the same item in two cells hashes
- * to the same value, while its socketed children (whose bytes follow) still count.
+ * to the same value, while its socketed children (whose bytes follow) still count. The input is
+ * not modified and the result does not share memory with it.
  */
 export function zeroItemPosition(bytes: Uint8Array): Uint8Array {
   return patchItemPosition(bytes, { loc: 0, bodyloc: 0, col: 0, row: 0, storage: 0 });
@@ -285,8 +290,9 @@ export function readItemPosition(bytes: Uint8Array, offset = 0): ItemPosition {
  * entries cover exactly the parsed items, each with byte-exact ranges taken from the reader
  * position before and after its parse.
  *
- * @throws {D2RSaverError} `INVALID_ARGUMENT` for an offset outside the buffer, `PARSE_ERROR`
- *   when the bytes at `headerOffset` are not a `JM` header.
+ * @throws {D2RSaverError} `INVALID_ARGUMENT` for a negative or non-integer offset,
+ *   `BUFFER_OVERRUN` for an offset whose 4-byte list header runs past the end of the buffer,
+ *   `PARSE_ERROR` when the bytes at `headerOffset` are not a `JM` header.
  */
 export function walkItemList(
   buffer: Uint8Array,

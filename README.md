@@ -176,11 +176,32 @@ Rules:
   byte for byte.
 - `fixD2ISectorSize(buffer, sectorOffset, delta)` is the header patch on its own, for callers
   that splice bytes themselves. `.d2i` has no checksum.
+- Inputs are never modified, whatever `Uint8Array` subclass they are. A Node `Buffer` (what
+  `fs.readFile`, HTTP bodies, S3 objects, `Buffer.from(base64)` and Prisma `bytea` hand out) is
+  accepted as-is; `newBuffer`, `removed[].bytes`, `diff.inserts[].bytes` and the results of
+  `patchItemPosition` / `zeroItemPosition` are fresh copies that share no memory with the
+  inputs. (`Buffer#slice` returns a view, not a copy; the library never relies on it.) The only
+  function that writes into its argument is `fixD2ISectorSize`, by contract.
 
 `verifyExactDiff(before, after, spec)` is pure (no GameData): it rebuilds the expected `after`
 from `before` and the `DiffSpec`, and compares byte for byte. `ok` is false on any length
 difference or stray byte; `mismatches` lists the first 32 with their offsets, `mismatchCount`
 counts them all. `assertExactDiff` throws `RANGE_MISMATCH` instead.
+
+Two things to know before building a gate on it:
+
+- **It is a byte check, not a structure check.** It proves that `after` differs from `before`
+  exactly as the spec declares. It does not prove that the declared ranges are item boundaries:
+  a spec whose range covers an item plus part of the next one, applied to a buffer spliced the
+  same way, is self-consistent and passes. A caller that verifies a spec it did not build in
+  the same call (the backend's gate 6) also matches `diff.ranges` / `diff.inserts[].at` against
+  `entries[i].full` of its own `walkD2I(before)` and re-walks the target sector of `after`
+  (`complete`, expected `parsed`).
+- **`DiffSpec` with `bytes` does not survive JSON as-is.** `JSON.stringify` turns
+  `inserts[].bytes` into a plain object and `verifyExactDiff` then throws `INVALID_ARGUMENT`
+  (it fails closed, it does not skip the gap). Persist a `d2i-insert` spec with `bytes` encoded
+  (base64, hex) and decode them back to a `Uint8Array` before verifying, or drop `bytes` to leave
+  the gap unchecked. `d2i-remove` specs carry only numbers and round-trip unchanged.
 
 ## Trade Flow (Extract → Serialize → Transfer → Insert)
 

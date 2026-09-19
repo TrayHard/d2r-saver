@@ -249,7 +249,9 @@ export function fixD2ISectorSize(buffer: Uint8Array, sectorOffset: number, delta
  * of items and its `sectorSize` by the number of bytes; every other byte of the file is copied
  * unchanged, which the function proves on its result before returning.
  *
- * @param buffer  The original `.d2i` bytes (not modified).
+ * @param buffer  The original `.d2i` bytes. Not modified, whatever `Uint8Array` subclass it is
+ *                (a Node `Buffer` from `fs.readFile` or an HTTP body included); `newBuffer` and
+ *                `removed[].bytes` are fresh copies that share no memory with it.
  * @param ref     Sector offset and the list indexes of the items to remove.
  * @param gd      GameData for the walker.
  * @param opts    `requireCompleteList` (default `true`).
@@ -321,9 +323,12 @@ export function extractInPlaceD2I(
     );
   }
 
+  // `subarray` is a view of the input; `zeroItemPosition` copies it into a fresh Uint8Array
+  // before clearing the bits, so the caller's buffer (a Node `Buffer` included) stays intact
+  // and `removed[].bytes` never shares memory with it.
   const removed: ExtractedInPlaceItem[] = entries.map(e => ({
     index: e.index,
-    bytes: zeroItemPosition(buffer.slice(e.full.start, e.full.end)),
+    bytes: zeroItemPosition(buffer.subarray(e.full.start, e.full.end)),
     range: { start: e.full.start, end: e.full.end },
     head: e.head,
   }));
@@ -342,9 +347,12 @@ export function extractInPlaceD2I(
  * The count and `sectorSize` grow accordingly; every other byte is copied unchanged, which the
  * function proves on its result before returning.
  *
- * @param buffer  The original `.d2i` bytes (not modified).
+ * @param buffer  The original `.d2i` bytes. Not modified, whatever `Uint8Array` subclass it is
+ *                (a Node `Buffer` included); `newBuffer` is a fresh copy.
  * @param target  Sector offset and, optionally, the list position (default: head of the list).
  * @param items   Items with their target cells, in the order they should appear in the list.
+ *                `items[].bytes` are not modified either: the position is patched on a copy, and
+ *                `diff.inserts[].bytes` share no memory with the caller's arrays.
  * @param gd      GameData for the walker and item sizes.
  * @throws {D2RSaverError} `INVALID_FORMAT`, `INVALID_PAGE`, `LIST_TRUNCATED` (target list not
  *   complete — always, there is no override), `UNKNOWN_BASE` (an item, or one already in the

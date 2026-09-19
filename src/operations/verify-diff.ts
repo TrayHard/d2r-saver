@@ -38,7 +38,15 @@ export interface DiffInsert {
   at: number;
   /** Number of bytes inserted. */
   length: number;
-  /** The inserted bytes, when the caller wants them checked as well; unchecked if omitted. */
+  /**
+   * The inserted bytes, when the caller wants them checked as well; unchecked if omitted.
+   *
+   * Must be a `Uint8Array` at verification time. A `DiffSpec` does not survive `JSON.stringify`
+   * as-is: `bytes` turns into a plain object and `verifyExactDiff` then throws
+   * `INVALID_ARGUMENT` (it fails closed, it does not skip the check). A caller that persists a
+   * spec must encode `bytes` itself (base64, hex) and decode it back before verifying;
+   * `d2i-remove` specs carry only numbers and survive JSON unchanged.
+   */
   bytes?: Uint8Array;
 }
 
@@ -210,6 +218,12 @@ function sortedInserts(spec: Extract<DiffSpec, { kind: 'd2i-insert' }>, sector: 
   const inserts = spec.inserts.map((ins, i) => {
     requireInt(`inserts[${i}].at`, ins.at, listStart, listEnd);
     requireInt(`inserts[${i}].length`, ins.length, 1, Number.MAX_SAFE_INTEGER);
+    if (ins.bytes !== undefined && !(ins.bytes instanceof Uint8Array)) {
+      throw new D2RSaverError(
+        ErrorCode.INVALID_ARGUMENT,
+        `inserts[${i}].bytes must be a Uint8Array (a JSON round trip turns it into a plain object; decode it first)`,
+      );
+    }
     if (ins.bytes && ins.bytes.length !== ins.length) {
       throw new D2RSaverError(
         ErrorCode.INVALID_ARGUMENT,
@@ -307,6 +321,14 @@ function buildExpectation(before: Uint8Array, spec: DiffSpec): Expectation {
  *
  * Offsets in `spec` refer to `before`; offsets in the returned `mismatches` refer to `after`.
  * Inserted gaps are compared only when the spec carries their `bytes`.
+ *
+ * What it proves, and what it does not: the check is purely about bytes. It proves that
+ * `after` differs from `before` exactly as the spec says, so a stray byte anywhere else is
+ * caught. It does NOT prove that the spec's ranges are item boundaries: a spec whose range
+ * covers an item plus part of the next one, together with a buffer spliced that way, is
+ * self-consistent and passes. A caller that must trust a spec it did not build (the backend's
+ * gate 6) also matches `ranges` / `inserts[].at` against `entries[i].full` of its own
+ * `walkD2I(before)` and re-walks the target sector of `after`.
  *
  * @throws {D2RSaverError} `INVALID_FORMAT` when `before` is not a tiled `.d2i`; `INVALID_PAGE`
  *   when `spec.sectorOffset` is not a sector start; `INVALID_ARGUMENT` when the ranges or
