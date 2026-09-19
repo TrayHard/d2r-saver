@@ -50,6 +50,16 @@ import {
 } from './formats/item-walker.js';
 import { buildRawGrid } from './inventory/raw-grid.js';
 import type { GridSize } from './inventory/dimensions.js';
+import {
+  extractInPlaceD2I,
+  insertInPlaceD2I,
+  type ExtractInPlaceD2IRef,
+  type ExtractInPlaceD2IOptions,
+  type ExtractInPlaceD2IResult,
+  type InsertInPlaceD2ITarget,
+  type InsertInPlaceD2IItem,
+  type InsertInPlaceD2IResult,
+} from './operations/inplace-d2i.js';
 
 // ─── Re-exports ─────────────────────────────────────────────────
 
@@ -102,6 +112,44 @@ export type {
 } from './formats/item-walker.js';
 export { buildRawGrid } from './inventory/raw-grid.js';
 export type { GridSize } from './inventory/dimensions.js';
+
+// ─── In-place operations on .d2i (0.3.0) ────────────────────────
+// Cut/paste raw item bytes in a shared-stash sector; the item writer is never involved.
+// `verifyExactDiff` proves that a result differs from its source by exactly the declared edit.
+export {
+  extractInPlaceD2I,
+  insertInPlaceD2I,
+  fixD2ISectorSize,
+} from './operations/inplace-d2i.js';
+export type {
+  ExtractInPlaceD2IRef,
+  ExtractInPlaceD2IOptions,
+  ExtractedInPlaceItem,
+  ExtractInPlaceD2IResult,
+  InsertInPlaceD2ITarget,
+  InsertInPlaceD2IItem,
+  InsertedInPlaceItem,
+  InsertInPlaceD2IResult,
+} from './operations/inplace-d2i.js';
+export {
+  verifyExactDiff,
+  assertExactDiff,
+  readD2ISectorChain,
+  findD2ISector,
+  MAX_REPORTED_MISMATCHES,
+  D2I_SECTOR_HEADER_SIZE,
+  D2I_SECTOR_SIZE_OFFSET,
+  D2I_SECTOR_TYPE_OFFSET,
+  D2I_LIST_COUNT_OFFSET,
+  D2I_FIRST_ITEM_OFFSET,
+} from './operations/verify-diff.js';
+export type {
+  DiffSpec,
+  DiffInsert,
+  DiffMismatch,
+  ExactDiffResult,
+  D2ISectorHeader,
+} from './operations/verify-diff.js';
 
 // ─── D2RSaver facade ────────────────────────────────────────────
 
@@ -208,6 +256,35 @@ export class D2RSaver {
    */
   buildRawGrid(walk: WalkResult, size?: GridSize): StashGrid {
     return buildRawGrid(walk, this.gd, size);
+  }
+
+  // ── In-place editing: operations on .d2i ────────────────────
+
+  /**
+   * Cut items (with their socketed children) out of a normal stash sector without rebuilding
+   * the file (0.3.0). Only the removed bytes, the sector's item count and its `sectorSize`
+   * change; the result is self-verified with `verifyExactDiff`.
+   * @throws {D2RSaverError} LIST_TRUNCATED, INVALID_PAGE, ITEM_NOT_FOUND, … — see `extractInPlaceD2I`.
+   */
+  extractInPlaceD2I(
+    buffer: Uint8Array,
+    ref: ExtractInPlaceD2IRef,
+    opts?: ExtractInPlaceD2IOptions,
+  ): ExtractInPlaceD2IResult {
+    return extractInPlaceD2I(buffer, ref, this.gd, opts);
+  }
+
+  /**
+   * Paste raw item bytes into a normal stash sector at explicit free cells without rebuilding
+   * the file (0.3.0). The target list must be complete; cells are checked on the raw grid.
+   * @throws {D2RSaverError} LIST_TRUNCATED, INVALID_PAGE, NO_FREE_SLOT, UNKNOWN_BASE, … — see `insertInPlaceD2I`.
+   */
+  insertInPlaceD2I(
+    buffer: Uint8Array,
+    target: InsertInPlaceD2ITarget,
+    items: InsertInPlaceD2IItem[],
+  ): InsertInPlaceD2IResult {
+    return insertInPlaceD2I(buffer, target, items, this.gd);
   }
 
   // ── Item serialization ──────────────────────────────────────

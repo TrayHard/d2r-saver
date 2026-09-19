@@ -2,10 +2,29 @@ import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { D2RSaver, D2RSaverError, ErrorCode, StashGrid } from '../src/index.js';
+import * as root from '../src/index.js';
 import { TOKEN_PREFIX } from '../src/types/constants.js';
 
 const DATA_DIR = resolve(import.meta.dirname!, '..', 'data');
 const FIXTURES = resolve(import.meta.dirname!, 'fixtures');
+
+describe('0.3.0 root exports', () => {
+  it('exports every in-place building block and operation as a function', () => {
+    const names = [
+      'walkItemList', 'walkD2I', 'readItemHead', 'readItemPosition', 'patchItemPosition', 'zeroItemPosition', 'buildRawGrid',
+      'extractInPlaceD2I', 'insertInPlaceD2I', 'fixD2ISectorSize',
+      'verifyExactDiff', 'assertExactDiff', 'readD2ISectorChain', 'findD2ISector',
+    ] as const;
+    for (const name of names) expect(typeof root[name], name).toBe('function');
+    expect(root.D2I_SECTOR_HEADER_SIZE).toBe(64);
+    expect(root.D2I_SECTOR_SIZE_OFFSET).toBe(16);
+    expect(root.D2I_SECTOR_TYPE_OFFSET).toBe(20);
+    expect(root.D2I_LIST_COUNT_OFFSET).toBe(66);
+    expect(root.D2I_FIRST_ITEM_OFFSET).toBe(68);
+    expect(root.ITEM_POSITION_BIT).toBe(35);
+    expect(root.MAX_REPORTED_MISMATCHES).toBeGreaterThan(0);
+  });
+});
 
 describe('D2RSaverError', () => {
   it('is an instance of Error', () => {
