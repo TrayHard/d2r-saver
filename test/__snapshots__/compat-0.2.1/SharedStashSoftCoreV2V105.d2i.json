@@ -1,0 +1,1332 @@
+{
+  "pages": [
+    {
+      "index": 0,
+      "pageType": 0,
+      "gold": 2500000,
+      "stash": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        1
+      ],
+      "offset": 0,
+      "sectorSize": 989
+    },
+    {
+      "index": 1,
+      "pageType": 0,
+      "gold": 91243,
+      "stash": [
+        2
+      ],
+      "offset": 989,
+      "sectorSize": 373
+    },
+    {
+      "index": 2,
+      "pageType": 0,
+      "gold": 0,
+      "stash": [],
+      "offset": 1362,
+      "sectorSize": 68
+    },
+    {
+      "index": 3,
+      "pageType": 0,
+      "gold": 0,
+      "stash": [],
+      "offset": 1430,
+      "sectorSize": 68
+    },
+    {
+      "index": 4,
+      "pageType": 0,
+      "gold": 0,
+      "stash": [],
+      "offset": 1498,
+      "sectorSize": 68
+    },
+    {
+      "index": 5,
+      "pageType": "gems",
+      "gold": 0,
+      "stash": [],
+      "quantities": [],
+      "offset": 1566,
+      "sectorSize": 830
+    },
+    {
+      "index": 6,
+      "pageType": "runes",
+      "gold": 0,
+      "stash": [
+        "r08",
+        "r14",
+        "r22",
+        "r13",
+        "r33",
+        "r32",
+        "r15",
+        "r31",
+        "r27",
+        "r21",
+        "r24",
+        "r29",
+        "r28",
+        "r25",
+        "r26",
+        "r30",
+        "r23",
+        "r02",
+        "r06",
+        "r10",
+        "r18",
+        "r16",
+        "r19",
+        "r07",
+        "r03",
+        "r09",
+        "r17",
+        "r12",
+        "r11",
+        "r04",
+        "r05",
+        "r01"
+      ],
+      "quantities": [
+        3,
+        2,
+        6,
+        6,
+        4,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "offset": 1566,
+      "sectorSize": 830
+    },
+    {
+      "index": 7,
+      "pageType": "misc",
+      "gold": 0,
+      "stash": [
+        "rvl",
+        "rvs",
+        "pk1",
+        "pk3",
+        "pk2",
+        "ua5",
+        "ua4",
+        "xa1",
+        "xa2",
+        "ua2",
+        "ua1",
+        "ua3",
+        null,
+        null,
+        null,
+        null,
+        null,
+        "xa4",
+        "xa5",
+        null,
+        null,
+        null,
+        "xa3",
+        "tes",
+        "bey",
+        "mbr",
+        "ceh",
+        "bet",
+        "dhn",
+        "fed",
+        "toa"
+      ],
+      "quantities": {
+        "0": 99,
+        "1": 1,
+        "2": 21,
+        "3": 21,
+        "4": 21,
+        "5": 6,
+        "6": 6,
+        "7": 7,
+        "8": 7,
+        "9": 6,
+        "10": 6,
+        "11": 6,
+        "17": 7,
+        "18": 7,
+        "22": 7,
+        "23": 1,
+        "24": 1,
+        "25": 1,
+        "26": 1,
+        "27": 1,
+        "28": 1,
+        "29": 1,
+        "30": 1
+      },
+      "rows": 4,
+      "offset": 1566,
+      "sectorSize": 830
+    }
+  ],
+  "items": {
+    "1": {
+      "itemId": 1,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "strength": 20,
+        "energy": 20,
+        "dexterity": 20,
+        "vitality": 20,
+        "fireresist": 20,
+        "lightresist": 20,
+        "coldresist": 20,
+        "poisonresist": 20,
+        "item_addexperience": 10,
+        "item_allskills": 1
+      },
+      "binaryOffset": {
+        "start": 544,
+        "end": 864
+      },
+      "base": "cm1",
+      "guid": 2620541511,
+      "ilvl": 1,
+      "quality": 7,
+      "iconIndex": 1,
+      "unique": "unique381",
+      "uniqueValues": [
+        1,
+        20,
+        20,
+        10
+      ]
+    },
+    "2": {
+      "itemId": 2,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": true,
+      "sockets": 1,
+      "socketedItems": [],
+      "stats": {
+        "armorclass": 120,
+        "fireresist": 70,
+        "lightresist": 70,
+        "coldresist": 70,
+        "poisonresist": 70,
+        "item_fastergethitrate": 20,
+        "item_cannotbefrozen": 1
+      },
+      "binaryOffset": {
+        "start": 544,
+        "end": 840
+      },
+      "base": "ci2",
+      "guid": 0,
+      "ilvl": 85,
+      "quality": 7,
+      "unique": "unique357",
+      "defense": 50,
+      "uniqueValues": [
+        120,
+        70,
+        1,
+        20
+      ]
+    },
+    "rvl": {
+      "itemId": 3,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 544,
+        "end": 632
+      },
+      "base": "rvl",
+      "quality": 2,
+      "quantity": 99
+    },
+    "rvs": {
+      "itemId": 4,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 632,
+        "end": 720
+      },
+      "base": "rvs",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r08": {
+      "itemId": 5,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 720,
+        "end": 808
+      },
+      "base": "r08",
+      "quality": 2,
+      "quantity": 3
+    },
+    "r14": {
+      "itemId": 6,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 808,
+        "end": 896
+      },
+      "base": "r14",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r22": {
+      "itemId": 7,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 896,
+        "end": 984
+      },
+      "base": "r22",
+      "quality": 2,
+      "quantity": 6
+    },
+    "r13": {
+      "itemId": 8,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 984,
+        "end": 1072
+      },
+      "base": "r13",
+      "quality": 2,
+      "quantity": 6
+    },
+    "r33": {
+      "itemId": 9,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1072,
+        "end": 1160
+      },
+      "base": "r33",
+      "quality": 2,
+      "quantity": 4
+    },
+    "r32": {
+      "itemId": 10,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1160,
+        "end": 1248
+      },
+      "base": "r32",
+      "quality": 2,
+      "quantity": 2
+    },
+    "pk1": {
+      "itemId": 11,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1248,
+        "end": 1392
+      },
+      "base": "pk1",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 21
+    },
+    "pk3": {
+      "itemId": 12,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1392,
+        "end": 1536
+      },
+      "base": "pk3",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 21
+    },
+    "pk2": {
+      "itemId": 13,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1536,
+        "end": 1680
+      },
+      "base": "pk2",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 21
+    },
+    "ua5": {
+      "itemId": 14,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1680,
+        "end": 1824
+      },
+      "base": "ua5",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 6
+    },
+    "ua4": {
+      "itemId": 15,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1824,
+        "end": 1968
+      },
+      "base": "ua4",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 6
+    },
+    "xa1": {
+      "itemId": 16,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 1968,
+        "end": 2112
+      },
+      "base": "xa1",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 7
+    },
+    "xa2": {
+      "itemId": 17,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2112,
+        "end": 2256
+      },
+      "base": "xa2",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 7
+    },
+    "ua2": {
+      "itemId": 18,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2256,
+        "end": 2400
+      },
+      "base": "ua2",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 6
+    },
+    "ua1": {
+      "itemId": 19,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2400,
+        "end": 2544
+      },
+      "base": "ua1",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 6
+    },
+    "ua3": {
+      "itemId": 20,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2544,
+        "end": 2688
+      },
+      "base": "ua3",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 6
+    },
+    "xa4": {
+      "itemId": 21,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2688,
+        "end": 2832
+      },
+      "base": "xa4",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 7
+    },
+    "xa5": {
+      "itemId": 22,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2832,
+        "end": 2976
+      },
+      "base": "xa5",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 7
+    },
+    "xa3": {
+      "itemId": 23,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 2976,
+        "end": 3120
+      },
+      "base": "xa3",
+      "guid": 0,
+      "ilvl": 41,
+      "quality": 2,
+      "quantity": 7
+    },
+    "glb": {
+      "itemId": 24,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3120,
+        "end": 3200
+      },
+      "base": "glb",
+      "quality": 2,
+      "quantity": 0
+    },
+    "r15": {
+      "itemId": 25,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3200,
+        "end": 3288
+      },
+      "base": "r15",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r31": {
+      "itemId": 26,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3288,
+        "end": 3376
+      },
+      "base": "r31",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r27": {
+      "itemId": 27,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3376,
+        "end": 3464
+      },
+      "base": "r27",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r21": {
+      "itemId": 28,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3464,
+        "end": 3552
+      },
+      "base": "r21",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r24": {
+      "itemId": 29,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3552,
+        "end": 3640
+      },
+      "base": "r24",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r29": {
+      "itemId": 30,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3640,
+        "end": 3728
+      },
+      "base": "r29",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r28": {
+      "itemId": 31,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3728,
+        "end": 3816
+      },
+      "base": "r28",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r25": {
+      "itemId": 32,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3816,
+        "end": 3904
+      },
+      "base": "r25",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r26": {
+      "itemId": 33,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3904,
+        "end": 3992
+      },
+      "base": "r26",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r30": {
+      "itemId": 34,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 3992,
+        "end": 4080
+      },
+      "base": "r30",
+      "quality": 2,
+      "quantity": 2
+    },
+    "r23": {
+      "itemId": 35,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4080,
+        "end": 4168
+      },
+      "base": "r23",
+      "quality": 2,
+      "quantity": 1
+    },
+    "tes": {
+      "itemId": 36,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4168,
+        "end": 4312
+      },
+      "base": "tes",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "bey": {
+      "itemId": 37,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4312,
+        "end": 4456
+      },
+      "base": "bey",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "r02": {
+      "itemId": 38,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4456,
+        "end": 4544
+      },
+      "base": "r02",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r06": {
+      "itemId": 39,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4544,
+        "end": 4632
+      },
+      "base": "r06",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r10": {
+      "itemId": 40,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4632,
+        "end": 4720
+      },
+      "base": "r10",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r18": {
+      "itemId": 41,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4720,
+        "end": 4808
+      },
+      "base": "r18",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r16": {
+      "itemId": 42,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4808,
+        "end": 4896
+      },
+      "base": "r16",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r19": {
+      "itemId": 43,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4896,
+        "end": 4984
+      },
+      "base": "r19",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r07": {
+      "itemId": 44,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 4984,
+        "end": 5072
+      },
+      "base": "r07",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r03": {
+      "itemId": 45,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5072,
+        "end": 5160
+      },
+      "base": "r03",
+      "quality": 2,
+      "quantity": 1
+    },
+    "mbr": {
+      "itemId": 46,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5160,
+        "end": 5304
+      },
+      "base": "mbr",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "ceh": {
+      "itemId": 47,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5304,
+        "end": 5448
+      },
+      "base": "ceh",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "bet": {
+      "itemId": 48,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5448,
+        "end": 5592
+      },
+      "base": "bet",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "dhn": {
+      "itemId": 49,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5592,
+        "end": 5736
+      },
+      "base": "dhn",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "fed": {
+      "itemId": 50,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5736,
+        "end": 5880
+      },
+      "base": "fed",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "toa": {
+      "itemId": 51,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 5880,
+        "end": 6024
+      },
+      "base": "toa",
+      "guid": 0,
+      "ilvl": 13,
+      "quality": 2,
+      "quantity": 1
+    },
+    "r09": {
+      "itemId": 52,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6024,
+        "end": 6112
+      },
+      "base": "r09",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r17": {
+      "itemId": 53,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6112,
+        "end": 6200
+      },
+      "base": "r17",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r12": {
+      "itemId": 54,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6200,
+        "end": 6288
+      },
+      "base": "r12",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r11": {
+      "itemId": 55,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6288,
+        "end": 6376
+      },
+      "base": "r11",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r04": {
+      "itemId": 56,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6376,
+        "end": 6464
+      },
+      "base": "r04",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r05": {
+      "itemId": 57,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6464,
+        "end": 6552
+      },
+      "base": "r05",
+      "quality": 2,
+      "quantity": 1
+    },
+    "r01": {
+      "itemId": 58,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 6552,
+        "end": 6640
+      },
+      "base": "r01",
+      "quality": 2,
+      "quantity": 1
+    }
+  },
+  "warnings": [
+    "Stash page 0: item list truncated: item 2/15: unknown item stat code 482",
+    "Stash page 1: item list truncated: item 2/7: unknown item stat code 480"
+  ]
+}

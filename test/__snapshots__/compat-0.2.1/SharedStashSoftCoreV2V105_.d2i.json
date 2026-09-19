@@ -1,0 +1,320 @@
+{
+  "pages": [
+    {
+      "index": 0,
+      "pageType": 0,
+      "gold": 2500000,
+      "stash": [],
+      "offset": 0,
+      "sectorSize": 1210
+    },
+    {
+      "index": 1,
+      "pageType": 0,
+      "gold": 2500000,
+      "stash": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        6,
+        1,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        3,
+        2,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        7,
+        5,
+        4
+      ],
+      "offset": 1210,
+      "sectorSize": 2290
+    },
+    {
+      "index": 2,
+      "pageType": 0,
+      "gold": 2500000,
+      "stash": [],
+      "offset": 3500,
+      "sectorSize": 1184
+    }
+  ],
+  "items": {
+    "1": {
+      "itemId": 1,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "strength": 5,
+        "energy": 5,
+        "dexterity": 5,
+        "vitality": 5,
+        "fireresist": 30,
+        "lightresist": 30,
+        "coldresist": 30,
+        "poisonresist": 30,
+        "item_allskills": 2
+      },
+      "binaryOffset": {
+        "start": 544,
+        "end": 840
+      },
+      "base": "amu",
+      "guid": 3740327953,
+      "ilvl": 99,
+      "quality": 7,
+      "iconIndex": 0,
+      "unique": "unique272",
+      "uniqueValues": [
+        2,
+        30,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "2": {
+      "itemId": 2,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "normal_damage_reduction": 11,
+        "poisonresist": 30,
+        "item_restinpeace": 1,
+        "item_preventheal": 1,
+        "item_charged_skill#226#5": 27
+      },
+      "binaryOffset": {
+        "start": 840,
+        "end": 1088
+      },
+      "base": "rin",
+      "guid": 0,
+      "ilvl": 99,
+      "quality": 7,
+      "iconIndex": 3,
+      "unique": "unique300",
+      "uniqueValues": [
+        1,
+        1,
+        11,
+        30,
+        5
+      ]
+    },
+    "3": {
+      "itemId": 3,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "normal_damage_reduction": 11,
+        "poisonresist": 30,
+        "item_restinpeace": 1,
+        "item_preventheal": 1,
+        "item_charged_skill#226#5": 27
+      },
+      "binaryOffset": {
+        "start": 1088,
+        "end": 1336
+      },
+      "base": "rin",
+      "guid": 0,
+      "ilvl": 99,
+      "quality": 7,
+      "iconIndex": 3,
+      "unique": "unique300",
+      "uniqueValues": [
+        1,
+        1,
+        11,
+        30,
+        5
+      ]
+    },
+    "4": {
+      "itemId": 4,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "maxstamina": 50,
+        "lifedrainmindam": 5,
+        "item_allskills": 1,
+        "item_hp_perlevel": 4
+      },
+      "binaryOffset": {
+        "start": 1336,
+        "end": 1544
+      },
+      "base": "rin",
+      "guid": 4198596071,
+      "ilvl": 97,
+      "quality": 7,
+      "iconIndex": 4,
+      "unique": "unique268",
+      "uniqueValues": [
+        null,
+        1,
+        5,
+        50
+      ]
+    },
+    "5": {
+      "itemId": 5,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "maxstamina": 50,
+        "lifedrainmindam": 5,
+        "item_allskills": 1,
+        "item_hp_perlevel": 4
+      },
+      "binaryOffset": {
+        "start": 1544,
+        "end": 1752
+      },
+      "base": "rin",
+      "guid": 4198596071,
+      "ilvl": 97,
+      "quality": 7,
+      "iconIndex": 4,
+      "unique": "unique268",
+      "uniqueValues": [
+        null,
+        1,
+        5,
+        50
+      ]
+    },
+    "6": {
+      "itemId": 6,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "strength": 5,
+        "energy": 5,
+        "dexterity": 5,
+        "vitality": 5,
+        "fireresist": 30,
+        "lightresist": 30,
+        "coldresist": 30,
+        "poisonresist": 30,
+        "item_allskills": 2
+      },
+      "binaryOffset": {
+        "start": 1752,
+        "end": 2048
+      },
+      "base": "amu",
+      "guid": 3740327953,
+      "ilvl": 99,
+      "quality": 7,
+      "iconIndex": 0,
+      "unique": "unique272",
+      "uniqueValues": [
+        2,
+        30,
+        5,
+        5,
+        5,
+        5
+      ]
+    },
+    "7": {
+      "itemId": 7,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "maxstamina": 50,
+        "lifedrainmindam": 5,
+        "item_allskills": 1,
+        "item_hp_perlevel": 4
+      },
+      "binaryOffset": {
+        "start": 2048,
+        "end": 2256
+      },
+      "base": "rin",
+      "guid": 4198596071,
+      "ilvl": 97,
+      "quality": 7,
+      "iconIndex": 4,
+      "unique": "unique268",
+      "uniqueValues": [
+        null,
+        1,
+        5,
+        50
+      ]
+    }
+  },
+  "warnings": [
+    "Stash page 0: item list truncated: item 1/31: unknown item stat code 508",
+    "Stash page 1: item list truncated: item 8/62: unknown item stat code 489",
+    "Stash page 2: item list truncated: item 1/42: unknown item stat code 506"
+  ]
+}
