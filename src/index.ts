@@ -68,6 +68,32 @@ export { StashGrid } from './inventory/grid.js';
 export type { WriteD2SOptions } from './formats/d2s-writer.js';
 export type { WriteStashPage } from './formats/d2i-writer.js';
 
+// ─── In-place editing building blocks (0.3.0) ───────────────────
+// Byte-exact list walking, item heads and position patching. These never re-encode an item:
+// the site-side gates and the in-place operations are built on them.
+export {
+  walkItemList,
+  walkD2I,
+  readItemHead,
+  readItemPosition,
+  patchItemPosition,
+  zeroItemPosition,
+  ITEM_POSITION_BIT,
+  ITEM_POSITION_BITS,
+  ITEM_BASE_BIT,
+} from './formats/item-walker.js';
+export type {
+  ItemHead,
+  ItemPosition,
+  WalkedItem,
+  WalkResult,
+  WalkItemListOptions,
+  D2IWalkedSector,
+  D2IParseReport,
+} from './formats/item-walker.js';
+export { buildRawGrid } from './inventory/raw-grid.js';
+export type { GridSize } from './inventory/dimensions.js';
+
 // ─── D2RSaver facade ────────────────────────────────────────────
 
 /** Options for `D2RSaver.create()`. */

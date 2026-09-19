@@ -33,6 +33,22 @@ export enum ErrorCode {
    * returning zeros and letting the item parser spin on garbage.
    */
   BUFFER_OVERRUN = 'BUFFER_OVERRUN',
+  /**
+   * An item list did not parse to its declared count (or did not end where the sector ends),
+   * and the requested in-place operation needs a fully understood list.
+   */
+  LIST_TRUNCATED = 'LIST_TRUNCATED',
+  /** The byte difference between two buffers is not exactly the one the operation declared. */
+  RANGE_MISMATCH = 'RANGE_MISMATCH',
+  /** An item's base code is not in GameData, so its grid size (and hence its placement) is unknown. */
+  UNKNOWN_BASE = 'UNKNOWN_BASE',
+  /**
+   * The stash sector cannot be used for the operation: wrong type (extended/metadata), an item
+   * outside the stash grid, or two items overlapping in the raw layout.
+   */
+  INVALID_PAGE = 'INVALID_PAGE',
+  /** A caller-supplied argument is out of range (position bits, offsets, buffer too short). */
+  INVALID_ARGUMENT = 'INVALID_ARGUMENT',
 }
 
 // ─── Error class ────────────────────────────────────────────────

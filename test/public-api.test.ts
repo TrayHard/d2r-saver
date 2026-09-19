@@ -26,6 +26,9 @@ describe('D2RSaverError', () => {
       'INVALID_FORMAT', 'UNSUPPORTED_VERSION', 'PARSE_ERROR',
       'CHECKSUM_MISMATCH', 'NO_FREE_SLOT', 'ITEM_NOT_FOUND',
       'WRITE_ERROR', 'INVALID_TOKEN', 'DATA_NOT_LOADED',
+      // 0.3.0: in-place editing
+      'BUFFER_OVERRUN', 'LIST_TRUNCATED', 'RANGE_MISMATCH',
+      'UNKNOWN_BASE', 'INVALID_PAGE', 'INVALID_ARGUMENT',
     ];
     for (const code of codes) {
       expect(ErrorCode[code as keyof typeof ErrorCode]).toBe(code);

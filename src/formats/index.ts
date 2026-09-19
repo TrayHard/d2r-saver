@@ -24,6 +24,24 @@ export {
   type ExtendedPageType,
 } from './d2i-reader.js';
 export {
+  walkItemList,
+  walkD2I,
+  readItemHead,
+  readItemPosition,
+  patchItemPosition,
+  zeroItemPosition,
+  ITEM_POSITION_BIT,
+  ITEM_POSITION_BITS,
+  ITEM_BASE_BIT,
+  type ItemHead,
+  type ItemPosition,
+  type WalkedItem,
+  type WalkResult,
+  type WalkItemListOptions,
+  type D2IWalkedSector,
+  type D2IParseReport,
+} from './item-walker.js';
+export {
   writeItem,
   writeItemList,
   buildWriteEntries,

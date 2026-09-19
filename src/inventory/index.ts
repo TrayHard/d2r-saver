@@ -19,3 +19,5 @@ export {
   buildGrid,
   type PlacementItem,
 } from './placement.js';
+
+export { buildRawGrid } from './raw-grid.js';
