@@ -49,9 +49,11 @@
   "scripts": {
     "build": "tsc",
     "build:data": "tsx src/data-parser/index.ts",
+    "build:fixtures": "tsx test/fixtures/build-shared-stash-complete.ts",
     "prepare": "tsc",
     "test": "vitest run",
     "test:watch": "vitest",
+    "probe": "npm run build && node test/probe/inplace-probe.mjs",
     "lint": "eslint src --ext .ts",
     "prepublishOnly": "npm test && npm run build",
     "release:patch": "npm version patch -m \"release: %s\" && npm publish && git push --follow-tags",

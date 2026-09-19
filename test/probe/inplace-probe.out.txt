@@ -1,0 +1,183 @@
+
+=== WarlockTest.d2s ===
+bytes=1849 filesize@8=1849 checksum@12=0xdb2c2c0f recomputed=0xdb2c2c0f
+  PASS original header: filesize == length
+  PASS original header: checksum matches
+main JM at 914, declared count=26, first item at 918
+walked 5/26 items, stop=item 6/26: unknown item stat code 508, endOffset=1197
+  #1 [918,954) len=36 extended base=lbl guid=3114709512 sockets=0 loc=1 storage=0 col=8 row=0 bodyloc=8 key=0
+  #2 [954,1000) len=46 extended base=mbt guid=3350356541 sockets=0 loc=1 storage=0 col=9 row=0 bodyloc=9 key=1
+  #3 [1000,1081) len=81 extended base=rin guid=3785561294 sockets=0 loc=1 storage=0 col=7 row=0 bodyloc=7 key=2
+  #4 [1081,1134) len=53 extended base=fhl guid=2731174711 sockets=2 loc=1 storage=0 col=1 row=0 bodyloc=1 key=3
+  #5 [1134,1197) len=63 extended base=rin guid=3873802297 sockets=0 loc=1 storage=0 col=6 row=0 bodyloc=6 key=6
+library readD2S: parsed=7 warnings=["Main item list truncated: item 6/26: unknown item stat code 508","Item parsing error (some items may be missing): invalid item table header"]
+  (no first simple item before truncation)
+
+-- extract first extended: #1 [918,954) len=36 extended base=lbl guid=3114709512 sockets=0 loc=1 storage=0 col=8 row=0 bodyloc=8 key=0
+  cut bytes: 10 00 80 00 0d 22 e0 ea 0d 08 b2 a6 b9 dd 03 0e 30 80 61 81 04 2f 1b 3c 4e 34 4b d1 6c 45 b3 16 cd b2 d4 7f
+  PASS cut range re-parses standalone as exactly one item — consumed 36/36
+  PASS bytes [0,8) identical
+  PASS bytes [16, jm+2) identical
+  PASS bytes [jm+4, start) identical
+  PASS bytes [start, end-of-file) == original [end, eof)
+  PASS count decremented — 25
+  PASS filesize field == new length — 1813 vs 1813
+  PASS checksum field == recomputed
+  PASS truncation point shifted by exactly one item — item 5/25: unknown item stat code 508
+  PASS remaining item ranges identical (shifted)
+  library readD2S after extract: parsed=6 warnings=["Main item list truncated: item 5/25: unknown item stat code 508","Item parsing error (some items may be missing): invalid item table header"]
+  PASS walked (base,guid) sequence == original minus removed — ["mbt:3350356541","rin:3785561294","fhl:2731174711","rin:3873802297"]
+  PASS re-insert at original offset restores the original file byte-for-byte
+  PASS inserted-at-head item parses with the new position bits — {"identified":true,"socketed":false,"ear":false,"simple":false,"ethereal":false,"personalized":false,"runeword":false,"extras":false,"loc":0,"bodyloc":0,"col":9,"row":7,"storage":5,"base":"lbl"}
+  PASS inserted-at-head item lands in stash slot 7*16+9 of the profile — stash[121]=0
+  PASS moved item keeps base/guid/stats — lbl guid=3114709512
+  PASS bytes after the inserted item identical to the extracted file
+  PASS moved file: filesize+checksum consistent
+  PASS moved file: truncation at the same item index (item moved before it) — item 6/26: unknown item stat code 508
+  PASS zeroItemPosition: moved and original hash the same
+
+=== WarlockShards.d2s ===
+bytes=1173 filesize@8=1173 checksum@12=0x7bc37b47 recomputed=0x7bc37b47
+  PASS original header: filesize == length
+  PASS original header: checksum matches
+main JM at 903, declared count=17, first item at 907
+walked 6/17 items, stop=item 7/17: unknown item stat code 504, endOffset=966
+  #1 [907,917) len=10 simple base=hp1 guid=- sockets=0 loc=2 storage=0 col=0 row=0 bodyloc=0 key=hp1
+  #2 [917,927) len=10 simple base=hp1 guid=- sockets=0 loc=2 storage=0 col=1 row=0 bodyloc=0 key=hp1
+  #3 [927,937) len=10 simple base=hp1 guid=- sockets=0 loc=2 storage=0 col=2 row=0 bodyloc=0 key=hp1
+  #4 [937,947) len=10 simple base=hp1 guid=- sockets=0 loc=2 storage=0 col=3 row=0 bodyloc=0 key=hp1
+  #5 [947,956) len=9 simple base=tsc guid=- sockets=0 loc=0 storage=1 col=9 row=3 bodyloc=0 key=tsc
+  #6 [956,966) len=10 simple base=isc guid=- sockets=0 loc=0 storage=1 col=9 row=2 bodyloc=0 key=isc
+library readD2S: parsed=3 warnings=["Main item list truncated: item 7/17: unknown item stat code 504","Item parsing error (some items may be missing): invalid item table header"]
+
+-- extract first simple: #1 [907,917) len=10 simple base=hp1 guid=- sockets=0 loc=2 storage=0 col=0 row=0 bodyloc=0 key=hp1
+  cut bytes: 10 20 a2 00 15 00 00 cf 4f 00
+  PASS cut range re-parses standalone as exactly one item — consumed 10/10
+  PASS bytes [0,8) identical
+  PASS bytes [16, jm+2) identical
+  PASS bytes [jm+4, start) identical
+  PASS bytes [start, end-of-file) == original [end, eof)
+  PASS count decremented — 16
+  PASS filesize field == new length — 1163 vs 1163
+  PASS checksum field == recomputed
+  PASS truncation point shifted by exactly one item — item 6/16: unknown item stat code 504
+  PASS remaining item ranges identical (shifted)
+  library readD2S after extract: parsed=3 warnings=["Main item list truncated: item 6/16: unknown item stat code 504","Item parsing error (some items may be missing): invalid item table header"]
+  PASS walked (base,guid) sequence == original minus removed — ["hp1:-","hp1:-","hp1:-","tsc:-","isc:-"]
+  PASS re-insert at original offset restores the original file byte-for-byte
+  PASS inserted-at-head item parses with the new position bits — {"identified":true,"socketed":false,"ear":false,"simple":true,"ethereal":false,"personalized":false,"runeword":false,"extras":false,"loc":0,"bodyloc":0,"col":9,"row":7,"storage":5,"base":"hp1"}
+  PASS inserted-at-head item lands in stash slot 7*16+9 of the profile — stash[121]=hp1
+  PASS moved item keeps base/guid/stats — hp1 guid=undefined
+  PASS bytes after the inserted item identical to the extracted file
+  PASS moved file: filesize+checksum consistent
+  PASS moved file: truncation at the same item index (item moved before it) — item 7/17: unknown item stat code 504
+  PASS zeroItemPosition: moved and original hash the same
+  (no first extended item before truncation)
+
+=== SharedStashSoftCoreV2V105_.d2i ===
+  sector @0 size=1210 type=0 gold=2500000 0/31 stop=item 1/31: unknown item stat code 508 endOffset=68 (sector end 1210)
+  sector @1210 size=2290 type=0 gold=2500000 7/62 stop=item 8/62: unknown item stat code 489 endOffset=1492 (sector end 3500)
+    #1 [1278,1315) len=37 extended base=amu guid=3740327953 sockets=0 loc=0 storage=5 col=8 row=0 bodyloc=0 key=1 qty=-
+    #2 [1315,1346) len=31 extended base=rin guid=0 sockets=0 loc=0 storage=5 col=7 row=2 bodyloc=0 key=2 qty=-
+    #3 [1346,1377) len=31 extended base=rin guid=0 sockets=0 loc=0 storage=5 col=6 row=2 bodyloc=0 key=3 qty=-
+    #4 [1377,1403) len=26 extended base=rin guid=4198596071 sockets=0 loc=0 storage=5 col=7 row=3 bodyloc=0 key=4 qty=-
+    ... 3 more
+  sector @3500 size=1184 type=0 gold=2500000 0/42 stop=item 1/42: unknown item stat code 506 endOffset=3568 (sector end 4684)
+  PASS sectors tile the file exactly
+  library readD2I: pages=3 items=7 warnings=["Stash page 0: item list truncated: item 1/31: unknown item stat code 508","Stash page 1: item list truncated: item 8/62: unknown item stat code 489","Stash page 2: item list truncated: item 1/42: unknown item stat code 506"]
+  -> using sector @1210 (truncated) for the in-place cut
+  cut: #1 [1278,1315) len=37 extended base=amu guid=3740327953 sockets=0 loc=0 storage=5 col=8 row=0 bodyloc=0 key=1
+  cut bytes (position zeroed): 10 00 80 00 05 00 e0 59 18 22 c0 e1 bd c7 17 20 02 00 25 01 4a 02 4a 03 4a 27 cc a5 30 b7 c2 5c 0b 73 7f f4 1f
+  PASS cut range re-parses standalone as exactly one item — consumed 37/37
+  PASS other sectors byte-identical (before target)
+  PASS target sector header identical except sectorSize
+  PASS other sectors byte-identical (after target)
+  PASS page count unchanged
+  PASS truncation point shifted by exactly one item — item 7/61: unknown item stat code 489
+  PASS remaining item ranges identical (shifted)
+  PASS verifyExactDiff: the file differs by exactly the declared removal — 0 mismatch(es), length 4647/4647
+  library readD2I after cut: pages=3 items=6 warnings=["Stash page 0: item list truncated: item 1/31: unknown item stat code 508","Stash page 1: item list truncated: item 7/61: unknown item stat code 489","Stash page 2: item list truncated: item 1/42: unknown item stat code 506"]
+  PASS re-insert into the truncated sector is refused with LIST_TRUNCATED — LIST_TRUNCATED: sector at byte 1210: item list is not complete (6/61 parsed): item 7/61: unknown item stat code 489
+  -> inserting the cut item into the empty sector SharedStashComplete.d2i @1644 at column 15, row 12
+  PASS inserted item parses first in the empty sector with the new position — {"identified":true,"socketed":false,"ear":false,"simple":false,"ethereal":false,"personalized":false,"runeword":false,"extras":false,"loc":0,"bodyloc":0,"col":15,"row":12,"storage":5,"base":"amu"}
+  PASS readD2I sees the item in stash slot 12*16+15 of that page — pages=8 warnings=["Stash page 0: item list truncated: item 1/14: unknown item stat code 482","Stash page 1: item list truncated: item 1/6: unknown item stat code 480"]
+  PASS empty sector list is 1/1 and complete after the insert
+  PASS verifyExactDiff: the file differs by exactly the declared insertion — 0 mismatch(es)
+  PASS moved item keeps base/guid/stats — amu guid=3740327953
+  PASS insert into the complete sector of SharedStashComplete.d2i: 10/10 complete, diff exact
+
+=== SharedStashSoftCoreV2V105.d2i ===
+  sector @0 size=989 type=0 gold=2500000 1/15 stop=item 2/15: unknown item stat code 482 endOffset=108 (sector end 989)
+    #1 [68,108) len=40 extended base=cm1 guid=2620541511 sockets=0 loc=0 storage=5 col=9 row=7 bodyloc=0 key=1 qty=-
+  sector @989 size=373 type=0 gold=91243 1/7 stop=item 2/7: unknown item stat code 480 endOffset=1094 (sector end 1362)
+    #1 [1057,1094) len=37 extended base=ci2 guid=0 sockets=1 loc=0 storage=5 col=0 row=0 bodyloc=0 key=1 qty=-
+  sector @1362 size=68 type=0 gold=0 0/0 complete
+  sector @1430 size=68 type=0 gold=0 0/0 complete
+  sector @1498 size=68 type=0 gold=0 0/0 complete
+  sector @1566 size=830 type=1 gold=0 56/56 complete
+    #1 [1634,1645) len=11 simple base=rvl guid=- sockets=0 loc=0 storage=5 col=3 row=6 bodyloc=0 key=rvl qty=99
+    #2 [1645,1656) len=11 simple base=rvs guid=- sockets=0 loc=0 storage=5 col=1 row=0 bodyloc=0 key=rvs qty=1
+    #3 [1656,1667) len=11 simple base=r08 guid=- sockets=0 loc=0 storage=5 col=3 row=0 bodyloc=0 key=r08 qty=3
+    #4 [1667,1678) len=11 simple base=r14 guid=- sockets=0 loc=0 storage=5 col=2 row=0 bodyloc=0 key=r14 qty=2
+    ... 52 more
+  sector @2396 size=168 type=2 gold=0 metadata
+  PASS sectors tile the file exactly
+  library readD2I: pages=8 items=58 warnings=["Stash page 0: item list truncated: item 2/15: unknown item stat code 482","Stash page 1: item list truncated: item 2/7: unknown item stat code 480"]
+  -> using sector @0 (truncated) for the in-place cut
+  cut: #1 [68,108) len=40 extended base=cm1 guid=2620541511 sockets=0 loc=0 storage=5 col=9 row=7 bodyloc=0 key=1
+  cut bytes (position zeroed): 10 00 80 00 05 00 40 d8 4f 38 52 92 e1 0c dc e8 0b 00 d0 04 a0 09 a0 0d a0 9d e0 96 82 db 0a 6e 2d b8 55 e1 f1 27 ff 01
+  PASS cut range re-parses standalone as exactly one item — consumed 40/40
+  PASS other sectors byte-identical (before target)
+  PASS target sector header identical except sectorSize
+  PASS other sectors byte-identical (after target)
+  PASS page count unchanged
+  PASS truncation point shifted by exactly one item — item 1/14: unknown item stat code 482
+  PASS remaining item ranges identical (shifted)
+  PASS verifyExactDiff: the file differs by exactly the declared removal — 0 mismatch(es), length 2524/2524
+  library readD2I after cut: pages=8 items=57 warnings=["Stash page 0: item list truncated: item 1/14: unknown item stat code 482","Stash page 1: item list truncated: item 2/7: unknown item stat code 480"]
+  PASS re-insert into the truncated sector is refused with LIST_TRUNCATED — LIST_TRUNCATED: sector at byte 0: item list is not complete (0/14 parsed): item 1/14: unknown item stat code 482
+  -> inserting the cut item into the empty sector SharedStashSoftCoreV2V105.d2i @1322 at column 15, row 12
+  PASS inserted item parses first in the empty sector with the new position — {"identified":true,"socketed":false,"ear":false,"simple":false,"ethereal":false,"personalized":false,"runeword":false,"extras":false,"loc":0,"bodyloc":0,"col":15,"row":12,"storage":5,"base":"cm1"}
+  PASS readD2I sees the item in stash slot 12*16+15 of that page — pages=8 warnings=["Stash page 0: item list truncated: item 1/14: unknown item stat code 482","Stash page 1: item list truncated: item 2/7: unknown item stat code 480"]
+  PASS empty sector list is 1/1 and complete after the insert
+  PASS verifyExactDiff: the file differs by exactly the declared insertion — 0 mismatch(es)
+  PASS moved item keeps base/guid/stats — cm1 guid=2620541511
+  PASS insert into the complete sector of SharedStashComplete.d2i: 10/10 complete, diff exact
+
+=== SharedStashComplete.d2i ===
+  sector @0 size=949 type=0 0/14
+  sector @949 size=336 type=0 0/6
+  sector @1285 size=359 type=0 9/9 complete
+  sector @1644 size=68 type=0 0/0 complete
+  sector @1712 size=68 type=0 0/0 complete
+  sector @1780 size=830 type=1 56/56 complete
+  sector @2610 size=168 type=2 metadata
+  PASS sectors tile the file exactly
+  PASS sector @1285 walks 9/9 and is complete
+    #1 [1353,1393) len=40 extended base=cm1 guid=2620541511 sockets=0 loc=0 storage=5 col=9 row=7 bodyloc=0 key=1
+    #2 [1393,1430) len=37 extended base=ci2 guid=0 sockets=1 loc=0 storage=5 col=0 row=0 bodyloc=0 key=2
+    #3 [1430,1467) len=37 extended base=amu guid=3740327953 sockets=0 loc=0 storage=5 col=8 row=0 bodyloc=0 key=3
+    #4 [1467,1498) len=31 extended base=rin guid=0 sockets=0 loc=0 storage=5 col=7 row=2 bodyloc=0 key=4
+    #5 [1498,1529) len=31 extended base=rin guid=0 sockets=0 loc=0 storage=5 col=6 row=2 bodyloc=0 key=5
+    #6 [1529,1555) len=26 extended base=rin guid=4198596071 sockets=0 loc=0 storage=5 col=7 row=3 bodyloc=0 key=6
+    #7 [1555,1581) len=26 extended base=rin guid=4198596071 sockets=0 loc=0 storage=5 col=6 row=3 bodyloc=0 key=7
+    #8 [1581,1618) len=37 extended base=amu guid=3740327953 sockets=0 loc=0 storage=5 col=7 row=0 bodyloc=0 key=8
+    #9 [1618,1644) len=26 extended base=rin guid=4198596071 sockets=0 loc=0 storage=5 col=5 row=3 bodyloc=0 key=9
+  PASS round trip item #1 (cm1@9,7): extract → insert restores the file byte-for-byte
+  PASS round trip item #2 (ci2@0,0): extract → insert restores the file byte-for-byte
+  PASS round trip item #3 (amu@8,0): extract → insert restores the file byte-for-byte
+  PASS round trip item #4 (rin@7,2): extract → insert restores the file byte-for-byte
+  PASS round trip item #5 (rin@6,2): extract → insert restores the file byte-for-byte
+  PASS round trip item #6 (rin@7,3): extract → insert restores the file byte-for-byte
+  PASS round trip item #7 (rin@6,3): extract → insert restores the file byte-for-byte
+  PASS round trip item #8 (amu@7,0): extract → insert restores the file byte-for-byte
+  PASS round trip item #9 (rin@5,3): extract → insert restores the file byte-for-byte
+  PASS three items in one cut: count 9→6, sectorSize -sum, list complete — removed 2,5,8 (89 bytes)
+  PASS verifyExactDiff catches one flipped byte in the sector header — [{"offset":1315,"expected":0,"actual":1}]
+  PASS insert into a truncated sector → LIST_TRUNCATED — LIST_TRUNCATED: sector at byte 0: item list is not complete (0/14 parsed): item 1/14: unknown item stat code 482
+  PASS insert into the extended sector → INVALID_PAGE — INVALID_PAGE: sector at byte 1780 has type 1 (extended); only normal (type 0) pages can be edited in place
+  PASS extract from the metadata sector → INVALID_PAGE — INVALID_PAGE: sector at byte 2610 has type 2 (metadata); only normal (type 0) pages can be edited in place
+  PASS insert onto a taken cell → NO_FREE_SLOT — NO_FREE_SLOT: items[0] (rin, 1x1) does not fit at column 8, row 0 of the 16x13 grid of the sector at byte 1285: cell taken or outside the grid
+  PASS file cut inside the sector → BUFFER_OVERRUN in milliseconds — item 4/9: buffer overrun: reading 9 bit(s) at bit 11874 (byte 1484) past the end of a 1485-byte buffer (0.3 ms)
+
+92 checks, ALL CHECKS PASSED
