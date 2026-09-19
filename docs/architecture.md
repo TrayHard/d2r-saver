@@ -31,6 +31,7 @@
   - [Иконки](#иконки)
   - [Trade DTO](#trade-dto)
 - [Операции](#операции)
+  - [Операции на месте для .d2i (0.3.0)](#операции-на-месте-для-d2i-030)
   - [Extract (извлечение)](#extract-извлечение)
   - [Insert (вставка)](#insert-вставка)
   - [readSave](#readsave)
@@ -106,6 +107,8 @@ d2r-saver/
 │   ├── operations/             — Высокоуровневые операции
 │   │   ├── extract-item.ts     — Извлечение предмета из сейва
 │   │   ├── insert-item.ts      — Вставка предмета в сейв
+│   │   ├── inplace-d2i.ts      — Операции на месте для .d2i: extractInPlaceD2I, insertInPlaceD2I, fixD2ISectorSize (0.3.0)
+│   │   ├── verify-diff.ts      — verifyExactDiff: доказательство «изменился ровно заявленный диапазон» (0.3.0)
 │   │   └── read-save.ts        — Универсальное чтение (авто-детект)
 │   ├── inventory/              — Инвентарная сетка и размещение
 │   │   ├── grid.ts             — StashGrid (Float64Array сетка занятости)
@@ -712,6 +715,24 @@ type ReadSaveResult =
 
 Вызывает `detectFormat()` + соответствующий ридер.
 
+### Операции на месте для .d2i (0.3.0)
+
+Файлы: `src/operations/inplace-d2i.ts`, `src/operations/verify-diff.ts`.
+
+Путь записи оффлайн-трейда. В отличие от `extractItemD2I` / `insertItemD2I`, файл не пересобирается писателем: предмет переносится своими байтами (диапазон `full` из обхода), а в файле меняются только три вещи: вырезанные или вставленные байты, 16-битный счётчик списка (`sector + 66`) и 32-битный `sectorSize` (`sector + 16`), плюс биты позиции 35–52 вставляемого предмета. Контрольной суммы в `.d2i` нет. Каждая операция доказывает это на своём результате через `verifyExactDiff` и бросает `RANGE_MISMATCH`, если доказательство не сошлось.
+
+| Функция | Что делает |
+|---|---|
+| `extractInPlaceD2I(buffer, { sectorOffset, indexes }, gd, { requireCompleteList? })` | Вырезает верхние предметы по индексам обхода вместе с вложениями. По умолчанию требует `report.complete` (иначе `LIST_TRUNCATED`); с `requireCompleteList: false` режет разобранный префикс оборванного списка, точка обрыва сдвигается на число предметов. Возвращает `newBuffer`, `removed[{ index, bytes (позиция обнулена), range, head }]`, `listBefore`, `listAfter`, `diff` |
+| `insertInPlaceD2I(buffer, { sectorOffset, listIndex? }, items[{ bytes, col, row }], gd)` | Вставляет байты предметов в явные клетки. Целевой список обязан быть полным (всегда `LIST_TRUNCATED` иначе); занятость по `buildRawGrid` (`NO_FREE_SLOT`, `UNKNOWN_BASE`); байты обязаны разбираться как ровно один предмет (`INVALID_ARGUMENT`); позиция ставится в `loc 0, bodyloc 0, storage 5` и клетку; по умолчанию в голову списка, `listIndex` задаёт место (для побайтового восстановления при обратной вставке) |
+| `fixD2ISectorSize(buffer, sectorOffset, delta)` | Правит только поле `sectorSize`; проверяет магию сектора и что новый размер помещается в буфер |
+| `verifyExactDiff(before, after, spec)` | Чистая функция без GameData. Строит ожидаемый `after` из `before` и `DiffSpec` (`d2i-remove` с диапазонами или `d2i-insert` с промежутками, опционально с байтами) и сравнивает побайтно: `ok`, `expectedLength`, `actualLength`, `mismatches` (первые 32 с адресом), `mismatchCount`. `assertExactDiff` бросает `RANGE_MISMATCH` |
+| `readD2ISectorChain(buffer)`, `findD2ISector(buffer, offset)`, `findNormalD2ISector` | Цепочка заголовков секторов без разбора предметов: `INVALID_FORMAT`, если секторы не покрывают буфер ровно; `INVALID_PAGE`, если по смещению сектор не начинается, либо это сектор типа 1 или 2 |
+
+Сектор адресуется байтовым смещением из цепочки заголовков, а не порядковым номером страницы. Файл, у которого цепочка секторов не покрывает буфер (обрезанный), отвергается кодом `INVALID_FORMAT` до разбора чего-либо.
+
+Синтетическая фикстура `test/fixtures/SharedStashComplete.d2i` (единственный полный непустой обычный сектор в тестах) собирается этими же операциями из двух реальных фикстур: `test/helpers/shared-stash-complete.ts`, `npm run build:fixtures`; происхождение описано в README.
+
 ---
 
 ## Инвентарная сетка
@@ -920,7 +941,7 @@ npm run build:data
 
 ## Тестирование
 
-302 теста, Vitest.
+425 тестов, Vitest.
 
 ```bash
 npm test
@@ -931,6 +952,7 @@ npm test
 - Чтение D2S/D2I файлов (реальные save-файлы в fixtures)
 - Запись D2S/D2I (round-trip: read → write → read)
 - Извлечение/вставка предметов
+- Операции на месте для .d2i: круговой рейс extract → insert байт в байт, вырезание нескольких предметов, вставка в пустой и в полный сектор, все отказы, мутационный свип `verifyExactDiff` по каждому байту файла, обрезанный файл (`BUFFER_OVERRUN` за миллисекунды), происхождение синтетической фикстуры
 - Сериализация/десериализация токенов
 - Инвентарная сетка (isFree, occupy, findFreeSlot)
 - GameData (processData, lookup maps)
