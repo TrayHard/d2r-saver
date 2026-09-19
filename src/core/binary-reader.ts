@@ -4,9 +4,16 @@
  * Ported from d2planner/src/logic/binary/reader.js.
  * Supports byte-aligned reads, arbitrary-width bit reads,
  * and Huffman-decoded character reads for item codes.
+ *
+ * Every read is bounds-checked: a read that would need bits past the end of the buffer throws
+ * `D2RSaverError` with code `BUFFER_OVERRUN`. The upstream reader returned zeros past the end,
+ * which let the item parser loop over phantom stats for many seconds on a truncated file.
+ * Positioning calls (`seek`, `skip`, `skipbits`, `align`) are NOT checked: they only move the
+ * cursor, and the next read reports the overrun with the exact position.
  */
 
 import { HUFFMAN_TREE, type HuffmanNode } from './huffman.js';
+import { D2RSaverError, ErrorCode } from '../types/errors.js';
 
 const utf8Decoder = new TextDecoder('utf-8');
 
@@ -17,14 +24,35 @@ export class BinaryReader {
   /** Underlying raw buffer */
   readonly buffer: Uint8Array;
 
+  /** Total number of readable bits (`buffer.byteLength * 8`). */
+  private readonly bitLength: number;
+
   constructor(buffer: Uint8Array) {
     this.buffer = buffer;
+    this.bitLength = buffer.byteLength * 8;
+  }
+
+  // ─── Bounds ───────────────────────────────────────────────────
+
+  /**
+   * Throw `BUFFER_OVERRUN` when reading `count` bits from `bitpos` would run past the end.
+   * `count === 0` never throws, so an exhausted reader can still satisfy zero-width reads.
+   */
+  private ensure(count: number, at: number = this.bitpos): void {
+    if (at < 0 || at + count > this.bitLength) {
+      throw new D2RSaverError(
+        ErrorCode.BUFFER_OVERRUN,
+        `buffer overrun: reading ${count} bit(s) at bit ${at} (byte ${at >> 3}) ` +
+          `past the end of a ${this.buffer.byteLength}-byte buffer`,
+      );
+    }
   }
 
   // ─── Byte-aligned reads (little-endian) ───────────────────────
 
   /** Read unsigned 8-bit integer (byte-aligned). */
   read8(): number {
+    this.ensure(8);
     const value = this.buffer[this.bitpos >> 3];
     this.bitpos += 8;
     return value;
@@ -32,6 +60,7 @@ export class BinaryReader {
 
   /** Read unsigned 16-bit integer, little-endian (byte-aligned). */
   read16(): number {
+    this.ensure(16);
     const idx = this.bitpos >> 3;
     const value1 = this.buffer[idx];
     const value2 = this.buffer[idx + 1];
@@ -41,6 +70,7 @@ export class BinaryReader {
 
   /** Read unsigned 32-bit integer, little-endian (byte-aligned). */
   read32(): number {
+    this.ensure(32);
     const idx = this.bitpos >> 3;
     const value1 = this.buffer[idx];
     const value2 = this.buffer[idx + 1];
@@ -52,13 +82,16 @@ export class BinaryReader {
 
   /** Peek at a byte at relative offset from current byte position (does NOT advance). */
   byte(offset: number): number {
-    return this.buffer[(this.bitpos >> 3) + offset];
+    const idx = (this.bitpos >> 3) + offset;
+    this.ensure(8, idx << 3);
+    return this.buffer[idx];
   }
 
   // ─── String reads (byte-aligned) ──────────────────────────────
 
   /** Read a fixed-length ASCII string, stopping at the first NUL. */
   string(length: number): string {
+    this.ensure(length << 3);
     const start = this.bitpos >> 3;
     const end = start + length;
     let index = this.buffer.indexOf(0, start);
@@ -71,6 +104,7 @@ export class BinaryReader {
 
   /** Read a fixed-length UTF-8 string, stopping at the first NUL. */
   utf8(length: number): string {
+    this.ensure(length << 3);
     const start = this.bitpos >> 3;
     const end = start + length;
     let index = this.buffer.indexOf(0, start);
@@ -102,6 +136,7 @@ export class BinaryReader {
 
   /** Read `count` bits as little-endian unsigned integer. */
   bits(count: number): number {
+    this.ensure(count);
     let result = 0;
     let shift = 0;
     let remaining = count;
@@ -120,6 +155,7 @@ export class BinaryReader {
 
   /** Read a single bit (0 or 1). */
   bit(): number {
+    this.ensure(1);
     const result = (this.buffer[this.bitpos >> 3] >> (this.bitpos & 7)) & 1;
     this.bitpos += 1;
     return result;
@@ -145,6 +181,6 @@ export class BinaryReader {
 
   /** Returns true when the reader has consumed the entire buffer. */
   eof(): boolean {
-    return this.bitpos >= this.buffer.byteLength * 8;
+    return this.bitpos >= this.bitLength;
   }
 }

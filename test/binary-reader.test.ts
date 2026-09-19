@@ -1,7 +1,85 @@
 import { describe, it, expect } from 'vitest';
 import { BinaryReader } from '../src/core/binary-reader.js';
+import { D2RSaverError, ErrorCode } from '../src/types/errors.js';
+
+function expectOverrun(fn: () => unknown): void {
+  let caught: unknown;
+  try { fn(); } catch (e) { caught = e; }
+  expect(caught).toBeInstanceOf(D2RSaverError);
+  expect((caught as D2RSaverError).code).toBe(ErrorCode.BUFFER_OVERRUN);
+}
 
 describe('BinaryReader', () => {
+  describe('bounds (BUFFER_OVERRUN)', () => {
+    it('bits() throws when the read would cross the end of the buffer', () => {
+      const reader = new BinaryReader(new Uint8Array([0xff]));
+      expect(reader.bits(7)).toBe(0x7f);
+      expectOverrun(() => reader.bits(2)); // 1 bit left, 2 requested
+      expect(reader.bitpos).toBe(7); // position untouched by the failed read
+      expect(reader.bits(1)).toBe(1); // the last bit is still readable
+      expectOverrun(() => reader.bits(1));
+    });
+
+    it('bits(0) never throws, even on an exhausted reader', () => {
+      const reader = new BinaryReader(new Uint8Array(0));
+      expect(reader.bits(0)).toBe(0);
+    });
+
+    it('bit(), read8(), read16(), read32() throw at the end', () => {
+      expectOverrun(() => new BinaryReader(new Uint8Array(0)).bit());
+      expectOverrun(() => new BinaryReader(new Uint8Array(0)).read8());
+      expectOverrun(() => new BinaryReader(new Uint8Array(1)).read16());
+      expectOverrun(() => new BinaryReader(new Uint8Array(3)).read32());
+    });
+
+    it('read16/read32 throw when only part of the value is present', () => {
+      const r16 = new BinaryReader(new Uint8Array([0x01, 0x02, 0x03]));
+      expect(r16.read16()).toBe(0x0201);
+      expectOverrun(() => r16.read16());
+      const r32 = new BinaryReader(new Uint8Array(7));
+      expect(r32.read32()).toBe(0);
+      expectOverrun(() => r32.read32());
+    });
+
+    it('byte() peek throws past the end and for negative offsets', () => {
+      const reader = new BinaryReader(new Uint8Array([0x10, 0x20]));
+      expect(reader.byte(1)).toBe(0x20);
+      expectOverrun(() => reader.byte(2));
+      expectOverrun(() => reader.byte(-1));
+    });
+
+    it('string()/utf8() throw when the fixed length exceeds the buffer', () => {
+      expectOverrun(() => new BinaryReader(new Uint8Array([0x41, 0x42])).string(3));
+      expectOverrun(() => new BinaryReader(new Uint8Array([0x41, 0x42])).utf8(3));
+      expect(new BinaryReader(new Uint8Array([0x41, 0x42])).string(2)).toBe('AB');
+    });
+
+    it('char() throws when the Huffman code is cut off', () => {
+      // 's' = 4 bits (0100); give only 3 bits worth of buffer by positioning at bit 5.
+      const reader = new BinaryReader(new Uint8Array([0b00000100 << 5]));
+      reader.bitpos = 5;
+      expectOverrun(() => reader.char());
+    });
+
+    it('reads after a positioning call past the end throw instead of returning zeros', () => {
+      const reader = new BinaryReader(new Uint8Array(4));
+      reader.seek(10);
+      expect(reader.eof()).toBe(true);
+      expectOverrun(() => reader.bits(1));
+      const reader2 = new BinaryReader(new Uint8Array(4));
+      reader2.skipbits(31);
+      expect(reader2.bits(1)).toBe(0);
+      expectOverrun(() => reader2.bits(1));
+    });
+
+    it('a zero-filled tail is still readable up to the exact last bit', () => {
+      const reader = new BinaryReader(new Uint8Array(2));
+      expect(reader.bits(16)).toBe(0);
+      expect(reader.eof()).toBe(true);
+      expectOverrun(() => reader.bits(1));
+    });
+  });
+
   describe('byte-aligned reads', () => {
     it('read8 reads a single byte', () => {
       const reader = new BinaryReader(new Uint8Array([0x42, 0xff]));

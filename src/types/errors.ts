@@ -27,6 +27,12 @@ export enum ErrorCode {
   INVALID_TOKEN = 'INVALID_TOKEN',
   /** GameData has not been loaded yet. */
   DATA_NOT_LOADED = 'DATA_NOT_LOADED',
+  /**
+   * A read ran past the end of the buffer. Raised by `BinaryReader` the moment any read would
+   * need bits that the buffer does not have (truncated / corrupt file), instead of silently
+   * returning zeros and letting the item parser spin on garbage.
+   */
+  BUFFER_OVERRUN = 'BUFFER_OVERRUN',
 }
 
 // ─── Error class ────────────────────────────────────────────────
