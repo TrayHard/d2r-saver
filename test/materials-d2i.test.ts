@@ -253,6 +253,23 @@ describe('encodeMaterialRecord', () => {
 // ─── Patch ──────────────────────────────────────────────────────
 
 describe('editMaterialsD2I patches', () => {
+  it('preserves an invalid unrelated record only with explicit opt-in, and never edits an invalid target', () => {
+    const original = buildMaterialsFixtures(complete, gd).seller;
+    const foreign = rec(readMaterialsD2I(original, gd, { sectorOffset: 0 }), 'rvl');
+    const input = Uint8Array.from(original);
+    input[(foreign.recordStart * 8 + 42) >> 3] ^= 1 << ((foreign.recordStart * 8 + 42) & 7);
+    expect(rec(readMaterialsD2I(input, gd, { sectorOffset: 0 }), 'rvl').layoutIssue).toBe('quantity_mismatch');
+    const edit = { sectorOffset: 0, patches: [{ code: 'r01', from: 5, to: 2 }], appends: [] };
+    expect(() => editMaterialsD2I(input, gd, edit)).toThrow();
+    const result = editMaterialsD2I(input, gd, edit, { preserveUnchangedInvalidRecords: true });
+    expect(result.newBuffer.slice(foreign.recordStart, foreign.recordEnd)).toEqual(input.slice(foreign.recordStart, foreign.recordEnd));
+    expect(rec(result.after, 'rvl').layoutIssue).toBe('quantity_mismatch');
+    expect(rec(result.after, 'r01').quantity).toBe(2);
+    expect(verifyExactDiff(input, result.newBuffer, result.diff).ok).toBe(true);
+    expect(() => editMaterialsD2I(input, gd, { sectorOffset:0, patches:[{code:'rvl', from:99, to:98}], appends:[] },
+      { preserveUnchangedInvalidRecords:true })).toThrow();
+    expect(() => editMaterialsD2I(input.slice(0,-1), gd, edit, { preserveUnchangedInvalidRecords:true })).toThrow();
+  });
   const cases: Array<[string, number, number]> = [['r01', 1, 0], ['r01', 1, 99], ['pk1', 21, 20], ['rvl', 99, 98]];
   for (const [code, from, to] of cases) {
     it(`${code} ${from} -> ${to} changes only the bytes of the changed col/row/quantity bits`, () => {

@@ -224,6 +224,8 @@ export interface EditMaterialsD2IEdit {
 export interface EditMaterialsD2IOptions {
   /** Highest quantity a patch or append may set (default 99, at most 255). */
   maxQuantity?: number;
+  /** Permit fully ranged invalid records only when they are not patched and remain byte-exact. Default false. */
+  preserveUnchangedInvalidRecords?: boolean;
 }
 
 /** Result of `editMaterialsD2I`. */
@@ -554,7 +556,8 @@ export function editMaterialsD2I(
   if (!before.complete) {
     throw new D2RSaverError(ErrorCode.LIST_TRUNCATED, `materials sector at byte ${before.sectorOffset} is not fully parsed: ${before.issues[0] ?? 'incomplete list'}`);
   }
-  const bad = before.records.find(r => !r.layoutOk);
+  const patchedCodes = new Set(patches.map(p => p.code));
+  const bad = before.records.find(r => !r.layoutOk && (options?.preserveUnchangedInvalidRecords !== true || patchedCodes.has(r.code)));
   if (bad) {
     throw new D2RSaverError(ErrorCode.MATERIAL_LAYOUT, `record ${bad.index} (${bad.code || 'ear'}) cannot be edited in place: ${bad.layoutIssue}`);
   }
@@ -654,7 +657,19 @@ export function editMaterialsD2I(
   if (after.records.length !== before.records.length + appendBytes.length) {
     fail(`${after.records.length} records instead of ${before.records.length + appendBytes.length}`);
   }
-  if (after.records.some(r => !r.layoutOk)) fail('a record lost its layout');
+  for (const [index, record] of before.records.entries()) {
+    const next = after.records[index];
+    if (!next || next.code !== record.code || next.recordStart !== record.recordStart || next.recordEnd !== record.recordEnd) {
+      fail('an existing record changed its boundary');
+    }
+    if (patchedCodes.has(record.code)) {
+      if (!next.layoutOk) fail('a patched record lost its layout');
+    } else {
+      const original = buffer.subarray(record.recordStart, record.recordEnd);
+      const preserved = out.subarray(next.recordStart, next.recordEnd);
+      if (original.length !== preserved.length || original.some((value, i) => value !== preserved[i])) fail('an untouched record changed');
+    }
+  }
   if (after.duplicateCodes.length > 0) fail(`duplicate codes ${after.duplicateCodes.join(', ')}`);
   const afterByCode = new Map(after.records.map(r => [r.code, r]));
   for (const { patch } of targets) {
