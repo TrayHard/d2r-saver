@@ -35,6 +35,10 @@ export const ITEM_POSITION_BIT = 35;
 export const ITEM_POSITION_BITS = 18;
 /** First bit of the Huffman-coded base code (four characters, the fourth is a space). */
 export const ITEM_BASE_BIT = 53;
+/** First bit of the 4-bit `col` field (0.4.0). In a materials tab `col` holds `quantity & 15`. */
+export const ITEM_COL_BIT = 42;
+/** First bit of the 4-bit `row` field (0.4.0). In a materials tab `row` holds `quantity >> 4`. */
+export const ITEM_ROW_BIT = 46;
 /** Bytes needed to hold the flags and the position block (bits 0–52). */
 const ITEM_HEAD_MIN_BYTES = 7;
 
@@ -93,6 +97,11 @@ export interface WalkedItem {
   registeredKey: number | string | null;
   /** The item carries a quantity (stack) field. */
   hasQuantity: boolean;
+  /**
+   * Bit position and width of the quantity field relative to `own.start * 8` (0.4.0), copied
+   * from `item.quantityField`; `undefined` when no quantity flag was set.
+   */
+  quantityField?: BinaryParsedItem['quantityField'];
 }
 
 /** A walked `JM` list. */
@@ -331,6 +340,7 @@ export function walkItemList(
         item,
         registeredKey,
         hasQuantity: item.quantity !== undefined,
+        quantityField: item.quantityField,
       };
       (pending[depth] ??= []).push(entry);
     },

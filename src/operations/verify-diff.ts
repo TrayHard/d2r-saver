@@ -11,6 +11,8 @@
  * sector layout (64-byte header: `sectorSize` at +16, `JM` list at +64, 16-bit item count at
  * +66). The in-place operations run it on their own output before returning, and a caller can
  * run it again on the buffers it is about to persist (gate 6 of the offline-trade design).
+ * Since 0.4.0 it also proves quantity edits of a materials (type 1) sector (`d2i-materials`):
+ * three bit fields per patched record plus whole records appended at the end of the sector.
  */
 
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
@@ -50,10 +52,41 @@ export interface DiffInsert {
   bytes?: Uint8Array;
 }
 
+/**
+ * One quantity patch of a materials record (0.4.0). Offsets refer to the ORIGINAL buffer;
+ * `quantityFlagBit` is in bits from the record's first bit (as `MaterialRecord.quantityFlagBit`).
+ * The edit rewrites `col` (record bits 42–45) to `after & 15`, `row` (46–49) to `after >> 4` and
+ * the 8 bits after the flag to `after`; nothing else in the record changes.
+ */
+export interface DiffMaterialPatch {
+  recordStart: number;
+  recordEnd: number;
+  quantityFlagBit: number;
+  /** Quantity the record holds in `before` (both copies; a stale spec is refused). */
+  before: number;
+  /** Quantity it holds in `after`, 0–255. */
+  after: number;
+}
+
+/**
+ * Declaration of a materials (type 1) sector edit (0.4.0): in-place quantity patches plus whole
+ * records appended at the end of the sector. `appends[].bytes` must be `Uint8Array`s (see
+ * `DiffInsert.bytes` about JSON round trips).
+ */
+export interface MaterialsDiffSpec {
+  kind: 'd2i-materials';
+  sectorOffset: number;
+  /** Sorted by `recordStart`, non-overlapping, inside the sector's list. */
+  patches: DiffMaterialPatch[];
+  /** Records appended, in order, at the end of the sector. */
+  appends: { bytes: Uint8Array }[];
+}
+
 /** Declaration of an in-place edit of a `.d2i` buffer. Offsets refer to the ORIGINAL buffer. */
 export type DiffSpec =
   | { kind: 'd2i-remove'; sectorOffset: number; ranges: ByteRange[] }
-  | { kind: 'd2i-insert'; sectorOffset: number; inserts: DiffInsert[] };
+  | { kind: 'd2i-insert'; sectorOffset: number; inserts: DiffInsert[] }
+  | MaterialsDiffSpec;
 
 /** A byte of the result that differs from the expectation. `offset` is in the RESULT buffer. */
 export interface DiffMismatch {
@@ -257,7 +290,136 @@ export function findNormalD2ISector(buffer: Uint8Array, sectorOffset: number): D
   return sector;
 }
 
+/**
+ * The sector at `sectorOffset`, checked to be a materials (type 1) page with a `JM` list header
+ * (0.4.0). Only the `d2i-materials` kind edits such a sector.
+ *
+ * @throws {D2RSaverError} `INVALID_PAGE` for another sector type or a missing `JM` marker.
+ */
+export function findMaterialsD2ISector(buffer: Uint8Array, sectorOffset: number): D2ISectorHeader {
+  const sector = findD2ISector(buffer, sectorOffset);
+  if (sector.type !== 1) {
+    throw new D2RSaverError(
+      ErrorCode.INVALID_PAGE,
+      `sector at byte ${sectorOffset} has type ${sector.type}; only a materials (type 1) sector holds quantity records`,
+    );
+  }
+  const jm = sector.offset + D2I_SECTOR_HEADER_SIZE;
+  if (sector.size < D2I_FIRST_ITEM_OFFSET || buffer[jm] !== 0x4a || buffer[jm + 1] !== 0x4d) {
+    throw new D2RSaverError(ErrorCode.INVALID_PAGE, `sector at byte ${sectorOffset} has no "JM" item list header`);
+  }
+  return sector;
+}
+
+/** Bit read, LSB-first, absolute bit offset (same convention as `BinaryReader`). */
+function bitsAt(data: Uint8Array, bitOffset: number, count: number): number {
+  let value = 0;
+  for (let i = 0; i < count; i++) {
+    const p = bitOffset + i;
+    value += ((data[p >> 3] >> (p & 7)) & 1) * 2 ** i;
+  }
+  return value;
+}
+
+/** Bit write, LSB-first, absolute bit offset. */
+function setBitsAt(data: Uint8Array, bitOffset: number, count: number, value: number): void {
+  for (let i = 0; i < count; i++) {
+    const p = bitOffset + i;
+    if (Math.floor(value / 2 ** i) & 1) data[p >> 3] |= 1 << (p & 7);
+    else data[p >> 3] &= ~(1 << (p & 7));
+  }
+}
+
+/** Record bits of the `col` and `row` fields (same as `ITEM_COL_BIT` / `ITEM_ROW_BIT`). */
+const MATERIAL_COL_BIT = 42;
+const MATERIAL_ROW_BIT = 46;
+/** Smallest possible record bit of a quantity flag: 54 + the shortest Huffman code (14 bits). */
+const MIN_MATERIAL_QUANTITY_FLAG_BIT = 68;
+
+function buildMaterialsExpectation(before: Uint8Array, spec: MaterialsDiffSpec): Expectation {
+  const sector = findMaterialsD2ISector(before, spec.sectorOffset);
+  if (!Array.isArray(spec.patches) || !Array.isArray(spec.appends)) {
+    throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, 'd2i-materials: patches and appends must be arrays');
+  }
+  if (spec.patches.length + spec.appends.length === 0) {
+    throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, 'd2i-materials: at least one patch or append is required');
+  }
+  const listStart = sector.offset + D2I_FIRST_ITEM_OFFSET;
+  const listEnd = sector.offset + sector.size;
+  const countOffset = sector.offset + D2I_LIST_COUNT_OFFSET;
+  const count = readU16(before, countOffset);
+
+  let previousEnd = listStart;
+  spec.patches.forEach((p, i) => {
+    requireInt(`patches[${i}].recordStart`, p.recordStart, listStart, listEnd);
+    requireInt(`patches[${i}].recordEnd`, p.recordEnd, listStart, listEnd);
+    if (p.recordEnd <= p.recordStart) {
+      throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `patches[${i}] is empty or reversed: [${p.recordStart}, ${p.recordEnd})`);
+    }
+    if (p.recordStart < previousEnd) {
+      throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `patches[${i}] is out of order or overlaps the previous patch`);
+    }
+    previousEnd = p.recordEnd;
+    requireInt(
+      `patches[${i}].quantityFlagBit`,
+      p.quantityFlagBit,
+      MIN_MATERIAL_QUANTITY_FLAG_BIT,
+      (p.recordEnd - p.recordStart) * 8 - 9,
+    );
+    requireInt(`patches[${i}].before`, p.before, 0, 255);
+    requireInt(`patches[${i}].after`, p.after, 0, 255);
+    const bit = p.recordStart * 8;
+    const flag = bitsAt(before, bit + p.quantityFlagBit, 1);
+    const quantity = bitsAt(before, bit + p.quantityFlagBit + 1, 8);
+    const position = bitsAt(before, bit + MATERIAL_COL_BIT, 4) + 16 * bitsAt(before, bit + MATERIAL_ROW_BIT, 4);
+    if (flag !== 1 || quantity !== p.before || position !== p.before) {
+      throw new D2RSaverError(
+        ErrorCode.INVALID_ARGUMENT,
+        `patches[${i}] does not describe the source: flag ${flag}, quantity ${quantity}, col+16*row ${position}, spec says ${p.before}`,
+      );
+    }
+  });
+  spec.appends.forEach((a, i) => {
+    if (!a || !(a.bytes instanceof Uint8Array)) {
+      throw new D2RSaverError(
+        ErrorCode.INVALID_ARGUMENT,
+        `appends[${i}].bytes must be a Uint8Array (a JSON round trip turns it into a plain object; decode it first)`,
+      );
+    }
+    if (a.bytes.length === 0) throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `appends[${i}] is empty`);
+  });
+  if (count + spec.appends.length > 0xffff) {
+    throw new D2RSaverError(
+      ErrorCode.INVALID_ARGUMENT,
+      `d2i-materials: ${count} + ${spec.appends.length} record(s) overflow the 16-bit list counter`,
+    );
+  }
+
+  const added = spec.appends.reduce((sum, a) => sum + a.bytes.length, 0);
+  const bytes = new Uint8Array(before.length + added);
+  bytes.set(before.subarray(0, listEnd), 0);
+  let at = listEnd;
+  for (const a of spec.appends) {
+    bytes.set(a.bytes, at);
+    at += a.bytes.length;
+  }
+  bytes.set(before.subarray(listEnd), at);
+  for (const p of spec.patches) {
+    const bit = p.recordStart * 8;
+    setBitsAt(bytes, bit + MATERIAL_COL_BIT, 4, p.after & 15);
+    setBitsAt(bytes, bit + MATERIAL_ROW_BIT, 4, p.after >> 4);
+    setBitsAt(bytes, bit + p.quantityFlagBit + 1, 8, p.after);
+  }
+  writeU16(bytes, countOffset, count + spec.appends.length);
+  writeU32(bytes, sector.offset + D2I_SECTOR_SIZE_OFFSET, sector.size + added);
+  return { bytes, mask: new Uint8Array(bytes.length).fill(1) };
+}
+
 function buildExpectation(before: Uint8Array, spec: DiffSpec): Expectation {
+  if (spec.kind === 'd2i-materials') return buildMaterialsExpectation(before, spec);
+  if (spec.kind !== 'd2i-remove' && spec.kind !== 'd2i-insert') {
+    throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `unknown diff kind ${JSON.stringify((spec as { kind?: unknown }).kind)}`);
+  }
   const sector = findNormalD2ISector(before, spec.sectorOffset);
   const countOffset = sector.offset + D2I_LIST_COUNT_OFFSET;
   const count = readU16(before, countOffset);
@@ -330,9 +492,17 @@ function buildExpectation(before: Uint8Array, spec: DiffSpec): Expectation {
  * gate 6) also matches `ranges` / `inserts[].at` against `entries[i].full` of its own
  * `walkD2I(before)` and re-walks the target sector of `after`.
  *
+ * `d2i-materials` (0.4.0): the expected buffer is `before` with, per patch, the `col`/`row`
+ * fields and the 8-bit quantity set to `after`, the appended records placed at the end of the
+ * sector, the count and `sectorSize` moved by the appends, and following sectors shifted. Every
+ * byte is compared (no mask). Each patch must describe `before` exactly (flag 1, 8-bit quantity
+ * and `col + 16 * row` both equal to `patch.before`), otherwise the spec is refused as stale.
+ * Only a type-1 sector is accepted for this kind; `d2i-remove`/`d2i-insert` still refuse type 1.
+ *
  * @throws {D2RSaverError} `INVALID_FORMAT` when `before` is not a tiled `.d2i`; `INVALID_PAGE`
- *   when `spec.sectorOffset` is not a sector start; `INVALID_ARGUMENT` when the ranges or
- *   inserts fall outside the sector's list, overlap, or under/overflow the item counter.
+ *   when `spec.sectorOffset` is not a sector start or the sector type does not fit the kind;
+ *   `INVALID_ARGUMENT` when the ranges, inserts or patches fall outside the sector's list,
+ *   overlap, under/overflow the item counter, or (materials) do not describe `before`.
  */
 export function verifyExactDiff(before: Uint8Array, after: Uint8Array, spec: DiffSpec): ExactDiffResult {
   const { bytes: expected, mask } = buildExpectation(before, spec);

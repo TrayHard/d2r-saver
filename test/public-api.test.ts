@@ -26,6 +26,38 @@ describe('0.3.0 root exports', () => {
   });
 });
 
+describe('0.4.0 root exports (materials tab)', () => {
+  it('exports the materials functions, constants and the type-1 sector finder', () => {
+    const names = [
+      'readMaterialsD2I', 'editMaterialsD2I', 'encodeMaterialRecord',
+      'materialRecordEncodeInput', 'materialEncodingVerified', 'findMaterialsD2ISector',
+    ] as const;
+    for (const name of names) expect(typeof root[name], name).toBe('function');
+    expect(root.ITEM_COL_BIT).toBe(42);
+    expect(root.ITEM_ROW_BIT).toBe(46);
+    expect(root.MATERIAL_SIMPLE_FLAGS).toBe(0x00a00010);
+    expect(root.MATERIAL_COMPLEX_FLAGS).toBe(0x00800010);
+    expect(root.MATERIAL_ITEM_VERSION).toBe(5);
+    expect(root.MATERIAL_STORAGE).toBe(5);
+    expect(root.MATERIAL_QUANTITY_FIELD_MAX).toBe(255);
+    expect(root.MATERIAL_DEFAULT_MAX_QUANTITY).toBe(99);
+  });
+
+  it('the facade reads, encodes and edits a materials sector', () => {
+    const rawData = JSON.parse(readFileSync(resolve(DATA_DIR, 'data.json'), 'utf-8'));
+    const locale = JSON.parse(readFileSync(resolve(DATA_DIR, 'strings.json'), 'utf-8'));
+    const saver = D2RSaver.fromData(rawData, locale);
+    const buf = new Uint8Array(readFileSync(resolve(FIXTURES, 'SharedStashComplete.d2i')));
+    const report = saver.readMaterialsD2I(buf, { sectorOffset: 1780 });
+    expect(report.records).toHaveLength(56);
+    const r01 = report.records.find(r => r.code === 'r01')!;
+    expect(saver.encodeMaterialRecord(root.materialRecordEncodeInput(r01))).toEqual(buf.subarray(r01.recordStart, r01.recordEnd));
+    const edit = saver.editMaterialsD2I(buf, { sectorOffset: 1780, patches: [{ code: 'r01', from: 1, to: 2 }], appends: [] });
+    expect(edit.after.records.find(r => r.code === 'r01')!.quantity).toBe(2);
+    expect(root.verifyExactDiff(buf, edit.newBuffer, edit.diff).ok).toBe(true);
+  });
+});
+
 describe('D2RSaverError', () => {
   it('is an instance of Error', () => {
     const err = new D2RSaverError(ErrorCode.INVALID_FORMAT, 'bad file');
@@ -48,6 +80,9 @@ describe('D2RSaverError', () => {
       // 0.3.0: in-place editing
       'BUFFER_OVERRUN', 'LIST_TRUNCATED', 'RANGE_MISMATCH',
       'UNKNOWN_BASE', 'INVALID_PAGE', 'INVALID_ARGUMENT',
+      // 0.4.0: materials tab
+      'MATERIAL_LAYOUT', 'MATERIAL_DUPLICATE_CODE', 'MATERIAL_NOT_FOUND', 'MATERIAL_STALE',
+      'MATERIAL_RANGE', 'MATERIAL_ALREADY_PRESENT', 'LAYOUT_UNVERIFIED',
     ];
     for (const code of codes) {
       expect(ErrorCode[code as keyof typeof ErrorCode]).toBe(code);

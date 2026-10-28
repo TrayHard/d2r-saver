@@ -55,3 +55,6 @@ export {
   patchStashPage,
   type WriteStashPage,
 } from './d2i-writer.js';
+
+export { readD2SDemonSection, type D2SDemonSectionReport, type D2SDemonRecord, type D2SDemonStat } from './d2s-demon-reader.js';
+export type { D2SParseCoverage } from './d2s-coverage.js';

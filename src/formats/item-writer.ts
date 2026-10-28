@@ -158,7 +158,8 @@ export function writeItem(
     // Simple items go straight to the post-stats quantity field below.
   } else {
   // (closed before V105 post-stats quantity block)
-  writer.writeUInt32(item.itemId || 0, 32); // item ID
+  // The persistent identity is independent of the parser's dictionary index.
+  writer.writeUInt32(item.guid ?? item.itemId ?? 0, 32);
   writer.writeUInt8(item.ilvl, 7); // item level
   // Runeword: quality field stores SUPERIOR (3) for a superior runeword base,
   // NORMAL (2) otherwise.
@@ -489,8 +490,8 @@ function getStatParamAndValue(
 function isItemSimple(item: BinaryParsedItem): boolean {
   // Simple items: presetItemIds that aren't uniquified
   if (presetItemIds.has(item.base) && !item.unique) return true;
-  // Items explicitly marked simple (quality 2 with no stats)
-  if (item.quality === 2 && !item.unique && Object.keys(item.stats || {}).length === 0) return true;
+  // An explicitly supplied guid always denotes an extended item, including normal equipment.
+  if (item.guid === undefined && item.quality === 2 && !item.unique && Object.keys(item.stats || {}).length === 0) return true;
   return false;
 }
 

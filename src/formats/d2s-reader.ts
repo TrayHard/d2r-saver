@@ -10,7 +10,9 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { detectFormat } from './detect.js';
-import { createItemParser, type BinaryParsedItem, type ItemListReport } from './item-parser.js';
+import { createItemParser, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace } from './item-parser.js';
+import { readD2SDemonSection, type D2SDemonSectionReport } from './d2s-demon-reader.js';
+import { d2sCoverage, type D2SParseCoverage } from './d2s-coverage.js';
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -118,6 +120,9 @@ export interface D2SReadResult {
   warnings: string[];
   /** What each `JM` list declared versus what parsed (0.3.0). */
   lists: D2SItemLists;
+  /** Strict traversal certificate. Raw preservation and empty warnings alone do not certify coverage. */
+  coverage: D2SParseCoverage;
+  demons: D2SDemonSectionReport | null;
 }
 
 // ─── Reader ─────────────────────────────────────────────────────
@@ -207,13 +212,21 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   }
 
   const charStats: Record<string, number> = {};
+  let prefixComplete = classId < GameData.classes.length;
+  const seenCharStats = new Set<number>();
   while (true) {
     const statId = reader.bits(9);
     if (statId === 511) break;
     const stat = statMap.get(statId);
     if (!stat) throw Error(`unknown stat code ${statId}`);
-    charStats[stat] = reader.bits(gd.itemStatCost[stat].csvbits ?? 0);
+    const width = gd.itemStatCost[stat].csvbits;
+    // The bundled tables certify zero-CsvParam base attributes only (IDs 0..15).
+    if (statId > 15 || seenCharStats.has(statId) || !Number.isInteger(width) || width! <= 0 || width! > 32) prefixComplete = false;
+    seenCharStats.add(statId);
+    charStats[stat] = reader.bits(width ?? 0);
   }
+  const statsPadding = (8 - (reader.bitpos % 8)) % 8;
+  if (reader.bits(statsPadding) !== 0) prefixComplete = false;
   reader.align();
 
   const classStats = gd.charStats[result.class!] as Record<string, unknown> | undefined;
@@ -239,7 +252,9 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   }
 
   // Items
-  const ctx = createItemParser(reader, gd);
+  const traces: ParsedItemTrace[] = [];
+  const ctx = createItemParser(reader, gd, 0, { onItem: trace => traces.push(trace) });
+  let demons: D2SDemonSectionReport | null = null;
   const lists: D2SItemLists = { main: null, corpses: [], merc: null, golem: null };
 
   result.items = {};
@@ -265,8 +280,9 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     const corpseStart = reader.bitpos >> 3;
     if (reader.read16() !== 0x4d4a) throw Error('invalid item table header');
     const corpses = reader.read16();
-    reader.skip(corpses * 12);
+
     for (let i = 0; i < corpses; ++i) {
+      reader.skip(12);
       lists.corpses.push(ctx.parseItemList(() => null));
       // Same invariant as the main/hireling lists: a silent mid-list break desyncs everything
       // after it (and rawCorpse below would capture a garbage byte range) — surface it.
@@ -303,6 +319,8 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     if (!reader.eof()) {
       const bytePos = reader.bitpos >> 3;
       result.extraSections = Array.from(reader.buffer.subarray(bytePos));
+      demons = readD2SDemonSection(data, bytePos, gd);
+      if (!demons.complete) warnings.push(`Demon section incomplete: ${demons.error}`);
       try {
         if (reader.read16() === 1 && reader.read16() === 0x666c) {
           const count = reader.read16();
@@ -379,5 +397,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     items: ctx.items,
     warnings,
     lists,
+    demons,
+    coverage: d2sCoverage(data, result, lists, traces, demons, warnings, prefixComplete),
   };
 }

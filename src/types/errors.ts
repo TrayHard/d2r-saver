@@ -49,6 +49,27 @@ export enum ErrorCode {
   INVALID_PAGE = 'INVALID_PAGE',
   /** A caller-supplied argument is out of range (position bits, offsets, buffer too short). */
   INVALID_ARGUMENT = 'INVALID_ARGUMENT',
+  /**
+   * A record of a materials (type 1) sector does not have the exact layout an in-place quantity
+   * edit relies on (0.4.0); the whole sector is refused, foreign records included.
+   */
+  MATERIAL_LAYOUT = 'MATERIAL_LAYOUT',
+  /** A materials sector holds more than one record for the same code (0.4.0). */
+  MATERIAL_DUPLICATE_CODE = 'MATERIAL_DUPLICATE_CODE',
+  /** A materials sector has no record for the code a patch names (0.4.0). */
+  MATERIAL_NOT_FOUND = 'MATERIAL_NOT_FOUND',
+  /** A materials record does not hold the quantity the patch expects (stale read) (0.4.0). */
+  MATERIAL_STALE = 'MATERIAL_STALE',
+  /** A requested materials quantity is outside the allowed range (0.4.0). */
+  MATERIAL_RANGE = 'MATERIAL_RANGE',
+  /** An append names a code the materials sector already holds (0.4.0). */
+  MATERIAL_ALREADY_PRESENT = 'MATERIAL_ALREADY_PRESENT',
+  /**
+   * A new record cannot be proven to match the sector's layout: the encoder does not reproduce
+   * every existing record of that family, there is no such record, or the result does not read
+   * back as written (0.4.0).
+   */
+  LAYOUT_UNVERIFIED = 'LAYOUT_UNVERIFIED',
 }
 
 // ─── Error class ────────────────────────────────────────────────
