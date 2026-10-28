@@ -1,5 +1,5 @@
 /**
- * Materials tab (`.d2i` sector type 1), 0.4.0: reading every record with both quantity copies,
+ * Materials tab (`.d2i` sector type 1), 0.4.0: reading every record with its authoritative counter and position mirror,
  * the deterministic record encoder, in-place quantity patches, appended records, and the
  * synthetic single-sector fixtures. All on public fixtures; the optional last block reads a local
  * copy of a real tab only when `STASH_MATERIALS_OWNER_COPY` points to it (nothing is committed).
@@ -82,12 +82,10 @@ function setBits(buf: Uint8Array, b: number, n: number, value: number): void {
     else buf[p >> 3] &= ~(1 << (p & 7));
   }
 }
-/** Hand-made patch of one record: col, row and the 8-bit quantity. */
+/** Hand-made native-style patch: only the authoritative 8-bit counter. */
 function handPatch(buf: Uint8Array, r: MaterialRecord, q: number): Uint8Array {
   const out = new Uint8Array(buf);
   const s = r.recordStart * 8;
-  setBits(out, s + 42, 4, q & 15);
-  setBits(out, s + 46, 4, q >> 4);
   setBits(out, s + r.quantityFlagBit! + 1, 8, q);
   return out;
 }
@@ -163,7 +161,7 @@ describe('readMaterialsD2I on the public fixture', () => {
     }
   });
 
-  it('both quantity copies agree, independently read: flag bit 1, 8-bit value == col + 16*row', () => {
+  it('the public fixture happens to have matching counter and position mirror', () => {
     for (const r of report.records) {
       const s = r.recordStart * 8;
       expect(r.quantityFlag).toBe(1);
@@ -253,17 +251,48 @@ describe('encodeMaterialRecord', () => {
 // ─── Patch ──────────────────────────────────────────────────────
 
 describe('editMaterialsD2I patches', () => {
+  it('accepts native counter updates without a position refresh, and changes only the footer counter', () => {
+    // D2R 3.3.93847 increment/decrement updates ItemData+0x9c alone (RVA 31bb90/31bcc0).
+    // The absolute-count packet path RVA 38aca0 refreshes X/Y separately.
+    for (const code of ['r01', 'pk1']) {
+      const original = rec(report, code);
+      for (const mirror of [0, 1, 16, 99, 255]) {
+        const input = new Uint8Array(complete);
+        setBits(input, original.recordStart * 8 + 42, 8, mirror);
+        for (const counter of [0, 1, 98, 99]) {
+          setBits(input, original.recordStart * 8 + original.quantityFlagBit! + 1, 8, counter);
+          const read = readMaterialsD2I(input, gd, { sectorOffset: SECTOR });
+          const r = rec(read, code);
+          expect(r).toMatchObject({ quantity: counter, positionQuantity: mirror, layoutOk: true, layoutIssue: null });
+          expect(encodeMaterialRecord(gd, materialRecordEncodeInput(r))).toEqual(input.slice(r.recordStart, r.recordEnd));
+          expect(materialEncodingVerified(input, gd, read, r.family)).toBe(true);
+          for (const to of [0, 1, 99]) {
+            const edited = editMaterialsD2I(input, gd, { sectorOffset: SECTOR, patches: [{ code, from: counter, to }], appends: [] });
+            expect(edited.newBuffer).toEqual(handPatch(input, r, to));
+            expect(rec(edited.after, code)).toMatchObject({ quantity: to, positionQuantity: mirror, layoutOk: true });
+            const forged = new Uint8Array(edited.newBuffer);
+            setBits(forged, r.recordStart * 8 + 42, 8, mirror ^ 1);
+            expect(verifyExactDiff(input, forged, edited.diff).ok).toBe(false);
+          }
+          if (mirror !== counter) expectCode(() => editMaterialsD2I(input, gd, {
+            sectorOffset: SECTOR, patches: [{ code, from: mirror, to: 1 }], appends: [],
+          }), ErrorCode.MATERIAL_STALE);
+        }
+      }
+    }
+  });
+
   it('preserves an invalid unrelated record only with explicit opt-in, and never edits an invalid target', () => {
     const original = buildMaterialsFixtures(complete, gd).seller;
     const foreign = rec(readMaterialsD2I(original, gd, { sectorOffset: 0 }), 'rvl');
     const input = Uint8Array.from(original);
-    input[(foreign.recordStart * 8 + 42) >> 3] ^= 1 << ((foreign.recordStart * 8 + 42) & 7);
-    expect(rec(readMaterialsD2I(input, gd, { sectorOffset: 0 }), 'rvl').layoutIssue).toBe('quantity_mismatch');
+    setBits(input, foreign.recordStart * 8 + 35, 3, 1);
+    expect(rec(readMaterialsD2I(input, gd, { sectorOffset: 0 }), 'rvl').layoutIssue).toBe('loc');
     const edit = { sectorOffset: 0, patches: [{ code: 'r01', from: 5, to: 2 }], appends: [] };
     expect(() => editMaterialsD2I(input, gd, edit)).toThrow();
     const result = editMaterialsD2I(input, gd, edit, { preserveUnchangedInvalidRecords: true });
     expect(result.newBuffer.slice(foreign.recordStart, foreign.recordEnd)).toEqual(input.slice(foreign.recordStart, foreign.recordEnd));
-    expect(rec(result.after, 'rvl').layoutIssue).toBe('quantity_mismatch');
+    expect(rec(result.after, 'rvl').layoutIssue).toBe('loc');
     expect(rec(result.after, 'r01').quantity).toBe(2);
     expect(verifyExactDiff(input, result.newBuffer, result.diff).ok).toBe(true);
     expect(() => editMaterialsD2I(input, gd, { sectorOffset:0, patches:[{code:'rvl', from:99, to:98}], appends:[] },
@@ -272,7 +301,7 @@ describe('editMaterialsD2I patches', () => {
   });
   const cases: Array<[string, number, number]> = [['r01', 1, 0], ['r01', 1, 99], ['pk1', 21, 20], ['rvl', 99, 98]];
   for (const [code, from, to] of cases) {
-    it(`${code} ${from} -> ${to} changes only the bytes of the changed col/row/quantity bits`, () => {
+    it(`${code} ${from} -> ${to} changes only the authoritative counter bits`, () => {
       const r = rec(report, code);
       const res = editMaterialsD2I(complete, gd, { sectorOffset: SECTOR, patches: [{ code, from, to }], appends: [] });
       expect(res.newBuffer.length).toBe(complete.length);
@@ -280,13 +309,12 @@ describe('editMaterialsD2I patches', () => {
       const changed = changedBytes(complete, res.newBuffer);
       expect(changed.length).toBeGreaterThan(0);
       const allowed = new Set<number>();
-      for (const b of [42, 43, 44, 45, 46, 47, 48, 49]) allowed.add(r.recordStart + (b >> 3));
       for (let b = r.quantityFlagBit! + 1; b <= r.quantityFlagBit! + 8; b++) allowed.add(r.recordStart + (b >> 3));
       for (const c of changed) expect(allowed.has(c), `byte ${c}`).toBe(true);
       expect(readU16(res.newBuffer, SECTOR + D2I_LIST_COUNT_OFFSET)).toBe(56);
       expect(readU32(res.newBuffer, SECTOR + D2I_SECTOR_SIZE_OFFSET)).toBe(830);
       const after = rec(res.after, code);
-      expect(after).toMatchObject({ quantity: to, positionQuantity: to, quantityFlag: 1, recordStart: r.recordStart, recordEnd: r.recordEnd });
+      expect(after).toMatchObject({ quantity: to, positionQuantity: r.positionQuantity, quantityFlag: 1, recordStart: r.recordStart, recordEnd: r.recordEnd });
       expect(res.diff).toEqual({
         kind: 'd2i-materials',
         sectorOffset: SECTOR,
@@ -297,10 +325,10 @@ describe('editMaterialsD2I patches', () => {
     });
   }
 
-  it('rvl 99 -> 98 touches record bytes 5 and 9 only; quantity 0 keeps the record', () => {
+  it('rvl 99 -> 98 touches record byte 9 only; quantity 0 keeps the record', () => {
     const r = rec(report, 'rvl');
     const res = editMaterialsD2I(complete, gd, { sectorOffset: SECTOR, patches: [{ code: 'rvl', from: 99, to: 98 }], appends: [] });
-    expect(changedBytes(complete, res.newBuffer).map(b => b - r.recordStart)).toEqual([5, 9]);
+    expect(changedBytes(complete, res.newBuffer).map(b => b - r.recordStart)).toEqual([9]);
     const zero = editMaterialsD2I(complete, gd, { sectorOffset: SECTOR, patches: [{ code: 'r01', from: 1, to: 0 }], appends: [] });
     expect(zero.after.records).toHaveLength(56);
     expect(rec(zero.after, 'r01')).toMatchObject({ quantity: 0, quantityFlag: 1, layoutOk: true });
@@ -316,7 +344,7 @@ describe('editMaterialsD2I patches', () => {
       }, { maxQuantity: 255 });
       expect(there.newBuffer.length).toBe(complete.length);
       for (const r of there.after.records) {
-        if (r.quantity !== q || r.positionQuantity !== q || r.quantityFlag !== 1) throw new Error(`q=${q} ${r.code}`);
+        if (r.quantity !== q || r.positionQuantity !== report.records[r.index].positionQuantity || r.quantityFlag !== 1) throw new Error(`q=${q} ${r.code}`);
       }
       const back = editMaterialsD2I(there.newBuffer, gd, {
         sectorOffset: SECTOR,
@@ -376,10 +404,10 @@ describe('editMaterialsD2I patches', () => {
   });
 
   it('refuses the whole sector when any record has a broken layout (MATERIAL_LAYOUT)', () => {
-    // col bit flipped: the two quantity copies disagree.
+    // An unsupported location keeps record boundaries parseable.
     const badCol = sectorWith([recordBytes('r01'), recordBytes('pk1'), recordBytes('glb')]);
-    badCol[D2I_FIRST_ITEM_OFFSET + 5] ^= 1 << (43 & 7); // record bit 43 (col bit 1) of r01
-    expect(readMaterialsD2I(badCol, gd, { sectorOffset: 0 }).records[0]).toMatchObject({ layoutOk: false, layoutIssue: 'quantity_mismatch' });
+    setBits(badCol, D2I_FIRST_ITEM_OFFSET * 8 + 35, 3, 1);
+    expect(readMaterialsD2I(badCol, gd, { sectorOffset: 0 }).records[0]).toMatchObject({ layoutOk: false, layoutIssue: 'loc' });
     expectCode(() => editMaterialsD2I(badCol, gd, { sectorOffset: 0, patches: [{ code: 'pk1', from: 21, to: 20 }], appends: [] }), ErrorCode.MATERIAL_LAYOUT);
 
     // Quantity flag 0: the record has no quantity field (the record is shorter accordingly).

@@ -46,11 +46,10 @@ function changedBits(a: Uint8Array, b: Uint8Array): number[] {
   return bits;
 }
 
-/** The only bits a quantity patch of `r` may flip: col (42–45), row (46–49), the 8-bit value after the flag. */
+/** The only bits a quantity patch of `r` may flip: the 8-bit value after the flag. */
 function allowedBits(r: MaterialRecord): Set<number> {
   const base = r.recordStart * 8;
   const allowed = new Set<number>();
-  for (let i = 42; i < 50; i++) allowed.add(base + i);
   for (let i = 1; i <= 8; i++) allowed.add(base + r.quantityFlagBit! + i);
   return allowed;
 }
@@ -72,7 +71,7 @@ function sectorOf(source: Uint8Array, records: MaterialRecord[]): Uint8Array {
   return out;
 }
 
-describe('materials edit, review: nothing outside col/row/quantity ever changes', () => {
+describe('materials edit, review: nothing outside the authoritative counter ever changes', () => {
   it('every record of both fixtures and of the public sector (inside its 7-sector file), every quantity 0..99', () => {
     const files: Array<[Uint8Array, number]> = [[seller, 0], [buyer, 0], [complete, 1780]];
     let edits = 0;
@@ -88,7 +87,7 @@ describe('materials edit, review: nothing outside col/row/quantity ever changes'
           expect(bits.includes(flagBit)).toBe(false);
           expect(verifyExactDiff(file, newBuffer, diff).ok).toBe(true);
           const back = readMaterialsD2I(newBuffer, gd, { sectorOffset }).records[r.index];
-          expect([back.code, back.quantity, back.positionQuantity, back.quantityFlag, back.layoutOk]).toEqual([r.code, to, to, 1, true]);
+          expect([back.code, back.quantity, back.positionQuantity, back.quantityFlag, back.layoutOk]).toEqual([r.code, to, r.positionQuantity, 1, true]);
           edits++;
         }
       }

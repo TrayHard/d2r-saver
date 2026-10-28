@@ -411,10 +411,13 @@ describe('verifyExactDiff d2i-materials', () => {
     const fb = first.recordStart * 8 + first.quantityFlagBit;
     noFlag[fb >> 3] &= ~(1 << (fb & 7));
     expectCode(() => verifyExactDiff(noFlag, patched.newBuffer, p), ErrorCode.INVALID_ARGUMENT);
-    // col/row disagree with the 8-bit value in the source.
+    // A stale position mirror is legal, but the output must preserve it exactly.
     const badCol = new Uint8Array(before);
     badCol[first.recordStart + 5] ^= 1 << 2; // record bit 42: col bit 0
-    expectCode(() => verifyExactDiff(badCol, patched.newBuffer, p), ErrorCode.INVALID_ARGUMENT);
+    expect(verifyExactDiff(badCol, patched.newBuffer, p).ok).toBe(false);
+    const keptPosition = new Uint8Array(patched.newBuffer);
+    keptPosition[first.recordStart + 5] ^= 1 << 2;
+    expect(verifyExactDiff(badCol, keptPosition, p).ok).toBe(true);
   });
 
   it('only a type-1 sector for d2i-materials; d2i-remove and d2i-insert still refuse type 1', () => {

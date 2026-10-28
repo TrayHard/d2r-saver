@@ -12,7 +12,7 @@
  * +66). The in-place operations run it on their own output before returning, and a caller can
  * run it again on the buffers it is about to persist (gate 6 of the offline-trade design).
  * Since 0.4.0 it also proves quantity edits of a materials (type 1) sector (`d2i-materials`):
- * three bit fields per patched record plus whole records appended at the end of the sector.
+ * the authoritative 8-bit counter per patched record plus whole records appended at the sector end.
  */
 
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
@@ -55,14 +55,14 @@ export interface DiffInsert {
 /**
  * One quantity patch of a materials record (0.4.0). Offsets refer to the ORIGINAL buffer;
  * `quantityFlagBit` is in bits from the record's first bit (as `MaterialRecord.quantityFlagBit`).
- * The edit rewrites `col` (record bits 42–45) to `after & 15`, `row` (46–49) to `after >> 4` and
- * the 8 bits after the flag to `after`; nothing else in the record changes.
+ * The edit rewrites only the 8 bits after the flag to `after`.
+ * Position fields are a replication mirror and must remain byte-exact.
  */
 export interface DiffMaterialPatch {
   recordStart: number;
   recordEnd: number;
   quantityFlagBit: number;
-  /** Quantity the record holds in `before` (both copies; a stale spec is refused). */
+  /** Authoritative post-stats quantity in `before`; a stale spec is refused. */
   before: number;
   /** Quantity it holds in `after`, 0–255. */
   after: number;
@@ -330,9 +330,6 @@ function setBitsAt(data: Uint8Array, bitOffset: number, count: number, value: nu
   }
 }
 
-/** Record bits of the `col` and `row` fields (same as `ITEM_COL_BIT` / `ITEM_ROW_BIT`). */
-const MATERIAL_COL_BIT = 42;
-const MATERIAL_ROW_BIT = 46;
 /** Smallest possible record bit of a quantity flag: 54 + the shortest Huffman code (14 bits). */
 const MIN_MATERIAL_QUANTITY_FLAG_BIT = 68;
 
@@ -371,11 +368,10 @@ function buildMaterialsExpectation(before: Uint8Array, spec: MaterialsDiffSpec):
     const bit = p.recordStart * 8;
     const flag = bitsAt(before, bit + p.quantityFlagBit, 1);
     const quantity = bitsAt(before, bit + p.quantityFlagBit + 1, 8);
-    const position = bitsAt(before, bit + MATERIAL_COL_BIT, 4) + 16 * bitsAt(before, bit + MATERIAL_ROW_BIT, 4);
-    if (flag !== 1 || quantity !== p.before || position !== p.before) {
+    if (flag !== 1 || quantity !== p.before) {
       throw new D2RSaverError(
         ErrorCode.INVALID_ARGUMENT,
-        `patches[${i}] does not describe the source: flag ${flag}, quantity ${quantity}, col+16*row ${position}, spec says ${p.before}`,
+        `patches[${i}] does not describe the source: flag ${flag}, quantity ${quantity}, spec says ${p.before}`,
       );
     }
   });
@@ -406,8 +402,6 @@ function buildMaterialsExpectation(before: Uint8Array, spec: MaterialsDiffSpec):
   bytes.set(before.subarray(listEnd), at);
   for (const p of spec.patches) {
     const bit = p.recordStart * 8;
-    setBitsAt(bytes, bit + MATERIAL_COL_BIT, 4, p.after & 15);
-    setBitsAt(bytes, bit + MATERIAL_ROW_BIT, 4, p.after >> 4);
     setBitsAt(bytes, bit + p.quantityFlagBit + 1, 8, p.after);
   }
   writeU16(bytes, countOffset, count + spec.appends.length);

@@ -25,6 +25,8 @@ import type { GameData } from '../../src/game-data/game-data.js';
 import {
   readMaterialsD2I,
   editMaterialsD2I,
+  encodeMaterialRecord,
+  materialRecordEncodeInput,
   type MaterialPatch,
   type MaterialAppend,
 } from '../../src/operations/materials-d2i.js';
@@ -109,6 +111,11 @@ function buildOne(source: Uint8Array, gd: GameData, records: MaterialsFixtureRec
     .map(r => ({ code: r.code, from: current.get(r.code)!, to: r.quantity }));
   if (patches.length > 0) buffer = editMaterialsD2I(buffer, gd, { sectorOffset: 0, patches, appends: [] }).newBuffer;
   if (appends.length > 0) buffer = editMaterialsD2I(buffer, gd, { sectorOffset: 0, patches: [], appends }).newBuffer;
+  // These pinned fixtures represent the state after an absolute-count packet refreshed X/Y.
+  // A normal save need not have matching fields; the production editor never does this refresh.
+  for (const r of readMaterialsD2I(buffer, gd, { sectorOffset: 0 }).records) {
+    buffer.set(encodeMaterialRecord(gd, { ...materialRecordEncodeInput(r), positionQuantity: r.quantity! }), r.recordStart);
+  }
   return buffer;
 }
 

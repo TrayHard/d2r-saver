@@ -1,20 +1,15 @@
 /**
  * Materials tab (`.d2i` sector type 1) — read, encode and edit quantity records in place (0.4.0).
  *
- * A Blizzless materials tab holds one record per material code. A record is an ordinary item
- * whose quantity is stored TWICE:
+ * A Blizzless materials tab holds one anchor record per material code. Its authoritative
+ * counter is the post-stats presence flag followed by an 8-bit value (ItemData+0x9c in
+ * D2R 3.3.93847). The position nibbles carry a replication mirror that may be stale.
+ * Native increment/decrement updates the counter alone; absolute-count network messages
+ * refresh the position mirror. Equality is not a save-format invariant.
  *
- * 1. the post-stats quantity field: a 1-bit flag (always 1, even for quantity 0) followed by an
- *    8-bit value;
- * 2. the position block: `col` (4 bits) + 16 × `row` (4 bits) equals the quantity (there is no
- *    grid in this tab).
- *
- * A quantity edit therefore rewrites exactly three bit fields of one record — `col`, `row` and the
- * 8-bit value — and never changes the record length, the flag, or any other byte. A record whose
- * quantity drops to 0 stays in the list. A new record for an absent code is appended at the end of
- * the list (the end of the sector); the sector's item count and `sectorSize` grow accordingly and
- * any following sectors shift unchanged. The item writer is never involved: it cannot write these
- * records (it drops the quantity field of non-stackable bases and writes flag 0 for quantity 0).
+ * A quantity edit changes only the 8-bit counter and preserves the position fields,
+ * record length, flag and all other bits. Zero-count anchors stay in the list.
+ * Appends grow the list count and sectorSize; following sectors shift unchanged.
  *
  * Bit convention (as `BinaryReader`): LSB-first, absolute bit `b` is `(buf[b >> 3] >> (b & 7)) & 1`;
  * a record starts on a byte boundary, so record bit `r` is absolute bit `recordStart * 8 + r`.
@@ -26,7 +21,7 @@
  * | 0–31            | flags `0x00a00010` (potions may carry bit 10) | flags `0x00800010`  |
  * | 32–34           | version 5                       | version 5                         |
  * | 35–37 / 38–41   | `loc` (0, or 4 for Blizzless crafting parts) / `bodyloc` 0 | same   |
- * | 42–45 / 46–49   | `col` = q & 15 / `row` = q >> 4 | same                              |
+ * | 42–45 / 46–49   | `col` / `row` replication mirror | same                              |
  * | 50–52           | `storage` 5                     | same                              |
  * | 53…53+L         | Huffman code "abc " (L = 14–23) | same                              |
  * | then            | 1 bit sockets (0)               | 3 bits sockets (0), 32 guid, 7 ilvl, 4 quality (2), 4 zero flags (icon, automod, extended, pre-stats quantity), stats terminator 0x1FF (9) |
@@ -43,7 +38,7 @@ import { BitWriter } from '../core/binary-writer.js';
 import { HUFFMAN_LOOKUP } from '../core/huffman.js';
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
 import { itemGetTypes } from '../items/item-types.js';
-import { walkItemList, ITEM_COL_BIT, ITEM_ROW_BIT, type WalkedItem } from '../formats/item-walker.js';
+import { walkItemList, type WalkedItem } from '../formats/item-walker.js';
 import {
   D2I_SECTOR_HEADER_SIZE,
   D2I_SECTOR_SIZE_OFFSET,
@@ -107,7 +102,6 @@ export type MaterialLayoutIssue =
   | 'pre_stats_quantity'
   | 'quantity_width'
   | 'quantity_flag'
-  | 'quantity_mismatch'
   | 'quality'
   | 'unexpected_layout';
 
@@ -124,7 +118,7 @@ export interface MaterialRecord {
   recordEnd: number;
   /** The 8-bit post-stats quantity, or `null` when the record has no quantity field. */
   quantity: number | null;
-  /** `col + 16 * row`: the second copy of the quantity. */
+  /** `col + 16 * row`: a replication mirror that can lag behind the authoritative quantity. */
   positionQuantity: number;
   /** Offset of the quantity flag in bits from the record's first bit, or `null` without a field. */
   quantityFlagBit: number | null;
@@ -175,8 +169,10 @@ export interface EncodeMaterialRecordInput {
   family: MaterialFamily;
   /** Three-letter base code present in GameData. */
   code: string;
-  /** 0–255; also written into `col`/`row`. */
+  /** Authoritative post-stats counter, 0–255. */
   quantity: number;
+  /** Position mirror to preserve when re-encoding. Defaults to quantity for existing encoder compatibility. */
+  positionQuantity?: number;
   /** Complex records only, required there: unsigned 32-bit persistent id. */
   guid?: number;
   /** Complex records only, required there: 0–127. */
@@ -311,7 +307,6 @@ function describeRecord(buffer: Uint8Array, entry: WalkedItem): MaterialRecord {
   else if (field.placement !== 'post-stats') fail('pre_stats_quantity');
   else if (field.width !== 8) fail('quantity_width');
   if (field && quantityFlag !== 1) fail('quantity_flag');
-  if (quantity !== null && quantity !== positionQuantity) fail('quantity_mismatch');
   if (family === 'complex' && item.quality !== QUALITY_NORMAL) fail('quality');
   if (issue === null && !head.ear) {
     // Fixed layout: the flag sits right where the family's layout puts it, the record ends on the
@@ -390,7 +385,7 @@ export function readMaterialsD2I(buffer: Uint8Array, gd: GameData, options: Read
 
 /**
  * The `encodeMaterialRecord` input that reproduces an existing record: family, code, quantity,
- * guid, ilvl, loc and flags as read. `encodeMaterialRecord(gd, materialRecordEncodeInput(r))`
+ * position mirror, guid, ilvl, loc and flags as read. `encodeMaterialRecord(gd, materialRecordEncodeInput(r))`
  * equals the record's bytes for every well-formed record.
  *
  * @throws {D2RSaverError} `INVALID_ARGUMENT` for a record without a quantity field.
@@ -403,6 +398,7 @@ export function materialRecordEncodeInput(record: MaterialRecord): EncodeMateria
     family: record.family,
     code: record.code,
     quantity: record.quantity,
+    positionQuantity: record.positionQuantity,
     loc: record.loc,
     flags: record.flags,
   };
@@ -415,7 +411,7 @@ export function materialRecordEncodeInput(record: MaterialRecord): EncodeMateria
 
 /**
  * Build the bytes of one materials record deterministically (no randomness: a complex record's
- * guid comes from the caller). `loc` 0 unless given, `bodyloc` 0, `col = q & 15`, `row = q >> 4`,
+ * guid comes from the caller). `loc` 0 unless given, `bodyloc` 0, position from `positionQuantity ?? quantity`,
  * `storage` 5, quantity flag 1 even for 0.
  *
  * @throws {D2RSaverError} `UNKNOWN_BASE` for a code not in GameData; `INVALID_ARGUMENT` for a
@@ -437,6 +433,8 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
     throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `"${code}" has type ${changing.join('/')}, whose record carries extra fields`);
   }
   requireInt('quantity', input.quantity, 0, MATERIAL_QUANTITY_FIELD_MAX);
+  const position = input.positionQuantity ?? input.quantity;
+  requireInt('positionQuantity', position, 0, MATERIAL_QUANTITY_FIELD_MAX);
   const loc = input.loc ?? 0;
   if (loc !== 0 && loc !== 4) throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `loc must be 0 or 4, got ${String(loc)}`);
   const flags = input.flags ?? (family === 'simple' ? MATERIAL_SIMPLE_FLAGS : MATERIAL_COMPLEX_FLAGS);
@@ -460,8 +458,8 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
   w.writeUInt8(MATERIAL_ITEM_VERSION, 3);
   w.writeUInt8(loc, 3);
   w.writeUInt8(0, 4); // bodyloc
-  w.writeUInt8(q & 15, 4); // col
-  w.writeUInt8(q >> 4, 4); // row
+  w.writeUInt8(position & 15, 4); // col: replication mirror, not the persisted counter
+  w.writeUInt8(position >> 4, 4); // row
   w.writeUInt8(MATERIAL_STORAGE, 3);
   for (const ch of code + ' ') w.writeChar(ch);
   if (family === 'simple') {
@@ -525,11 +523,11 @@ export function materialEncodingVerified(
  *    (`MATERIAL_RANGE`), and the encoder reproduces every record of the same family in the
  *    sector, of which there is at least one (`LAYOUT_UNVERIFIED`).
  *
- * A patch rewrites only `col`, `row` and the 8-bit quantity; the flag and the length stay. A
+ * A patch rewrites only the 8-bit post-stats quantity; position, flag and length stay. A
  * record set to 0 stays in the list. Appends go to the end of the list (= end of the sector) in
  * the given order; the count and `sectorSize` grow, following sectors shift unchanged. The
- * result is proven with `assertExactDiff` and re-read: the record count and both quantity copies
- * of every touched record must be what was asked.
+ * result is proven with `assertExactDiff` and re-read: the record count and authoritative quantity
+ * of every touched record must be what was asked, and its position must be unchanged.
  *
  * @throws {D2RSaverError} as listed above, plus `INVALID_PAGE`/`INVALID_FORMAT` from
  *   `readMaterialsD2I`, `RANGE_MISMATCH` from the self-check.
@@ -611,7 +609,7 @@ export function editMaterialsD2I(
     return encodeMaterialRecord(gd, input);
   });
 
-  // Write: copy (never alias the caller's memory), patch three fields, append at the sector end.
+  // Write: copy (never alias the caller's memory), patch the authoritative counter, append at the sector end.
   const sectorEnd = before.sectorOffset + before.size;
   const added = appendBytes.reduce((sum, b) => sum + b.length, 0);
   const count = readU16(buffer, before.sectorOffset + D2I_LIST_COUNT_OFFSET);
@@ -625,8 +623,6 @@ export function editMaterialsD2I(
   out.set(buffer.subarray(sectorEnd), at);
   for (const { patch, record } of targets) {
     const bit = record.recordStart * 8;
-    setBitsAt(out, bit + ITEM_COL_BIT, 4, patch.to & 15);
-    setBitsAt(out, bit + ITEM_ROW_BIT, 4, patch.to >> 4);
     setBitsAt(out, bit + record.quantityFlagBit! + 1, 8, patch.to);
   }
   writeU16(out, before.sectorOffset + D2I_LIST_COUNT_OFFSET, count + appendBytes.length);
@@ -672,9 +668,9 @@ export function editMaterialsD2I(
   }
   if (after.duplicateCodes.length > 0) fail(`duplicate codes ${after.duplicateCodes.join(', ')}`);
   const afterByCode = new Map(after.records.map(r => [r.code, r]));
-  for (const { patch } of targets) {
+  for (const { patch, record } of targets) {
     const r = afterByCode.get(patch.code);
-    if (!r || r.quantity !== patch.to || r.positionQuantity !== patch.to) fail(`record ${patch.code} does not hold ${patch.to}`);
+    if (!r || r.quantity !== patch.to || r.positionQuantity !== record.positionQuantity) fail(`record ${patch.code} does not hold ${patch.to} with its original position`);
   }
   appends.forEach((a, i) => {
     const r = after.records[before.records.length + i];

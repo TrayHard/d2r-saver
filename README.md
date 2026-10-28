@@ -212,9 +212,10 @@ statuettes, shards, organs, potions…) and a count for each. A realm tab file i
 sector at offset 0; in a full shared stash the sector sits between the normal tabs and the
 metadata sector.
 
-Every record stores its quantity **twice**: an 8-bit post-stats field preceded by a 1-bit flag
-(always 1, even for quantity 0), and the position fields, `col + 16 * row == quantity` (the tab
-has no grid). A record whose quantity drops to 0 stays in the list.
+The authoritative counter is the 8-bit post-stats field preceded by a 1-bit flag
+(always 1, even for quantity 0). Position fields carry a replication mirror that may lag
+behind this counter. Equality is not required. In-place edits change only the counter,
+preserving the position fields and all other bits. A zero-count record stays in the list.
 
 ```ts
 import { verifyExactDiff, materialRecordEncodeInput } from 'd2r-saver';
@@ -250,7 +251,7 @@ Record layouts (bits LSB-first from the record's first bit; source of truth: the
 |------|-------------------------------|-------------------------------------------------------------|
 | 0–31 | flags `0x00a00010` (potions may also carry bit 10) | flags `0x00800010` |
 | 32–34 | version 5 | version 5 |
-| 35–52 | `loc` 0 (4 for Blizzless crafting parts), `bodyloc` 0, `col` = q & 15, `row` = q >> 4, `storage` 5 | same |
+| 35–52 | `loc` 0 (4 for Blizzless crafting parts), `bodyloc` 0, position mirror in `col`/`row`, `storage` 5 | same |
 | 53… | Huffman code `"abc "` (14–23 bits) | same |
 | then | 1 bit sockets (0) | 3 bits sockets (0), guid (32), ilvl (7), quality (4, = 2), four zero flags (icon, automod, extended, pre-stats quantity), stats terminator `0x1FF` (9) |
 | then | quantity flag 1, quantity (8) | quantity flag 1, quantity (8) |
@@ -261,7 +262,7 @@ Rules:
 - `readMaterialsD2I` accepts only a type-1 sector (`INVALID_PAGE` otherwise) and lists every
   record, zero quantities included (the `readD2I` pages hide them). `layoutOk` requires: no ear,
   personalized, runeword, extras or socketed flag, no children, `storage` 5, `bodyloc` 0, `loc`
-  0 or 4, a post-stats 8-bit quantity field with flag 1, both quantity copies equal, quality 2
+  0 or 4, a post-stats 8-bit quantity field with flag 1, quality 2
   for a complex record, and the flag exactly where the family's layout puts it (`54 + L` simple,
   `112 + L` complex) with zero padding after the value.
 - `editMaterialsD2I` checks, in this order: complete list (`LIST_TRUNCATED`); every record
@@ -272,7 +273,7 @@ Rules:
   absent (`MATERIAL_ALREADY_PRESENT`), `1 ≤ quantity ≤ maxQuantity` (`MATERIAL_RANGE`), and the
   encoder reproduces every record of the same family in the sector, of which there must be at
   least one (`LAYOUT_UNVERIFIED`).
-- A patch rewrites only `col`, `row` and the 8-bit value. The flag and the record length never
+- A patch rewrites only the 8-bit counter. Position fields, flag and record length never
   change. Appends go to the end of the list (the end of the sector); the 16-bit count and
   `sectorSize` grow and following sectors shift unchanged. The result is proven with
   `assertExactDiff` and re-read before it is returned.
@@ -282,10 +283,10 @@ Rules:
 - `verifyExactDiff` with `{ kind: 'd2i-materials', sectorOffset, patches: [{ recordStart,
   recordEnd, quantityFlagBit, before, after }], appends: [{ bytes }] }` needs no GameData. It
   accepts only a type-1 sector, requires sorted non-overlapping patches inside the list,
-  `68 ≤ quantityFlagBit ≤ 8 * length - 9`, and refuses a stale spec (flag, 8-bit value and
-  `col + 16 * row` in `before` must all equal `patch.before`). The comparison covers every byte.
+  `68 ≤ quantityFlagBit ≤ 8 * length - 9`, and refuses a stale spec (flag must be 1 and the
+  post-stats value must equal `patch.before`). Position fields stay unchanged. The comparison covers every byte.
   `d2i-remove` and `d2i-insert` still refuse type-1 sectors.
-- The game's stack cap of 99 is a game rule, not a format rule (both copies can hold 255); keep
+- The game's stack cap of 99 is a game rule, not a format rule (the counter can hold 255); keep
   the default `maxQuantity`. Whether the game accepts an appended record is only shown by loading
   the tab in the game.
 
