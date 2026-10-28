@@ -60,6 +60,17 @@ import {
   type InsertInPlaceD2IItem,
   type InsertInPlaceD2IResult,
 } from './operations/inplace-d2i.js';
+import {
+  readMaterialsD2I,
+  editMaterialsD2I,
+  encodeMaterialRecord,
+  type ReadMaterialsD2IOptions,
+  type MaterialsSectorReport,
+  type EncodeMaterialRecordInput,
+  type EditMaterialsD2IEdit,
+  type EditMaterialsD2IOptions,
+  type EditMaterialsD2IResult,
+} from './operations/materials-d2i.js';
 
 // ─── Re-exports ─────────────────────────────────────────────────
 
@@ -100,6 +111,8 @@ export {
   ITEM_POSITION_BIT,
   ITEM_POSITION_BITS,
   ITEM_BASE_BIT,
+  ITEM_COL_BIT,
+  ITEM_ROW_BIT,
 } from './formats/item-walker.js';
 export type {
   ItemHead,
@@ -136,6 +149,7 @@ export {
   assertExactDiff,
   readD2ISectorChain,
   findD2ISector,
+  findMaterialsD2ISector,
   MAX_REPORTED_MISMATCHES,
   D2I_SECTOR_HEADER_SIZE,
   D2I_SECTOR_SIZE_OFFSET,
@@ -146,10 +160,42 @@ export {
 export type {
   DiffSpec,
   DiffInsert,
+  DiffMaterialPatch,
+  MaterialsDiffSpec,
   DiffMismatch,
   ExactDiffResult,
   D2ISectorHeader,
 } from './operations/verify-diff.js';
+
+// ─── Materials tab (.d2i sector type 1) (0.4.0) ─────────────────
+// Quantity records: read every record (zero quantities included), encode a record
+// deterministically, and patch quantities / append records in place with a self-proven diff.
+export {
+  readMaterialsD2I,
+  editMaterialsD2I,
+  encodeMaterialRecord,
+  materialRecordEncodeInput,
+  materialEncodingVerified,
+  MATERIAL_SIMPLE_FLAGS,
+  MATERIAL_COMPLEX_FLAGS,
+  MATERIAL_ITEM_VERSION,
+  MATERIAL_STORAGE,
+  MATERIAL_QUANTITY_FIELD_MAX,
+  MATERIAL_DEFAULT_MAX_QUANTITY,
+} from './operations/materials-d2i.js';
+export type {
+  MaterialFamily,
+  MaterialLayoutIssue,
+  MaterialRecord,
+  MaterialsSectorReport,
+  ReadMaterialsD2IOptions,
+  EncodeMaterialRecordInput,
+  MaterialPatch,
+  MaterialAppend,
+  EditMaterialsD2IEdit,
+  EditMaterialsD2IOptions,
+  EditMaterialsD2IResult,
+} from './operations/materials-d2i.js';
 
 // ─── D2RSaver facade ────────────────────────────────────────────
 
@@ -285,6 +331,40 @@ export class D2RSaver {
     items: InsertInPlaceD2IItem[],
   ): InsertInPlaceD2IResult {
     return insertInPlaceD2I(buffer, target, items, this.gd);
+  }
+
+  // ── Materials tab (.d2i sector type 1) ──────────────────────
+
+  /**
+   * Read a materials (type 1) sector record by record, zero-quantity records included (0.4.0).
+   * Each record reports both copies of its quantity, the quantity flag's bit offset and whether
+   * its layout allows an in-place edit.
+   * @throws {D2RSaverError} INVALID_PAGE, INVALID_FORMAT — see `readMaterialsD2I`.
+   */
+  readMaterialsD2I(buffer: Uint8Array, options: ReadMaterialsD2IOptions): MaterialsSectorReport {
+    return readMaterialsD2I(buffer, this.gd, options);
+  }
+
+  /**
+   * Patch quantities of existing materials records and/or append records for absent codes
+   * (0.4.0). Only `col`, `row` and the 8-bit quantity of a patched record change; appends go to
+   * the end of the sector. The result is self-verified with `verifyExactDiff`.
+   * @throws {D2RSaverError} LIST_TRUNCATED, MATERIAL_LAYOUT, MATERIAL_STALE, … — see `editMaterialsD2I`.
+   */
+  editMaterialsD2I(
+    buffer: Uint8Array,
+    edit: EditMaterialsD2IEdit,
+    options?: EditMaterialsD2IOptions,
+  ): EditMaterialsD2IResult {
+    return editMaterialsD2I(buffer, this.gd, edit, options);
+  }
+
+  /**
+   * Build the bytes of one materials record deterministically (0.4.0).
+   * @throws {D2RSaverError} UNKNOWN_BASE, INVALID_ARGUMENT — see `encodeMaterialRecord`.
+   */
+  encodeMaterialRecord(input: EncodeMaterialRecordInput): Uint8Array {
+    return encodeMaterialRecord(this.gd, input);
   }
 
   // ── Item serialization ──────────────────────────────────────
@@ -448,3 +528,6 @@ export class D2RSaver {
     return toTradeDTO(item, allItems, this.gd);
   }
 }
+
+export { readD2SDemonSection, type D2SDemonSectionReport, type D2SDemonRecord, type D2SDemonStat } from './formats/d2s-demon-reader.js';
+export type { D2SParseCoverage } from './formats/d2s-coverage.js';

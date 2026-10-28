@@ -108,7 +108,8 @@ d2r-saver/
 │   │   ├── extract-item.ts     — Извлечение предмета из сейва
 │   │   ├── insert-item.ts      — Вставка предмета в сейв
 │   │   ├── inplace-d2i.ts      — Операции на месте для .d2i: extractInPlaceD2I, insertInPlaceD2I, fixD2ISectorSize (0.3.0)
-│   │   ├── verify-diff.ts      — verifyExactDiff: доказательство «изменился ровно заявленный диапазон» (0.3.0)
+│   │   ├── verify-diff.ts      — verifyExactDiff: доказательство «изменился ровно заявленный диапазон» (0.3.0); вид d2i-materials для вкладки материалов (0.4.0)
+│   │   ├── materials-d2i.ts    — Вкладка материалов (сектор типа 1): readMaterialsD2I, editMaterialsD2I, encodeMaterialRecord (0.4.0)
 │   │   └── read-save.ts        — Универсальное чтение (авто-детект)
 │   ├── inventory/              — Инвентарная сетка и размещение
 │   │   ├── grid.ts             — StashGrid (Float64Array сетка занятости)
@@ -181,6 +182,9 @@ const saver = D2RSaver.fromData(rawData, locale);
 | `walkD2I(buffer)` | Обход всех секторов сундука с байтовыми диапазонами предметов (0.3.0) |
 | `walkItemList(buffer, headerOffset, options?)` | Обход одного списка `JM` по абсолютному смещению (0.3.0) |
 | `buildRawGrid(walk, size?)` | Сетка занятости сектора по битам позиции (0.3.0) |
+| `readMaterialsD2I(buffer, { sectorOffset })` | Все записи вкладки материалов с обеими копиями количества, включая записи с нулём (0.4.0) |
+| `editMaterialsD2I(buffer, edit, options?)` | Правка количества на месте и добавление записей в конец сектора с проверкой `verifyExactDiff` (0.4.0) |
+| `encodeMaterialRecord(input)` | Детерминированная сборка одной записи материала (0.4.0) |
 
 ### Ре-экспорты
 

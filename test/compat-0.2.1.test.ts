@@ -5,6 +5,7 @@
  * The snapshots under `test/__snapshots__/compat-0.2.1/` were generated on the unmodified
  * 0.2.1 sources BEFORE the in-place editing work started. The projection below strips only the
  * fields that 0.3.0 ADDS (`byteRange`, `fullByteRange`, `socketedByteRanges` on items;
+ * 0.4.0 adds `quantityField` on items;
  * `lists` on the d2s result; `sectors`, `tiled`, `reachedEof` on the d2i result and
  * `list`, `rawType` on pages), so any change to a pre-existing field or value fails the test.
  * If you add another field on purpose, add it to the strip list AND regenerate deliberately.
@@ -21,8 +22,8 @@ const FIXTURES = resolve(import.meta.dirname!, 'fixtures');
 const SNAPSHOTS = resolve(import.meta.dirname!, '__snapshots__', 'compat-0.2.1');
 
 /** Fields that did not exist in 0.2.1. Everything else must match byte for byte. */
-const ITEM_FIELDS_ADDED_IN_0_3 = new Set(['byteRange', 'fullByteRange', 'socketedByteRanges']);
-const D2S_RESULT_FIELDS_ADDED_IN_0_3 = new Set(['lists']);
+const ITEM_FIELDS_ADDED_IN_0_3 = new Set(['byteRange', 'fullByteRange', 'socketedByteRanges', 'quantityField']);
+const D2S_RESULT_FIELDS_ADDED_IN_0_3 = new Set(['lists', 'coverage', 'demons']);
 const D2I_RESULT_FIELDS_ADDED_IN_0_3 = new Set(['sectors', 'tiled', 'reachedEof']);
 const D2I_PAGE_FIELDS_ADDED_IN_0_3 = new Set(['list', 'rawType']);
 

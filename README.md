@@ -9,6 +9,8 @@ Blizzless D2R v105 save file reader/writer library. Ported from d2planner.
 - Byte-exact list walking for in-place editing: item ranges, list reports, position patching (0.3.0)
 - In-place `.d2i` operations: cut and paste raw item bytes in a stash tab without rebuilding the
   file, with an exact-diff proof of what changed (0.3.0)
+- Materials tab (`.d2i` sector type 1): read every quantity record, patch quantities in place,
+  append records for absent codes, with the same exact-diff proof (0.4.0)
 - Portable item serialization tokens (`d2r1:<base64>`)
 - HD/SD icon path resolution
 - Trade DTO generation for backend integration
@@ -203,6 +205,90 @@ Two things to know before building a gate on it:
   (base64, hex) and decode them back to a `Uint8Array` before verifying, or drop `bytes` to leave
   the gap unchecked. `d2i-remove` specs carry only numbers and round-trip unchanged.
 
+## Materials Tab (`.d2i` sector type 1) (0.4.0)
+
+A Blizzless materials tab holds one record per material code (runes, gems, keys, essences,
+statuettes, shards, organs, potions…) and a count for each. A realm tab file is a single type-1
+sector at offset 0; in a full shared stash the sector sits between the normal tabs and the
+metadata sector.
+
+Every record stores its quantity **twice**: an 8-bit post-stats field preceded by a 1-bit flag
+(always 1, even for quantity 0), and the position fields, `col + 16 * row == quantity` (the tab
+has no grid). A record whose quantity drops to 0 stays in the list.
+
+```ts
+import { verifyExactDiff, materialRecordEncodeInput } from 'd2r-saver';
+
+const tab = saver.readMaterialsD2I(file, { sectorOffset: 0 });
+tab.complete;                 // parsed === declared and the list ends at the sector end
+tab.duplicateCodes;           // [] in a healthy tab
+tab.records[0];
+// { index, code: 'r01', family: 'simple', recordStart, recordEnd, quantity: 5,
+//   positionQuantity: 5, quantityFlagBit: 76, quantityFlag: 1, flags, guid: null, ilvl: null,
+//   loc: 0, layoutOk: true, layoutIssue: null }
+
+// Withdraw 3 El into the tab, deposit 2 keys from it, create a record for an absent gem.
+const edit = saver.editMaterialsD2I(file, {
+  sectorOffset: 0,
+  patches: [{ code: 'r01', from: 5, to: 8 }, { code: 'pk1', from: 3, to: 1 }],
+  appends: [{ code: 'gpr', family: 'simple', quantity: 4 }],
+});                           // maxQuantity defaults to 99
+edit.newBuffer;               // fresh buffer; the input is never modified
+edit.diff;                    // { kind: 'd2i-materials', sectorOffset, patches, appends }
+edit.before; edit.after;      // sector reports before and after
+
+verifyExactDiff(file, edit.newBuffer, edit.diff).ok;   // true
+
+// The encoder reproduces existing records byte for byte; new records use the default flags.
+saver.encodeMaterialRecord(materialRecordEncodeInput(tab.records[0]));
+saver.encodeMaterialRecord({ family: 'complex', code: 'pk2', quantity: 1, guid: 0x1234, ilvl: 1 });
+```
+
+Record layouts (bits LSB-first from the record's first bit; source of truth: the item parser):
+
+| bits | simple (runes, gems, potions) | complex (keys, essences, statuettes, shards, organs, token) |
+|------|-------------------------------|-------------------------------------------------------------|
+| 0–31 | flags `0x00a00010` (potions may also carry bit 10) | flags `0x00800010` |
+| 32–34 | version 5 | version 5 |
+| 35–52 | `loc` 0 (4 for Blizzless crafting parts), `bodyloc` 0, `col` = q & 15, `row` = q >> 4, `storage` 5 | same |
+| 53… | Huffman code `"abc "` (14–23 bits) | same |
+| then | 1 bit sockets (0) | 3 bits sockets (0), guid (32), ilvl (7), quality (4, = 2), four zero flags (icon, automod, extended, pre-stats quantity), stats terminator `0x1FF` (9) |
+| then | quantity flag 1, quantity (8) | quantity flag 1, quantity (8) |
+| tail | zero bits up to the byte boundary (10–11 bytes) | same (18 bytes) |
+
+Rules:
+
+- `readMaterialsD2I` accepts only a type-1 sector (`INVALID_PAGE` otherwise) and lists every
+  record, zero quantities included (the `readD2I` pages hide them). `layoutOk` requires: no ear,
+  personalized, runeword, extras or socketed flag, no children, `storage` 5, `bodyloc` 0, `loc`
+  0 or 4, a post-stats 8-bit quantity field with flag 1, both quantity copies equal, quality 2
+  for a complex record, and the flag exactly where the family's layout puts it (`54 + L` simple,
+  `112 + L` complex) with zero padding after the value.
+- `editMaterialsD2I` checks, in this order: complete list (`LIST_TRUNCATED`); every record
+  `layoutOk`, foreign ones included (`MATERIAL_LAYOUT`); no duplicate code
+  (`MATERIAL_DUPLICATE_CODE`); no code twice in the edit and at least one change
+  (`INVALID_ARGUMENT`); per patch: the record exists (`MATERIAL_NOT_FOUND`), holds exactly `from`
+  (`MATERIAL_STALE`), `0 ≤ to ≤ maxQuantity ≤ 255` (`MATERIAL_RANGE`); per append: the code is
+  absent (`MATERIAL_ALREADY_PRESENT`), `1 ≤ quantity ≤ maxQuantity` (`MATERIAL_RANGE`), and the
+  encoder reproduces every record of the same family in the sector, of which there must be at
+  least one (`LAYOUT_UNVERIFIED`).
+- A patch rewrites only `col`, `row` and the 8-bit value. The flag and the record length never
+  change. Appends go to the end of the list (the end of the sector); the 16-bit count and
+  `sectorSize` grow and following sectors shift unchanged. The result is proven with
+  `assertExactDiff` and re-read before it is returned.
+- `encodeMaterialRecord` is deterministic: a complex record's guid and ilvl come from the caller
+  (required), there is no randomness inside the library. Bases whose records carry extra fields
+  (books, charms, armor, weapons) and layout-changing flags are refused.
+- `verifyExactDiff` with `{ kind: 'd2i-materials', sectorOffset, patches: [{ recordStart,
+  recordEnd, quantityFlagBit, before, after }], appends: [{ bytes }] }` needs no GameData. It
+  accepts only a type-1 sector, requires sorted non-overlapping patches inside the list,
+  `68 ≤ quantityFlagBit ≤ 8 * length - 9`, and refuses a stale spec (flag, 8-bit value and
+  `col + 16 * row` in `before` must all equal `patch.before`). The comparison covers every byte.
+  `d2i-remove` and `d2i-insert` still refuse type-1 sectors.
+- The game's stack cap of 99 is a game rule, not a format rule (both copies can hold 255); keep
+  the default `maxQuantity`. Whether the game accepts an appended record is only shown by loading
+  the tab in the game.
+
 ## Trade Flow (Extract → Serialize → Transfer → Insert)
 
 ```ts
@@ -267,6 +353,10 @@ buffer), `LIST_TRUNCATED` (an operation needs a complete list), `RANGE_MISMATCH`
 is not the declared one), `UNKNOWN_BASE` (no grid size for a base code), `INVALID_PAGE` (sector
 type, placement or overlap), `INVALID_ARGUMENT` (out-of-range position or offset).
 
+Codes added in 0.4.0 for the materials tab: `MATERIAL_LAYOUT`, `MATERIAL_DUPLICATE_CODE`,
+`MATERIAL_NOT_FOUND`, `MATERIAL_STALE`, `MATERIAL_RANGE`, `MATERIAL_ALREADY_PRESENT`,
+`LAYOUT_UNVERIFIED` (see "Materials Tab").
+
 ## Architecture
 
 ```
@@ -278,7 +368,7 @@ src/
   formats/              — D2S/D2I readers/writers, item parser/writer, item walker
   items/                — Item types, stats, serializer, icons, DTO
   inventory/            — Grid, placement, dimensions, raw grid from walked items
-  operations/           — Extract, insert, readSave
+  operations/           — Extract, insert, readSave, in-place .d2i, materials tab, exact diff
 ```
 
 ## Test fixtures
@@ -314,6 +404,23 @@ The build is deterministic and self-checked: the walker both builds the tab and 
 Caveat: this proves the library is consistent with itself; whether the game accepts such a tab
 is only shown by loading it in the game.
 
+### `MaterialsTabSeller.d2i` / `MaterialsTabBuyer.d2i` (synthetic, 0.4.0)
+
+Single-sector materials tabs (one type-1 sector at offset 0, the realm's file shape), built only
+from the materials sector of `SharedStashComplete.d2i` (`test/helpers/materials-fixtures.ts`,
+regenerate with `npm run build:fixtures:materials`): copy the 64-byte sector header and the `JM`
+list header, copy the chosen records, fix the count and `sectorSize`, then set quantities with
+`editMaterialsD2I` and add `gpv` through an append.
+
+- Seller (176 bytes): `rvl` 99, `glb` 0, `r01` 5, `r10` 3, `pk1` 3, `tes` 2, `ua1` 1, `gpv` 4.
+- Buyer (129 bytes): `rvl` 99, `glb` 0, `r01` 0 (record present), `r10` 98 (one below the cap),
+  `tes` 1; `pk1` and `gpv` are absent.
+
+`test/materials-d2i.test.ts` pins their SHA-256 and fails if a fresh build differs. An optional
+block of that test reads a local copy of a real materials tab when the environment variable
+`STASH_MATERIALS_OWNER_COPY` points to it (read-only, only hashes and counts are logged, nothing
+is committed); it is skipped otherwise.
+
 ## Development
 
 ```bash
@@ -321,6 +428,7 @@ npm test                # run tests (vitest)
 npm run build           # compile TypeScript
 npm run probe           # build, then run test/probe/inplace-probe.mjs (in-place editing on the public API)
 npm run build:fixtures  # regenerate test/fixtures/SharedStashComplete.d2i
+npm run build:fixtures:materials  # regenerate test/fixtures/MaterialsTab{Seller,Buyer}.d2i
 ```
 
 ## Requirements

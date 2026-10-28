@@ -13,6 +13,7 @@ import {
   readD2ISectorChain,
   findD2ISector,
   findNormalD2ISector,
+  findMaterialsD2ISector,
   readU16,
   readU32,
   writeU16,
@@ -21,7 +22,9 @@ import {
   D2I_LIST_COUNT_OFFSET,
   D2I_SECTOR_SIZE_OFFSET,
   type DiffSpec,
+  type MaterialsDiffSpec,
 } from '../src/operations/verify-diff.js';
+import { readMaterialsD2I, editMaterialsD2I, encodeMaterialRecord } from '../src/operations/materials-d2i.js';
 import { D2RSaverError, ErrorCode } from '../src/types/errors.js';
 
 const DATA_DIR = resolve(import.meta.dirname!, '..', 'data');
@@ -322,5 +325,122 @@ describe('verifyExactDiff d2i-insert', () => {
       () => verifyExactDiff(full, after, { kind: 'd2i-insert', sectorOffset: SECTOR, inserts: [{ at: 1430, length: 40 }] }),
       ErrorCode.INVALID_ARGUMENT,
     );
+  });
+});
+
+// ─── d2i-materials (0.4.0) ──────────────────────────────────────
+
+describe('verifyExactDiff d2i-materials', () => {
+  const SECTOR = 1780; // type-1 sector of SharedStashComplete.d2i
+  let before: Uint8Array;
+  let patched: ReturnType<typeof editMaterialsD2I>;
+  let appended: ReturnType<typeof editMaterialsD2I>;
+
+  beforeAll(() => {
+    before = fixture('SharedStashComplete.d2i');
+    patched = editMaterialsD2I(before, gd, {
+      sectorOffset: SECTOR,
+      patches: [{ code: 'rvl', from: 99, to: 98 }, { code: 'pk1', from: 21, to: 0 }, { code: 'r01', from: 1, to: 77 }],
+      appends: [],
+    });
+    appended = editMaterialsD2I(before, gd, {
+      sectorOffset: SECTOR,
+      patches: [{ code: 'r01', from: 1, to: 2 }],
+      appends: [{ code: 'gpv', family: 'simple', quantity: 4 }, { code: 'std', family: 'complex', quantity: 1, guid: 7, ilvl: 90 }],
+    });
+  });
+
+  it('accepts the edits the library produced, and an equivalent hand-built spec', () => {
+    expect(verifyExactDiff(before, patched.newBuffer, patched.diff).ok).toBe(true);
+    expect(verifyExactDiff(before, appended.newBuffer, appended.diff).ok).toBe(true);
+    // A spec rebuilt from an independent read and fresh encodes proves the same buffer.
+    const report = readMaterialsD2I(before, gd, { sectorOffset: SECTOR });
+    const r01 = report.records.find(r => r.code === 'r01')!;
+    const spec: DiffSpec = {
+      kind: 'd2i-materials',
+      sectorOffset: SECTOR,
+      patches: [{ recordStart: r01.recordStart, recordEnd: r01.recordEnd, quantityFlagBit: r01.quantityFlagBit!, before: 1, after: 2 }],
+      appends: [
+        { bytes: encodeMaterialRecord(gd, { family: 'simple', code: 'gpv', quantity: 4 }) },
+        { bytes: encodeMaterialRecord(gd, { family: 'complex', code: 'std', quantity: 1, guid: 7, ilvl: 90 }) },
+      ],
+    };
+    expect(verifyExactDiff(before, appended.newBuffer, spec).ok).toBe(true);
+  });
+
+  it('catches every single flipped byte of the result (mutation sweep, no mask)', () => {
+    for (const res of [patched, appended]) {
+      const mutated = new Uint8Array(res.newBuffer);
+      for (let offset = 0; offset < mutated.length; offset++) {
+        mutated[offset] ^= 0x01;
+        const r = verifyExactDiff(before, mutated, res.diff);
+        if (r.ok || r.mismatchCount !== 1 || r.mismatches[0].offset !== offset) throw new Error(`flip at ${offset} not caught`);
+        mutated[offset] = res.newBuffer[offset];
+      }
+    }
+  });
+
+  it('a wrong after, a missing append or an extra append in the spec is not ok', () => {
+    const p = patched.diff as MaterialsDiffSpec;
+    const wrongAfter: DiffSpec = { ...p, patches: p.patches.map((x, i) => (i === 0 ? { ...x, after: x.after + 1 } : x)) };
+    expect(verifyExactDiff(before, patched.newBuffer, wrongAfter).ok).toBe(false);
+    const a = appended.diff as MaterialsDiffSpec;
+    expect(verifyExactDiff(before, appended.newBuffer, { ...a, appends: a.appends.slice(0, 1) }).ok).toBe(false);
+    expect(verifyExactDiff(before, appended.newBuffer, { ...a, appends: [...a.appends, { bytes: new Uint8Array([1]) }] }).ok).toBe(false);
+  });
+
+  it('refuses a stale spec, a flag bit outside the record, unsorted or overlapping patches, bad bytes, a bad value', () => {
+    const p = patched.diff as MaterialsDiffSpec;
+    const first = p.patches[0];
+    const bad = (spec: DiffSpec, code: ErrorCode) => expectCode(() => verifyExactDiff(before, patched.newBuffer, spec), code);
+    const one = (patch: Partial<typeof first>): DiffSpec => ({ ...p, patches: [{ ...first, ...patch }] });
+    bad(one({ before: first.before + 1 }), ErrorCode.INVALID_ARGUMENT); // stale: the source holds another quantity
+    bad(one({ quantityFlagBit: first.quantityFlagBit + 1 }), ErrorCode.INVALID_ARGUMENT); // not the flag
+    bad(one({ quantityFlagBit: 67 }), ErrorCode.INVALID_ARGUMENT);
+    bad(one({ quantityFlagBit: (first.recordEnd - first.recordStart) * 8 - 8 }), ErrorCode.INVALID_ARGUMENT); // value runs past the record
+    bad(one({ after: 256 }), ErrorCode.INVALID_ARGUMENT);
+    bad(one({ recordStart: SECTOR + 67 }), ErrorCode.INVALID_ARGUMENT); // inside the list header
+    bad(one({ recordEnd: SECTOR + 831 }), ErrorCode.INVALID_ARGUMENT); // past the sector
+    bad({ ...p, patches: [...p.patches].reverse() }, ErrorCode.INVALID_ARGUMENT);
+    bad({ ...p, patches: [first, first] }, ErrorCode.INVALID_ARGUMENT);
+    bad({ ...p, patches: [], appends: [] }, ErrorCode.INVALID_ARGUMENT);
+    bad({ ...p, appends: [{ bytes: { 0: 1 } as unknown as Uint8Array }] }, ErrorCode.INVALID_ARGUMENT); // JSON round trip
+    bad({ ...p, appends: [{ bytes: new Uint8Array(0) }] }, ErrorCode.INVALID_ARGUMENT);
+    // The source's flag bit is 0 for the first patched record.
+    const noFlag = new Uint8Array(before);
+    const fb = first.recordStart * 8 + first.quantityFlagBit;
+    noFlag[fb >> 3] &= ~(1 << (fb & 7));
+    expectCode(() => verifyExactDiff(noFlag, patched.newBuffer, p), ErrorCode.INVALID_ARGUMENT);
+    // col/row disagree with the 8-bit value in the source.
+    const badCol = new Uint8Array(before);
+    badCol[first.recordStart + 5] ^= 1 << 2; // record bit 42: col bit 0
+    expectCode(() => verifyExactDiff(badCol, patched.newBuffer, p), ErrorCode.INVALID_ARGUMENT);
+  });
+
+  it('only a type-1 sector for d2i-materials; d2i-remove and d2i-insert still refuse type 1', () => {
+    const p = patched.diff as MaterialsDiffSpec;
+    expectCode(() => verifyExactDiff(before, patched.newBuffer, { ...p, sectorOffset: 0 }), ErrorCode.INVALID_PAGE);
+    expectCode(() => verifyExactDiff(before, patched.newBuffer, { ...p, sectorOffset: 2610 }), ErrorCode.INVALID_PAGE);
+    expect(findMaterialsD2ISector(before, SECTOR)).toEqual({ offset: SECTOR, size: 830, type: 1 });
+    expectCode(() => findMaterialsD2ISector(before, 949), ErrorCode.INVALID_PAGE);
+    const r = p.patches[0];
+    expectCode(
+      () => verifyExactDiff(before, before, { kind: 'd2i-remove', sectorOffset: SECTOR, ranges: [{ start: r.recordStart, end: r.recordEnd }] }),
+      ErrorCode.INVALID_PAGE,
+    );
+    expectCode(
+      () => verifyExactDiff(before, before, { kind: 'd2i-insert', sectorOffset: SECTOR, inserts: [{ at: SECTOR + 830, length: 11 }] }),
+      ErrorCode.INVALID_PAGE,
+    );
+    expectCode(
+      () => verifyExactDiff(before, before, { kind: 'bogus', sectorOffset: SECTOR } as unknown as DiffSpec),
+      ErrorCode.INVALID_ARGUMENT,
+    );
+  });
+
+  it('assertExactDiff reports a tampered materials result as RANGE_MISMATCH', () => {
+    const tampered = new Uint8Array(patched.newBuffer);
+    tampered[tampered.length - 1] ^= 0xff;
+    expectCode(() => assertExactDiff(before, tampered, patched.diff), ErrorCode.RANGE_MISMATCH);
   });
 });

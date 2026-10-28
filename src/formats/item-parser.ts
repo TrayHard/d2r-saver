@@ -197,6 +197,15 @@ export interface BinaryParsedItem {
   superior?: Record<string, number[]>;
   defense?: number;
   quantity?: number;
+  /**
+   * Where the quantity field sits inside the item's own bits (0.4.0), set whenever a quantity
+   * flag was read as 1. `flagBit` is the offset of the 1-bit flag from the first bit of the item;
+   * the value follows right after it (`width` bits, LSB-first). `post-stats` is the 1+8-bit field
+   * after the stats/extras block, `pre-stats` the V105 1+9-bit field before the sockets. When
+   * both are present the later (`post-stats`) one wins, exactly like `quantity`. Parsing does not
+   * depend on it; in-place quantity patching of materials tabs does.
+   */
+  quantityField?: { placement: 'post-stats' | 'pre-stats'; flagBit: number; width: 8 | 9 };
   /** Personalized name string (when personalized flag set). */
   personalized?: string;
   /** Ear-item payload (when ear flag set). */
@@ -623,8 +632,10 @@ export function createItemParser(
       }
 
       // ── V105 pre-stats quantity (1-bit flag + 9-bit value) ─
+      const preQuantityFlagBit = reader.bitpos - startBit;
       if (reader.bits(1)) {
         item.quantity = reader.bits(9);
+        item.quantityField = { placement: 'pre-stats', flagBit: preQuantityFlagBit, width: 9 };
       } else if (forceStackable && !types.has('ques')) {
         // legacy fixture path — V105 never enters here
       }
@@ -790,7 +801,11 @@ export function createItemParser(
       if (hasChronicle) reader.skipbits(64);
     }
     // V105: post-stats quantity (1-bit flag + 8-bit value).
-    if (reader.bits(1)) item.quantity = reader.bits(8);
+    const postQuantityFlagBit = reader.bitpos - startBit;
+    if (reader.bits(1)) {
+      item.quantity = reader.bits(8);
+      item.quantityField = { placement: 'post-stats', flagBit: postQuantityFlagBit, width: 8 };
+    }
 
     reader.align();
     item.binaryOffset!.end = reader.bitpos;

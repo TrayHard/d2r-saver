@@ -128,7 +128,7 @@ export class StashGrid {
       // Grid stores numeric IDs; map preset string codes to a hashed numeric
       // sentinel so the grid can still mark cells occupied.
       const numericId = typeof id === 'number'
-        ? id
+        ? (id === 0 ? -1 : id)
         : (id as string).split('').reduce((s, c) => s * 31 + c.charCodeAt(0), 1) & 0x7fffffff;
       this.occupy(x, y, w, h, numericId);
     }
