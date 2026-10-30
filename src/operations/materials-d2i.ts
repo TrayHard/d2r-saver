@@ -20,7 +20,7 @@
  * |-----------------|---------------------------------|-----------------------------------|
  * | 0–31            | flags `0x00a00010` (potions may carry bit 10) | flags `0x00800010`  |
  * | 32–34           | version 5                       | version 5                         |
- * | 35–37 / 38–41   | `loc` (0, or 4 for Blizzless crafting parts) / `bodyloc` 0 | same   |
+ * | 35–37 / 38–41   | `loc` (0, 2 for a potion that came from a belt, or 4 for Blizzless crafting parts) / `bodyloc` 0 | same   |
  * | 42–45 / 46–49   | `col` / `row` replication mirror | same                              |
  * | 50–52           | `storage` 5                     | same                              |
  * | 53…53+L         | Huffman code "abc " (L = 14–23) | same                              |
@@ -32,9 +32,9 @@
  * 18 bytes). A record whose flag is anywhere else carries something this module does not
  * understand (stats, an icon, an automod, a pre-stats quantity…) and is reported `layoutOk: false`.
  *
- * Standard of Heroes (`std`) is a complex record in a unique form: quality 7 and, after the icon and
- * automod flags, the 12-bit unique id 0xFFF, so its flag sits at `124 + L` (19 bytes). Verified on a
- * tab written by the game.
+ * Standard of Heroes (`std`, `sth`) is a complex record in a unique form: quality 7 and, after the icon
+ * and automod flags, the 12-bit unique id 0xFFF, so its flag sits at `124 + L` (19 bytes). Verified on
+ * tabs written by the game. The reader recognises the form from the record, not from a list of codes.
  */
 
 import type { GameData } from '../game-data/game-data.js';
@@ -80,7 +80,10 @@ const QUALITY_NORMAL = 2;
 const QUALITY_UNIQUE = 7;
 const UNIQUE_ID_NONE = 0xfff;
 const UNIQUE_ID_BITS = 12;
-const UNIQUE_FORM_CODES: ReadonlySet<string> = new Set(['std']);
+/** Codes the encoder writes in the unique form by default. */
+const UNIQUE_FORM_CODES: ReadonlySet<string> = new Set(['std', 'sth']);
+/** `loc` values the game leaves in a materials record: stored, belt (a potion), Blizzless crafting part. */
+const MATERIAL_LOCS: ReadonlySet<number> = new Set([0, 2, 4]);
 /** Flags that change the record layout and are never set in a materials record. */
 const FLAG_SOCKETED = 1 << 11;
 const FLAG_EAR = 1 << 16;
@@ -141,7 +144,7 @@ export interface MaterialRecord {
   ilvl: number | null;
   /** The record has the unique form of Standard of Heroes (quality 7, unique id 0xFFF). */
   uniqueForm: boolean;
-  /** 0 normally; 4 for Blizzless crafting parts (also stored in the tab). */
+  /** 0 normally; 2 for a potion from a belt; 4 for Blizzless crafting parts (all stored in the tab). */
   loc: number;
   /** Every condition for an in-place quantity edit holds (see `MaterialLayoutIssue`). */
   layoutOk: boolean;
@@ -190,7 +193,7 @@ export interface EncodeMaterialRecordInput {
   ilvl?: number;
   /** Write the unique form; defaults to true for the codes the game stores that way (`std`). */
   uniqueForm?: boolean;
-  /** `loc` field, 0 (default) or 4. */
+  /** `loc` field, 0 (default), 2 or 4. */
   loc?: number;
   /**
    * Bits 0–31; defaults to `MATERIAL_SIMPLE_FLAGS` / `MATERIAL_COMPLEX_FLAGS`. Exists so that an
@@ -315,13 +318,13 @@ function describeRecord(buffer: Uint8Array, entry: WalkedItem): MaterialRecord {
   if (entry.own.start !== entry.full.start || entry.own.end !== entry.full.end) fail('own_not_full');
   if (head.storage !== MATERIAL_STORAGE) fail('storage');
   if (head.bodyloc !== 0) fail('bodyloc');
-  if (head.loc !== 0 && head.loc !== 4) fail('loc');
+  if (!MATERIAL_LOCS.has(head.loc)) fail('loc');
   if (!field) fail('no_quantity_field');
   else if (field.placement !== 'post-stats') fail('pre_stats_quantity');
   else if (field.width !== 8) fail('quantity_width');
   if (field && quantityFlag !== 1) fail('quantity_flag');
   // The id sits before the extended and pre-stats quantity flags (2 bits) and the 9-bit stats terminator.
-  const uniqueForm = family === 'complex' && UNIQUE_FORM_CODES.has(code) && item.quality === QUALITY_UNIQUE && quantityFlagBit !== null
+  const uniqueForm = family === 'complex' && item.quality === QUALITY_UNIQUE && quantityFlagBit !== null
     && bitsAt(buffer, recordStart * 8 + quantityFlagBit - 9 - 2 - UNIQUE_ID_BITS, UNIQUE_ID_BITS) === UNIQUE_ID_NONE;
   if (family === 'complex' && item.quality !== QUALITY_NORMAL && !uniqueForm) fail('quality');
   if (issue === null && !head.ear) {
@@ -454,7 +457,7 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
   const position = input.positionQuantity ?? input.quantity;
   requireInt('positionQuantity', position, 0, MATERIAL_QUANTITY_FIELD_MAX);
   const loc = input.loc ?? 0;
-  if (loc !== 0 && loc !== 4) throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `loc must be 0 or 4, got ${String(loc)}`);
+  if (!MATERIAL_LOCS.has(loc)) throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `loc must be 0, 2 or 4, got ${String(loc)}`);
   const flags = input.flags ?? (family === 'simple' ? MATERIAL_SIMPLE_FLAGS : MATERIAL_COMPLEX_FLAGS);
   requireInt('flags', flags, 0, 0xffffffff);
   if (((flags & FLAG_SIMPLE) !== 0) !== (family === 'simple')) {
@@ -469,7 +472,7 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
   } else if (input.guid !== undefined || input.ilvl !== undefined) {
     throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, 'a simple record has no guid or ilvl');
   }
-  if (input.uniqueForm === true && (family !== 'complex' || !UNIQUE_FORM_CODES.has(code))) {
+  if (input.uniqueForm === true && family !== 'complex') {
     throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `"${code}" has no unique form`);
   }
 

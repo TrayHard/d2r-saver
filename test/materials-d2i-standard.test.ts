@@ -76,10 +76,11 @@ describe('Standard of Heroes record', () => {
     expect(next.after.records.at(-1)).toMatchObject({ code: 'pk2', quantity: 1, uniqueForm: false, layoutOk: true });
   });
 
-  it('other quality or another unique id stays refused, and no other code gets the form', () => {
+  it('other quality or another unique id stays refused, and no other code gets the form by default', () => {
     const otherId = gameRecord();
     otherId[14] ^= 0x40; // record bit 118, the first bit of the 12-bit unique id
     expect(std(withRecord(otherId))).toMatchObject({ uniqueForm: false, layoutOk: false, layoutIssue: 'quality' });
-    expect(() => encodeMaterialRecord(gd, { family: 'complex', code: 'pk1', quantity: 1, guid: 1, ilvl: 1, uniqueForm: true })).toThrow(/no unique form/);
+    expect(encodeMaterialRecord(gd, { family: 'complex', code: 'pk1', quantity: 1, guid: 1, ilvl: 1 }).length).toBe(18);
+    expect(() => encodeMaterialRecord(gd, { family: 'simple', code: 'r01', quantity: 1, uniqueForm: true })).toThrow(/no unique form/);
   });
 });

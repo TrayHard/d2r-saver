@@ -1,15 +1,17 @@
 /**
  * Save shapes found by reading every live save (2026-10-30). The bytes here are synthetic; the shapes
  * are the ones the game wrote: a UTF-8 name past 16 bytes, characters without the optional tail
- * sections, and ears with 8-bit names.
+ * sections, ears with 8-bit names, `sth` in the unique form, and potions that kept `loc` 2.
  */
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
-import { D2RSaver, encodeMaterialRecord } from '../src/index.js';
+import { D2RSaver, encodeMaterialRecord, materialEncodingVerified, materialRecordEncodeInput, readMaterialsD2I } from '../src/index.js';
 import { BitWriter } from '../src/core/binary-writer.js';
 import { computeChecksum } from '../src/core/checksum.js';
+import { D2I_LIST_COUNT_OFFSET, D2I_SECTOR_SIZE_OFFSET, readU16, readU32, writeU16, writeU32 } from '../src/operations/verify-diff.js';
 
 const saver = D2RSaver.fromData(JSON.parse(readFileSync('data/data.json', 'utf8')), JSON.parse(readFileSync('data/strings.json', 'utf8')));
+const buyer = new Uint8Array(readFileSync('test/fixtures/MaterialsTabBuyer.d2i'));
 
 function fix(bytes: Uint8Array): Uint8Array {
   const out = Uint8Array.from(bytes);
@@ -22,6 +24,14 @@ function character(): Uint8Array {
   const profile = saver.readD2S(readFileSync('test/fixtures/WarlockShards.d2s')).profile;
   return saver.writeD2S({ ...profile, items: {}, mercItems: {}, inventory: [], cube: [], stash: [], belt: [],
     rawCorpse: undefined, rawGolem: undefined, extraSections: undefined }, {});
+}
+function withRecord(record: Uint8Array): Uint8Array {
+  const out = new Uint8Array(buyer.length + record.length);
+  out.set(buyer, 0);
+  out.set(record, buyer.length);
+  writeU16(out, D2I_LIST_COUNT_OFFSET, readU16(buyer, D2I_LIST_COUNT_OFFSET) + 1);
+  writeU32(out, D2I_SECTOR_SIZE_OFFSET, readU32(buyer, D2I_SECTOR_SIZE_OFFSET) + record.length);
+  return out;
 }
 
 describe('character name', () => {
@@ -87,5 +97,31 @@ describe('ear items', () => {
       expect(walk.entries[0].full.end).toBe(4 + record.length);
       expect(walk.entries[1].head.base).toBe('r01');
     }
+  });
+});
+
+describe('materials records', () => {
+  it('reads and re-encodes sth in the unique form', () => {
+    const record = encodeMaterialRecord(saver.gd, { family: 'complex', code: 'sth', quantity: 11, guid: 5, ilvl: 98 });
+    const report = readMaterialsD2I(withRecord(record), saver.gd, { sectorOffset: 0 });
+    expect(report.records.at(-1)).toMatchObject({ code: 'sth', uniqueForm: true, quantity: 11, layoutOk: true, layoutIssue: null });
+    expect(record.length).toBe(19);
+  });
+
+  it('recognises the unique form from the record, for any complex code', () => {
+    const record = encodeMaterialRecord(saver.gd, { family: 'complex', code: 'pk1', quantity: 2, guid: 5, ilvl: 98, uniqueForm: true });
+    const tab = withRecord(record);
+    const report = readMaterialsD2I(tab, saver.gd, { sectorOffset: 0 });
+    expect(report.records.at(-1)).toMatchObject({ code: 'pk1', uniqueForm: true, layoutOk: true });
+    expect(materialEncodingVerified(tab, saver.gd, report, 'complex')).toBe(true);
+  });
+
+  it('reads a potion that kept loc 2 and proves its encoding', () => {
+    const record = encodeMaterialRecord(saver.gd, { family: 'simple', code: 'rvl', quantity: 1, loc: 2 });
+    const tab = withRecord(record);
+    const report = readMaterialsD2I(tab, saver.gd, { sectorOffset: 0 });
+    const read = report.records.at(-1)!;
+    expect(read).toMatchObject({ code: 'rvl', loc: 2, quantity: 1, layoutOk: true });
+    expect(encodeMaterialRecord(saver.gd, materialRecordEncodeInput(read))).toEqual(record);
   });
 });

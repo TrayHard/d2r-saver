@@ -41,8 +41,8 @@ function refused(buf: Uint8Array): D2RSaverError {
 }
 
 describe('materials layout conditions (review)', () => {
-  it('a record with loc outside {0, 4} is reported and blocks every edit', () => {
-    for (const loc of [1, 2, 3, 5, 6, 7]) {
+  it('a record with loc outside {0, 2, 4} is reported and blocks every edit', () => {
+    for (const loc of [1, 3, 5, 6, 7]) {
       const buf = new Uint8Array(seller);
       const rvl = readMaterialsD2I(buf, gd, { sectorOffset: 0 }).records.find(r => r.code === 'rvl')!;
       setBits(buf, rvl.recordStart * 8 + 35, 3, loc);
