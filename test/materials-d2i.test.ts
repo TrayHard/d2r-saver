@@ -467,7 +467,7 @@ function complexWith(o: { preQuantity: number | null; postQuantity: number | nul
 // ─── Append ─────────────────────────────────────────────────────
 
 describe('editMaterialsD2I appends', () => {
-  it('appends gpv (+11), gpb (+10) and std (+18) at the end of the sector; the type-2 sector after it moves unchanged', () => {
+  it('appends gpv (+11), gpb (+10) and std (+19) at the end of the sector; the type-2 sector after it moves unchanged', () => {
     const res = editMaterialsD2I(complete, gd, {
       sectorOffset: SECTOR,
       patches: [],
@@ -478,10 +478,10 @@ describe('editMaterialsD2I appends', () => {
       ],
     });
     const out = res.newBuffer;
-    expect(out.length).toBe(complete.length + 39);
+    expect(out.length).toBe(complete.length + 40);
     expect(readU16(out, SECTOR + D2I_LIST_COUNT_OFFSET)).toBe(59);
-    expect(readU32(out, SECTOR + D2I_SECTOR_SIZE_OFFSET)).toBe(830 + 39);
-    expect(res.diff.appends.map(a => a.bytes.length)).toEqual([11, 10, 18]);
+    expect(readU32(out, SECTOR + D2I_SECTOR_SIZE_OFFSET)).toBe(830 + 40);
+    expect(res.diff.appends.map(a => a.bytes.length)).toEqual([11, 10, 19]);
     // Everything before the sector end is identical except the count and the size.
     const end = SECTOR + 830;
     for (let i = 0; i < end; i++) {
@@ -489,9 +489,9 @@ describe('editMaterialsD2I appends', () => {
       if (i >= SECTOR + 66 && i < SECTOR + 68) continue;
       if (out[i] !== complete[i]) throw new Error(`byte ${i} changed`);
     }
-    expect(Array.from(out.subarray(end + 39))).toEqual(Array.from(complete.subarray(end)));
+    expect(Array.from(out.subarray(end + 40))).toEqual(Array.from(complete.subarray(end)));
     expect(readD2ISectorChain(out).map(s => [s.offset, s.size, s.type])).toEqual([
-      [0, 949, 0], [949, 336, 0], [1285, 359, 0], [1644, 68, 0], [1712, 68, 0], [1780, 869, 1], [2649, 168, 2],
+      [0, 949, 0], [949, 336, 0], [1285, 359, 0], [1644, 68, 0], [1712, 68, 0], [1780, 870, 1], [2650, 168, 2],
     ]);
     const tail = res.after.records.slice(56);
     expect(tail.map(r => [r.code, r.family, r.quantity, r.positionQuantity, r.guid, r.ilvl, r.layoutOk])).toEqual([

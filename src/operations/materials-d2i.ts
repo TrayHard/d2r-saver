@@ -31,6 +31,10 @@
  * So the quantity flag sits at record bit `54 + L` (simple, 10–11 bytes) or `112 + L` (complex,
  * 18 bytes). A record whose flag is anywhere else carries something this module does not
  * understand (stats, an icon, an automod, a pre-stats quantity…) and is reported `layoutOk: false`.
+ *
+ * Standard of Heroes (`std`) is a complex record in a unique form: quality 7 and, after the icon and
+ * automod flags, the 12-bit unique id 0xFFF, so its flag sits at `124 + L` (19 bytes). Verified on a
+ * tab written by the game.
  */
 
 import type { GameData } from '../game-data/game-data.js';
@@ -72,6 +76,11 @@ export const MATERIAL_DEFAULT_MAX_QUANTITY = 99;
 
 /** Quality value (normal) of a complex record. */
 const QUALITY_NORMAL = 2;
+/** The game stores these codes as a unique with no unique row: quality 7 and id 0xFFF, 12 bits longer than a normal complex record. */
+const QUALITY_UNIQUE = 7;
+const UNIQUE_ID_NONE = 0xfff;
+const UNIQUE_ID_BITS = 12;
+const UNIQUE_FORM_CODES: ReadonlySet<string> = new Set(['std']);
 /** Flags that change the record layout and are never set in a materials record. */
 const FLAG_SOCKETED = 1 << 11;
 const FLAG_EAR = 1 << 16;
@@ -130,6 +139,8 @@ export interface MaterialRecord {
   guid: number | null;
   /** Item level of a complex record, `null` for a simple one. */
   ilvl: number | null;
+  /** The record has the unique form of Standard of Heroes (quality 7, unique id 0xFFF). */
+  uniqueForm: boolean;
   /** 0 normally; 4 for Blizzless crafting parts (also stored in the tab). */
   loc: number;
   /** Every condition for an in-place quantity edit holds (see `MaterialLayoutIssue`). */
@@ -177,6 +188,8 @@ export interface EncodeMaterialRecordInput {
   guid?: number;
   /** Complex records only, required there: 0–127. */
   ilvl?: number;
+  /** Write the unique form; defaults to true for the codes the game stores that way (`std`). */
+  uniqueForm?: boolean;
   /** `loc` field, 0 (default) or 4. */
   loc?: number;
   /**
@@ -273,8 +286,8 @@ function huffmanLength(code: string): number {
 }
 
 /** Record bit at which the quantity flag of a well-formed record of `family` sits. */
-function expectedQuantityFlagBit(family: MaterialFamily, code: string): number {
-  return (family === 'simple' ? 54 : 112) + huffmanLength(code);
+function expectedQuantityFlagBit(family: MaterialFamily, code: string, uniqueForm: boolean): number {
+  return (family === 'simple' ? 54 : 112) + huffmanLength(code) + (uniqueForm ? UNIQUE_ID_BITS : 0);
 }
 
 // ─── Read ───────────────────────────────────────────────────────
@@ -307,11 +320,14 @@ function describeRecord(buffer: Uint8Array, entry: WalkedItem): MaterialRecord {
   else if (field.placement !== 'post-stats') fail('pre_stats_quantity');
   else if (field.width !== 8) fail('quantity_width');
   if (field && quantityFlag !== 1) fail('quantity_flag');
-  if (family === 'complex' && item.quality !== QUALITY_NORMAL) fail('quality');
+  // The id sits before the extended and pre-stats quantity flags (2 bits) and the 9-bit stats terminator.
+  const uniqueForm = family === 'complex' && UNIQUE_FORM_CODES.has(code) && item.quality === QUALITY_UNIQUE && quantityFlagBit !== null
+    && bitsAt(buffer, recordStart * 8 + quantityFlagBit - 9 - 2 - UNIQUE_ID_BITS, UNIQUE_ID_BITS) === UNIQUE_ID_NONE;
+  if (family === 'complex' && item.quality !== QUALITY_NORMAL && !uniqueForm) fail('quality');
   if (issue === null && !head.ear) {
     // Fixed layout: the flag sits right where the family's layout puts it, the record ends on the
     // first byte boundary after the 8-bit value, and the alignment padding is zero.
-    const expected = expectedQuantityFlagBit(family, code);
+    const expected = expectedQuantityFlagBit(family, code, uniqueForm);
     const lengthBits = (recordEnd - recordStart) * 8;
     if (
       quantityFlagBit !== expected ||
@@ -335,6 +351,7 @@ function describeRecord(buffer: Uint8Array, entry: WalkedItem): MaterialRecord {
     flags: bitsAt(buffer, recordStart * 8, 32),
     guid: family === 'complex' && item.guid !== undefined ? item.guid : null,
     ilvl: family === 'complex' && item.ilvl !== undefined ? item.ilvl : null,
+    uniqueForm,
     loc: head.loc,
     layoutOk: issue === null,
     layoutIssue: issue,
@@ -405,6 +422,7 @@ export function materialRecordEncodeInput(record: MaterialRecord): EncodeMateria
   if (record.family === 'complex') {
     input.guid = record.guid ?? undefined;
     input.ilvl = record.ilvl ?? undefined;
+    input.uniqueForm = record.uniqueForm;
   }
   return input;
 }
@@ -451,6 +469,9 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
   } else if (input.guid !== undefined || input.ilvl !== undefined) {
     throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, 'a simple record has no guid or ilvl');
   }
+  if (input.uniqueForm === true && (family !== 'complex' || !UNIQUE_FORM_CODES.has(code))) {
+    throw new D2RSaverError(ErrorCode.INVALID_ARGUMENT, `"${code}" has no unique form`);
+  }
 
   const q = input.quantity;
   const w = new BitWriter(256);
@@ -468,9 +489,11 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
     w.writeUInt8(0, 3); // socketed item count
     w.writeUInt32(input.guid! >>> 0, 32);
     w.writeUInt8(input.ilvl!, 7);
-    w.writeUInt8(QUALITY_NORMAL, 4);
+    const uniqueForm = input.uniqueForm ?? UNIQUE_FORM_CODES.has(code);
+    w.writeUInt8(uniqueForm ? QUALITY_UNIQUE : QUALITY_NORMAL, 4);
     w.writeBit(0); // icon index flag
     w.writeBit(0); // automod flag
+    if (uniqueForm) w.writeUInt16(UNIQUE_ID_NONE, UNIQUE_ID_BITS);
     w.writeBit(0); // D2R extended section flag
     w.writeBit(0); // pre-stats quantity flag
     w.writeUInt16(0x1ff, 9); // stats terminator
