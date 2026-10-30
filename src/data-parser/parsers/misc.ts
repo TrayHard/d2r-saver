@@ -46,6 +46,7 @@ export async function miscToJson(): Promise<Record<string, unknown>> {
       skipname: toNumber(line[158]),
       useable: toNumber(line[30]),
       quest: toNumber(line[46]),
+      questdiffcheck: toNumber(line[47]),
       hd: getHD(code, 'misc'),
     };
 
