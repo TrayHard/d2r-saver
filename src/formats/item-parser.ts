@@ -609,10 +609,8 @@ export function createItemParser(
         reader.skipbits(5);
       }
 
-      // D2R extended section flag
-      if (reader.bits(1)) {
-        reader.skipbits(types.has('misc') ? 128 : 3);
-      }
+      // Realm data: 4 x uint32 for any item type (BGS D2SSharp Item.ReadRealmData).
+      if (reader.bits(1)) reader.skipbits(128);
 
       // ── Armor defense ─────────────────────────────────────
       if (types.has('armo')) {

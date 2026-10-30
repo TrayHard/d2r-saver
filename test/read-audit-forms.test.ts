@@ -100,6 +100,34 @@ describe('ear items', () => {
   });
 });
 
+describe('realm data', () => {
+  it('skips the 128 bits of realm data for a base outside the misc group', () => {
+    const w = new BitWriter();
+    w.writeUInt32(0x00800010); // identified, bit 23
+    w.writeUInt8(5, 3);
+    w.writeUInt8(0, 3).writeUInt8(0, 4).writeUInt8(0, 4).writeUInt8(0, 4).writeUInt8(5, 3);
+    for (const ch of 'box ') w.writeChar(ch);
+    w.writeUInt8(0, 3); // sockets
+    w.writeUInt32(5); // guid
+    w.writeUInt8(13, 7).writeUInt8(2, 4); // ilvl, normal quality
+    w.writeUInt8(0, 2); // icon and automod flags
+    w.writeUInt8(1, 1); // realm flag
+    for (let i = 0; i < 4; i++) w.writeUInt32(0x1ff01ff0 + i);
+    w.writeUInt8(0, 1); // pre-stats quantity flag
+    w.writeUInt16(0x1ff, 9); // stats terminator
+    w.writeUInt8(0, 1); // post-stats quantity flag
+    w.align();
+    const record = w.toArray();
+    const rune = encodeMaterialRecord(saver.gd, { family: 'simple', code: 'r01', quantity: 1 });
+    const list = Uint8Array.from([0x4a, 0x4d, 2, 0, ...record, ...rune]);
+    const walk = saver.walkItemList(list, 0, { expectedEnd: list.length });
+    expect(walk.report.error).toBeNull();
+    expect(walk.report.complete).toBe(true);
+    expect(walk.entries[0].full.end).toBe(4 + record.length);
+    expect(walk.entries[1].head.base).toBe('r01');
+  });
+});
+
 describe('materials records', () => {
   it('reads and re-encodes sth in the unique form', () => {
     const record = encodeMaterialRecord(saver.gd, { family: 'complex', code: 'sth', quantity: 11, guid: 5, ilvl: 98 });
