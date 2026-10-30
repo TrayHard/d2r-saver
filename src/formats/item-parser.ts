@@ -206,6 +206,8 @@ export interface BinaryParsedItem {
    * depend on it; in-place quantity patching of materials tabs does.
    */
   quantityField?: { placement: 'post-stats' | 'pre-stats'; flagBit: number; width: 8 | 9 };
+  /** Difficulty of a compact quest item with `questdiffcheck`; `undefined` for other items. */
+  questDifficulty?: number;
   /** Personalized name string (when personalized flag set). */
   personalized?: string;
   /** Ear-item payload (when ear flag set). */
@@ -439,10 +441,11 @@ export function createItemParser(
     const personalized = !!reader.bits(1);
     reader.skipbits(1);
     const runeword = !!reader.bits(1);
-    // D2R: 1 unk + 1 extras flag + 6 unk
+    // D2R: 1 unk + chronicle flag (bit 28) + compact-chronicle flag (bit 29) + 5 unk
     reader.skipbits(1);
     const extras = reader.bits(1);
-    reader.skipbits(6);
+    const compactChronicle = reader.bits(1);
+    reader.skipbits(5);
 
     const item: Partial<BinaryParsedItem> = {
       itemId: typeof idIn === 'number' ? idIn : 0,
@@ -499,15 +502,20 @@ export function createItemParser(
 
     const base = (gd.items[baseId] || {}) as unknown as Record<string, unknown>;
     let socketedItemsCount = 0;
+    const types = itemGetTypes(gd, baseId);
 
     if (simple) {
+      // Compact quest items with questdiffcheck store their difficulty (stat 356 width) first (BGS D2SSharp Item.ReadCompactItem).
+      if (base.quest && base.questdiffcheck) {
+        const info = getStatInfo('questitemdifficulty');
+        item.questDifficulty = reader.bits(info.savebits ?? 0) - (info.saveadd || 0);
+      }
       // socketed-count is 1-bit for simple items (always 0 in practice)
       socketedItemsCount = reader.bits(1);
       item.quality = QUALITY_NORMAL;
     } else {
       socketedItemsCount = reader.bits(3);
 
-      const types = itemGetTypes(gd, baseId);
 
       // Persistent 32-bit D2 item id (GUID). `bits(32)` needs `>>> 0` because the accumulator is a
       // signed int32, so a high-bit-set value would come out negative. Same bit-advance as the old
@@ -787,18 +795,14 @@ export function createItemParser(
 
     // ── Post-stats: D2R extras + chronicle + V105 quantity ───
     if (extras) {
-      // Blizzless D2R "extras" block: a fixed 52-bit field whose bit 48 flags whether a 64-bit
-      // chronicle-tracking record (a "found/identified by" stamp) follows. The chronicle's presence
-      // is governed ONLY by that flag — NOT by quality or identified status: an unidentified misc
-      // unique can carry it while an identified armor unique does not. The old "skip 64 for every
-      // SET/UNIQUE/RUNEWORD" heuristic over-consumed 64 bits whenever the flag was 0, silently
-      // misaligning EVERY following item in the list — later items were read as garbage or dropped
-      // (e.g. an unidentified Eschuta's Temper vanishing from the save import). Verified against
-      // real saves: the flag predicts 52 vs 116 bits for every observed extras=1 item.
-      reader.skipbits(48);
-      const hasChronicle = reader.bits(1); // bit 48 of the 52-bit extras block
-      reader.skipbits(3); // remainder of the extras block
-      if (hasChronicle) reader.skipbits(64);
+      // Chronicle record (flag bit 28), as the game server writes it (BGS D2SSharp Item.ReadChronicle):
+      // 16-bit id; then, unless compact (flag bit 29), a 32-bit timestamp and a 4-bit recipient
+      // count capped at 8; each recipient is 64 bits. A compact chronicle has exactly one recipient.
+      // Reading the count as a single bit misaligned every item after one with 2+ recipients.
+      reader.skipbits(16);
+      if (!compactChronicle) reader.skipbits(32);
+      const recipients = compactChronicle ? 1 : Math.min(reader.bits(4), 8);
+      reader.skipbits(64 * recipients);
     }
     // V105: post-stats quantity (1-bit flag + 8-bit value).
     const postQuantityFlagBit = reader.bitpos - startBit;
