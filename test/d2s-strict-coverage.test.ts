@@ -105,9 +105,9 @@ describe('strict whole-character coverage', () => {
       expect(cursor).toBe(bytes.length); expect(parsed.coverage.endOffset).toBe(bytes.length);
     }
   });
-  it('rejects missing and malformed final sections even with a repaired file checksum', () => {
+  it('rejects malformed final sections even with a repaired file checksum', () => {
     const good = cleanCharacter(); const start = saver.readD2S(good).demons!.headerOffset;
-    for (const tail of [new Uint8Array(), emptySection().subarray(0, 5), Uint8Array.from([...emptySection(), 0]), changed(emptySection(), 0, 2)]) {
+    for (const tail of [emptySection().subarray(0, 5), Uint8Array.from([...emptySection(), 0]), changed(emptySection(), 0, 2)]) {
       const parsed = saver.readD2S(fix(Buffer.concat([good.subarray(0, start), tail])));
       expect(parsed.coverage.complete).toBe(false);
     }

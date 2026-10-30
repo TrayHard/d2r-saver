@@ -469,10 +469,14 @@ export function createItemParser(
     if (ear) {
       const earClass = reader.bits(3);
       const earLevel = reader.bits(7);
+      // Ear names are 8-bit UTF-8 in saves above v97 (BGS D2SSharp Item.ReadString), then the same realm
+      // and post-stats quantity flags as any compact item.
       const nameBytes: number[] = [];
       let ch: number;
-      while ((ch = reader.bits(7))) nameBytes.push(ch);
-      const earName = String.fromCharCode(...nameBytes);
+      while ((ch = reader.bits(8))) nameBytes.push(ch);
+      const earName = new TextDecoder('utf-8').decode(new Uint8Array(nameBytes));
+      if (reader.bits(1)) reader.skipbits(128);
+      if (reader.bits(1)) reader.skipbits(8);
       item.ear = { class: earClass, level: earLevel, name: earName };
       item.base = 'ear';
       item.quality = QUALITY_NORMAL;

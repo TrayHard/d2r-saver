@@ -150,11 +150,11 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   // v105: 4 zero bytes at offset 0x10
   reader.skip(4);
 
-  // Name might be at offset 299 (v105)
+  // Name at offset 299 (v105): a 96-byte UTF-8 field, so a Cyrillic name is longer than 16 bytes.
   if (!result.name) {
     const savedPos = reader.bitpos;
     reader.seek(299);
-    result.name = reader.utf8(16);
+    result.name = reader.utf8(96);
     reader.bitpos = savedPos;
   }
 
