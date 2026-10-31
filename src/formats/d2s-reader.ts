@@ -13,6 +13,7 @@ import { detectFormat } from './detect.js';
 import { createItemParser, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace } from './item-parser.js';
 import { readD2SDemonSection, type D2SDemonSectionReport } from './d2s-demon-reader.js';
 import { d2sCoverage, type D2SParseCoverage } from './d2s-coverage.js';
+import { D2S_MAGIC } from '../types/constants.js';
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -75,6 +76,8 @@ export interface D2SCharacterProfile {
    * without recomputing them. Only filesize + checksum are re-derived on write.
    */
   rawHeader?: number[];
+  /** Set by `readLegacyD2S`: this profile came from an older save version and must not be written. */
+  legacyVersion?: 99;
   /** Raw bytes of the corpse section (0x4d4a marker + corpse item lists). */
   rawCorpse?: number[];
   /** Raw bytes of the iron-golem section (0x666b marker + optional golem item). */
@@ -134,9 +137,37 @@ export interface D2SReadResult {
  * @param gd   GameData instance
  */
 export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
-  const warnings: string[] = [];
   const fmt = detectFormat(data);
   if (!fmt || fmt.type !== 'd2s') throw Error('invalid d2s header');
+  return readCharacter(data, gd, V105_LAYOUT);
+}
+
+/**
+ * Parse a legacy v99 .d2s for reading only. The profile carries no `rawHeader`, and `writeD2S`
+ * refuses `legacyVersion`, so a v99 file can never be written back through the v105 writer.
+ */
+export function readLegacyD2S(data: Uint8Array, gd: GameData): D2SReadResult {
+  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  if (data.length < 16 || view.getUint32(0, true) !== D2S_MAGIC || view.getUint32(4, true) !== 99) throw Error('invalid v99 d2s header');
+  return readCharacter(data, gd, V99_LAYOUT);
+}
+
+/** Fixed offsets of the character header (BGS D2SSharp Character.Read, PreviewData.Read). */
+interface CharacterLayout {
+  version: 99 | 105;
+  flags: number;
+  class: number;
+  merc: number;
+  name: number;
+  nameLength: number;
+  quests: [number, number, number];
+  stats: number;
+}
+const V105_LAYOUT: CharacterLayout = { version: 105, flags: 20, class: 24, merc: 163, name: 299, nameLength: 96, quests: [413, 509, 605], stats: 833 };
+const V99_LAYOUT: CharacterLayout = { version: 99, flags: 36, class: 40, merc: 179, name: 267, nameLength: 60, quests: [345, 441, 537], stats: 765 };
+
+function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout): D2SReadResult {
+  const warnings: string[] = [];
 
   const reader = new BinaryReader(data);
   reader.seek(16);
@@ -145,26 +176,25 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
 
   // Preserve the fixed 833-byte v105 header verbatim for lossless round-tripping.
   // (The stats section always starts at offset 833 in this format.)
-  result.rawHeader = Array.from(data.subarray(0, 833));
+  if (layout.version === 105) result.rawHeader = Array.from(data.subarray(0, 833));
+  else result.legacyVersion = layout.version;
 
   // v105: 4 zero bytes at offset 0x10
   reader.skip(4);
 
-  // Name at offset 299 (v105): a 96-byte UTF-8 field, so a Cyrillic name is longer than 16 bytes.
+  // A UTF-8 field, so a Cyrillic name is longer than 16 bytes.
   if (!result.name) {
     const savedPos = reader.bitpos;
-    reader.seek(299);
-    result.name = reader.utf8(96);
+    reader.seek(layout.name);
+    result.name = reader.utf8(layout.nameLength);
     reader.bitpos = savedPos;
   }
 
-  // Class at offset 24 (v105)
-  reader.seek(24);
+  reader.seek(layout.class);
   const classId = reader.read8();
   result.class = GameData.classes[classId] || `unknown_${classId}`;
 
-  // Merc data at offset 163 (v105)
-  reader.seek(163);
+  reader.seek(layout.merc);
   const mercId = reader.read32();
   if (mercId) {
     result.mercName = reader.read16();
@@ -194,15 +224,12 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
   }
 
   result.quests = [];
-  reader.seek(413); // v105 quest offset normal
-  result.quests.push(readQuestTable());
-  reader.seek(509); // nightmare
-  result.quests.push(readQuestTable());
-  reader.seek(605); // hell
-  result.quests.push(readQuestTable());
+  for (const offset of layout.quests) { // normal, nightmare, hell
+    reader.seek(offset);
+    result.quests.push(readQuestTable());
+  }
 
-  // Character stats at offset 833 (v105)
-  reader.seek(833);
+  reader.seek(layout.stats);
   if (reader.read16() !== 0x6667) throw Error('invalid stats header');
 
   // Build stat map
@@ -253,7 +280,7 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
 
   // Items
   const traces: ParsedItemTrace[] = [];
-  const ctx = createItemParser(reader, gd, 0, { onItem: trace => traces.push(trace) });
+  const ctx = createItemParser(reader, gd, 0, { saveVersion: layout.version, onItem: trace => traces.push(trace) });
   let demons: D2SDemonSectionReport | null = null;
   const lists: D2SItemLists = { main: null, corpses: [], merc: null, golem: null };
 
@@ -398,6 +425,6 @@ export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
     warnings,
     lists,
     demons,
-    coverage: d2sCoverage(data, result, lists, traces, demons, warnings, prefixComplete),
+    coverage: d2sCoverage(data, result, lists, traces, demons, warnings, prefixComplete, layout.flags, layout.merc),
   };
 }

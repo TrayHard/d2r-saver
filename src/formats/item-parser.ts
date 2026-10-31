@@ -146,6 +146,8 @@ export interface ParserOptions {
   baseOffset?: number;
   /** Called for every item the parser finishes, including ones it does not register. */
   onItem?: (trace: ParsedItemTrace) => void;
+  /** Save version of the items; 99 selects the legacy read-only layout. Defaults to 105. */
+  saveVersion?: 99 | 105;
 }
 
 /** Parsed item representation from the binary reader. */
@@ -395,6 +397,7 @@ export function createItemParser(
   const forceStackable = options?.forceStackable ?? false;
   const baseOffset = options?.baseOffset ?? 0;
   const onItem = options?.onItem;
+  const legacy = options?.saveVersion === 99;
   const items: Record<number | string, BinaryParsedItem> = {};
   let itemId = initialId;
   let listError: string | null = null;
@@ -476,7 +479,7 @@ export function createItemParser(
       while ((ch = reader.bits(8))) nameBytes.push(ch);
       const earName = new TextDecoder('utf-8').decode(new Uint8Array(nameBytes));
       if (reader.bits(1)) reader.skipbits(128);
-      if (reader.bits(1)) reader.skipbits(8);
+      if (!legacy && reader.bits(1)) reader.skipbits(8);
       item.ear = { class: earClass, level: earLevel, name: earName };
       item.base = 'ear';
       item.quality = QUALITY_NORMAL;
@@ -514,8 +517,8 @@ export function createItemParser(
         const info = getStatInfo('questitemdifficulty');
         item.questDifficulty = reader.bits(info.savebits ?? 0) - (info.saveadd || 0);
       }
-      // socketed-count is 1-bit for simple items (always 0 in practice)
-      socketedItemsCount = reader.bits(1);
+      // Compact items have no sockets; this bit is the realm flag (BGS D2SSharp Item.ReadCompactItem).
+      if (reader.bits(1)) reader.skipbits(128);
       item.quality = QUALITY_NORMAL;
     } else {
       socketedItemsCount = reader.bits(3);
@@ -643,7 +646,10 @@ export function createItemParser(
 
       // ── V105 pre-stats quantity (1-bit flag + 9-bit value) ─
       const preQuantityFlagBit = reader.bitpos - startBit;
-      if (reader.bits(1)) {
+      if (legacy) {
+        // Up to v104 only stackable bases store a quantity, with no presence flag (BGS D2SSharp Item.ReadCompleteItem).
+        if (base.stackable) item.quantity = reader.bits(9);
+      } else if (reader.bits(1)) {
         item.quantity = reader.bits(9);
         item.quantityField = { placement: 'pre-stats', flagBit: preQuantityFlagBit, width: 9 };
       } else if (forceStackable && !types.has('ques')) {
@@ -796,7 +802,7 @@ export function createItemParser(
     }
 
     // ── Post-stats: D2R extras + chronicle + V105 quantity ───
-    if (extras) {
+    if (extras && !legacy) {
       // Chronicle record (flag bit 28), as the game server writes it (BGS D2SSharp Item.ReadChronicle):
       // 16-bit id; then, unless compact (flag bit 29), a 32-bit timestamp and a 4-bit recipient
       // count capped at 8; each recipient is 64 bits. A compact chronicle has exactly one recipient.
@@ -808,7 +814,7 @@ export function createItemParser(
     }
     // V105: post-stats quantity (1-bit flag + 8-bit value).
     const postQuantityFlagBit = reader.bitpos - startBit;
-    if (reader.bits(1)) {
+    if (!legacy && reader.bits(1)) {
       item.quantity = reader.bits(8);
       item.quantityField = { placement: 'post-stats', flagBit: postQuantityFlagBit, width: 8 };
     }

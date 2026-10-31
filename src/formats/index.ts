@@ -12,6 +12,7 @@ export {
 } from './item-parser.js';
 export {
   readD2S,
+  readLegacyD2S,
   type D2SReadResult,
   type D2SCharacterProfile,
   type D2SItemLists,
@@ -26,6 +27,7 @@ export {
 export {
   walkItemList,
   walkD2I,
+  walkLegacyD2I,
   readItemHead,
   readItemPosition,
   patchItemPosition,

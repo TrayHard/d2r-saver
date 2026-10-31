@@ -8,7 +8,7 @@ import { GameData } from './game-data/game-data.js';
 import type { RawGameData } from './game-data/types.js';
 import type { LocaleArray } from './game-data/loader.js';
 import { detectFormat, type DetectedFormat } from './formats/detect.js';
-import { readD2S, type D2SReadResult, type D2SCharacterProfile } from './formats/d2s-reader.js';
+import { readD2S, readLegacyD2S, type D2SReadResult, type D2SCharacterProfile } from './formats/d2s-reader.js';
 import { readD2I, type D2IReadResult, type D2IStashPage } from './formats/d2i-reader.js';
 import type { BinaryParsedItem } from './formats/item-parser.js';
 import { writeD2S, type WriteD2SOptions } from './formats/d2s-writer.js';
@@ -43,6 +43,7 @@ import { StashGrid } from './inventory/grid.js';
 import { D2RSaverError, ErrorCode } from './types/errors.js';
 import {
   walkD2I,
+  walkLegacyD2I,
   walkItemList,
   type D2IParseReport,
   type WalkItemListOptions,
@@ -271,6 +272,11 @@ export class D2RSaver {
     return readD2S(buffer, this.gd);
   }
 
+  /** Read a legacy v99 .d2s character save. Read-only: `writeD2S` refuses the result. */
+  readLegacyD2S(buffer: Uint8Array): D2SReadResult {
+    return readLegacyD2S(buffer, this.gd);
+  }
+
   /** Read a .d2i shared stash file. */
   readD2I(buffer: Uint8Array): D2IReadResult {
     return readD2I(buffer, this.gd);
@@ -289,6 +295,11 @@ export class D2RSaver {
    */
   walkD2I(buffer: Uint8Array): D2IParseReport {
     return walkD2I(buffer, this.gd);
+  }
+
+  /** Walk a legacy v99 .d2i shared stash. Read-only: the in-place operations reject these files. */
+  walkLegacyD2I(buffer: Uint8Array): D2IParseReport {
+    return walkLegacyD2I(buffer, this.gd);
   }
 
   /** Walk one `JM` item list that starts at absolute byte `headerOffset` (0.3.0). */

@@ -79,6 +79,7 @@ export interface WriteD2SOptions {
  */
 export function writeD2S(opts: WriteD2SOptions): Uint8Array {
   const { profile, items, gd, name } = opts;
+  if (profile.legacyVersion) throw new Error(`v${profile.legacyVersion} characters are read-only`);
   const writer = new BitWriter();
 
   const classId = GameData.classes.indexOf(profile.class as typeof GameData.classes[number]);

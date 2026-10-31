@@ -16,13 +16,14 @@ export interface D2SParseCoverage {
 }
 
 export function d2sCoverage(data: Uint8Array, profile: Partial<D2SCharacterProfile>, lists: D2SItemLists,
-  traces: ParsedItemTrace[], demons: D2SDemonSectionReport | null, warnings: string[], prefixComplete: boolean): D2SParseCoverage {
+  traces: ParsedItemTrace[], demons: D2SDemonSectionReport | null, warnings: string[], prefixComplete: boolean,
+  flagsOffset = 20, mercOffset = 163): D2SParseCoverage {
   const out: D2SParseCoverage = { complete: false, reachedEof: demons?.reachedEof ?? false,
     endOffset: demons?.endOffset ?? 0, error: null, items: [], sections: [] };
   try {
     if (!prefixComplete) throw Error('unsupported character prefix schema');
     // Mercenary and golem sections exist for expansion characters only (status bit 5); the demon section is optional.
-    const expansion = (data[20] & 0x20) !== 0;
+    const expansion = (data[flagsOffset] & 0x20) !== 0;
     if (warnings.length || !lists.main || (expansion && !lists.golem) || (demons && !demons.complete)) throw Error('incomplete character sections');
     const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
     if (view.getUint32(8, true) !== data.length || view.getUint32(12, true) !== computeChecksum(data)) throw Error('invalid character size or checksum');
@@ -84,7 +85,7 @@ export function d2sCoverage(data: Uint8Array, profile: Partial<D2SCharacterProfi
       out.complete = true;
       return out;
     }
-    if (view.getUint32(163, true) !== 0 && !lists.merc) throw Error('missing hired mercenary item list');
+    if (view.getUint32(mercOffset, true) !== 0 && !lists.merc) throw Error('missing hired mercenary item list');
     const mercEnd = lists.golem.headerOffset;
     if (view.getUint16(corpseEnd, true) !== 0x666a || mercEnd !== (lists.merc?.endOffset ?? corpseEnd + 2)
       || (lists.merc && lists.merc.headerOffset !== corpseEnd + 2)) throw Error('invalid mercenary boundary');

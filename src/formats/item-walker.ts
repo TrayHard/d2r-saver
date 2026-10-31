@@ -19,6 +19,7 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import type { GameData } from '../game-data/game-data.js';
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
+import { D2S_MAGIC } from '../types/constants.js';
 import { detectFormat } from './detect.js';
 import {
   createItemParser,
@@ -142,6 +143,8 @@ export interface WalkItemListOptions {
   initialId?: number;
   /** Absolute byte offset where the list must end, if known (sector end for `.d2i`). */
   expectedEnd?: number;
+  /** Save version of the items; 99 selects the legacy read-only layout. Defaults to 105. */
+  saveVersion?: 99 | 105;
 }
 
 // ─── Bit helpers (LSB-first, same convention as BinaryReader) ───
@@ -327,6 +330,7 @@ export function walkItemList(
   // to the next item that completes one level up.
   const pending: WalkedItem[][] = [];
   const ctx = createItemParser(reader, gd, options?.initialId ?? 0, {
+    saveVersion: options?.saveVersion,
     onItem: ({ item, depth, registeredKey }) => {
       const children = pending[depth + 1] ?? [];
       pending[depth + 1] = [];
@@ -383,14 +387,28 @@ function readU32(data: Uint8Array, offset: number): number {
  *   `BUFFER_OVERRUN` when a sector header claims bytes the buffer does not have for its list header.
  */
 export function walkD2I(buffer: Uint8Array, gd: GameData): D2IParseReport {
+  return walkSectors(buffer, gd, 105);
+}
+
+/**
+ * Walk a legacy v99 `.d2i` for reading only. The in-place operations go through `walkD2I`, which
+ * rejects these files, so a v99 tab can never reach a write.
+ */
+export function walkLegacyD2I(buffer: Uint8Array, gd: GameData): D2IParseReport {
+  return walkSectors(buffer, gd, 99);
+}
+
+function walkSectors(buffer: Uint8Array, gd: GameData, saveVersion: 99 | 105): D2IParseReport {
   const sectors: D2IWalkedSector[] = [];
   let offset = 0;
   let stoppedEarly = false;
 
   while (offset < buffer.length) {
     if (offset + SECTOR_HEADER_SIZE > buffer.length) { stoppedEarly = true; break; }
-    const fmt = detectFormat(buffer.subarray(offset));
-    if (!fmt || fmt.type !== 'd2i') { stoppedEarly = true; break; }
+    if (saveVersion === 105) {
+      const fmt = detectFormat(buffer.subarray(offset));
+      if (!fmt || fmt.type !== 'd2i') { stoppedEarly = true; break; }
+    } else if (readU32(buffer, offset) !== D2S_MAGIC || readU32(buffer, offset + 8) !== saveVersion) { stoppedEarly = true; break; }
 
     const gold = readU32(buffer, offset + 12);
     const size = readU32(buffer, offset + 16);
@@ -402,6 +420,7 @@ export function walkD2I(buffer: Uint8Array, gd: GameData): D2IParseReport {
       walk = walkItemList(buffer, offset + SECTOR_HEADER_SIZE, gd, {
         initialId: 1,
         expectedEnd: offset + size,
+        saveVersion,
       });
     }
     sectors.push({ offset, size, type, gold, walk });
