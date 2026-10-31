@@ -164,7 +164,7 @@ Runeword163	Wind	1			110	mele						h2h	scep		SurEl	r29	r01					dmg		340	360	swin
 Runeword164	Wings of Hope																																																	0
 Runeword165	Wisdom	1			D2R Ladder 1	helm									PulIthEld	r21	r06	r02				pierce		33	33	manasteal		4	8	dmg%		90	90	mana-kill		5	5	nofreeze		1	1	enr		10	10					0
 Runeword166	Woe																																																	0
-Runeword167	Wonder																																																	0
+Runeword167	Wonder	1			Blizzless S4	staf									OhmLemIst	r27	r20	r24				aura	Conviction	9	9	hit-skill	Flame Wave	7	33	allskills		2	2	cast2		20	20	pierce-fire		10	10	res-all		20	40	oskill	Telekinesis	1	1	0
 Runeword168	Wrath	1			Previously Ladder Only	miss									PulLumBerMal	r21	r17	r30	r23			dmg%		340	340	oskill	Multiple Shot	1	1	nofreeze		1	1	swing2		20	20	crush		10	10	hit-skill	Amplify Damage	15	14					0
 Runeword169	Youth																																																	0
 Runeword170	Zephyr	1			109	miss									OrtEth	r09	r05					move2		25	25	swing2		25	25	dmg%		33	33	att		66	66	gethit-skill	240	7	1	ac		25	25					0
