@@ -11,3 +11,12 @@ describe('Wonder runeword data', () => {
     expect(wonder).toMatchObject({ t1code1: 'aura', t1min1: 9, t1max1: 9, t1code6: 'res-all', t1min6: 20, t1max6: 40 });
   });
 });
+
+describe('Pure runeword data', () => {
+  it('keeps every Pure row under its own 9xx key with its runes', () => {
+    const pure = Object.entries(runes).filter(([, value]) => String(value.name).endsWith('(Pure)'));
+    expect(pure).toHaveLength(34);
+    expect(pure.every(([key]) => /^runeword9\d\d$/.test(key))).toBe(true);
+    expect(pure.find(([, value]) => value.name === 'Eternity (Pure)')?.[1]).toMatchObject({ rune1: 'r11', rune5: '29r', itype1: 'mele' });
+  });
+});

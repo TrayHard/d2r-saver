@@ -7,16 +7,21 @@ export async function runesToJson(): Promise<Record<string, unknown>> {
   const table = await readGameFile('runes');
   const runes: Record<string, unknown> = {};
   let i = 1;
+  let pureNum = 900;
 
   for (const line of table) {
     const name = getString(line[0]).trim();
-    if (name === '' || getString(line[1]).indexOf('(Pure)') > 0 || getString(line[2]) !== '1') {
+    if (name === '' || getString(line[2]) !== '1') {
       i++;
       continue;
     }
 
+    // Pure rows reuse the Name of the plain row and their stored id is unknown: a caller matches them by socketed runes.
+    const pure = getString(line[1]).indexOf('(Pure)') > 0;
     let rwNum = name.startsWith('Runeword') ? +(name.match(/Runeword(\d+)/)?.[1] ?? i) : i;
-    if (rwNum > 75) {
+    if (pure) {
+      rwNum = ++pureNum;
+    } else if (rwNum > 75) {
       rwNum += 25;
     } else {
       rwNum += 26;
