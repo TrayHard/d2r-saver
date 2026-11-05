@@ -2,7 +2,7 @@
 //! every item list in file order (main, corpses, hireling, iron golem) and the profile slots.
 
 use crate::bits::BitReader;
-use crate::item::{Item, ItemDetail, Key, ListReport, Parsed, Parser};
+use crate::item::{Item, ItemCopy, ItemDetail, Key, ListReport, Parsed, Parser, Section};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC};
 use std::collections::HashMap;
 
@@ -57,6 +57,8 @@ pub struct Character {
     pub main: Option<ListReport>,
     /// The details `Item::detail` points to when the save was read with details, else empty.
     pub details: Vec<ItemDetail>,
+    /// With details: every extended item of the main, corpse and hireling lists, socketed ones included.
+    pub copies: Vec<ItemCopy>,
 }
 
 /// `readD2S`: a v105 `.d2s`.
@@ -170,6 +172,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
         }
 
         // Corpses.
+        p.section = Section::Corpse;
         if p.r.read16()? != 0x4d4a {
             return Err(Error("invalid item table header"));
         }
@@ -190,6 +193,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
         }
 
         // Hireling.
+        p.section = Section::Mercenary;
         if !p.r.eof() {
             if p.r.read16()? != 0x666a {
                 return Err(Error("invalid hireling header"));
@@ -213,6 +217,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
         }
 
         // Iron golem: its item is registered but sits in no slot.
+        p.section = Section::Golem;
         if !p.r.eof() {
             if p.r.read16()? != 0x666b {
                 return Err(Error("invalid iron golem header"));
@@ -236,6 +241,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
         held: refs.into_iter().map(|(slot, (_, item))| (slot, item)).collect(),
         main,
         details: p.details.unwrap_or_default(),
+        copies: p.copies.unwrap_or_default(),
     })
 }
 

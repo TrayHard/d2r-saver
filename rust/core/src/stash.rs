@@ -1,7 +1,7 @@
 //! Port of `walkSectors` / `walkItemList` in `src/formats/item-walker.ts`: every sector of a
 //! `.d2i` stash tab and the top-level items of each sector's `JM` list.
 
-use crate::item::{Item, ItemDetail, ListReport, Parser};
+use crate::item::{Item, ItemCopy, ItemDetail, ListReport, Parser, Section};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC, OVERRUN};
 
 const SECTOR_HEADER_SIZE: u64 = 64;
@@ -14,6 +14,8 @@ pub struct StashWalk {
     pub entries: Vec<Item>,
     /// The details `Item::detail` points to when the tab was walked with details, else empty.
     pub details: Vec<ItemDetail>,
+    /// With details: every extended item of the sector, socketed ones included.
+    pub copies: Vec<ItemCopy>,
 }
 
 pub struct StashSector {
@@ -82,6 +84,7 @@ fn walk_sectors(buffer: &[u8], gd: &GameData, legacy: bool, details: bool) -> Re
                 legacy,
                 offset + size,
                 details,
+                kind,
             )?)
         } else {
             None
@@ -108,6 +111,7 @@ fn walk_item_list(
     legacy: bool,
     expected_end: u64,
     details: bool,
+    kind: u8,
 ) -> Result<StashWalk> {
     if header_offset + 4 > buffer.len() {
         return Err(OVERRUN);
@@ -116,6 +120,7 @@ fn walk_item_list(
         return Err(Error("no JM item list header"));
     }
     let mut parser = Parser::new(buffer, gd, legacy, details);
+    parser.section = Section::Tab(kind);
     parser.r.seek(header_offset);
     let mut entries = Vec::new();
     let report = parser.parse_item_list(|parsed| entries.push(parsed.item))?;
@@ -125,5 +130,6 @@ fn walk_item_list(
         complete,
         entries,
         details: parser.details.unwrap_or_default(),
+        copies: parser.copies.unwrap_or_default(),
     })
 }

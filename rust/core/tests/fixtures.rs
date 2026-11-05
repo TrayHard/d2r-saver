@@ -507,7 +507,9 @@ fn detail_rows_read_like_the_js_reference() {
     assert_eq!(c.rows[4].stats.get("item_skillongethit#38#10"), Some(&3));
 
     // Stacks are quantities; the empty gem slot and the potion and gem stacks are no rows.
-    let rows = stash_tab_details(&fixture("MaterialsTabSeller.d2i"), gd()).unwrap();
+    let rows = stash_tab_details(&fixture("MaterialsTabSeller.d2i"), gd())
+        .unwrap()
+        .rows;
     let summary: Vec<_> = rows
         .iter()
         .map(|r| (r.place.as_str(), r.name.as_str(), r.quantity, r.guid.is_some()))
@@ -577,4 +579,41 @@ fn detail_rows_come_from_each_copy_of_a_preset_base() {
     let tomes: Vec<_> = c.rows.iter().filter(|r| r.base == "tbk").map(|r| r.guid).collect();
     assert_eq!(tomes.len(), 2);
     assert!(tomes.contains(&Some(GUID as u32)) && tomes.contains(&Some(GUID as u32 ^ 1)));
+}
+
+#[test]
+fn fingerprints_equal_the_js_reference_and_ignore_what_play_changes() {
+    // Expected values: the JS reference (`fp-ref.mjs`, raw fields read from each item's own bytes as the
+    // TypeScript walker locates them) on the same fixture.
+    let bytes = fixture("WarlockTest.d2s");
+    let summary = |bytes: &[u8]| -> Vec<(String, String, u32, bool, String)> {
+        character_details(bytes, gd())
+            .unwrap()
+            .copies
+            .into_iter()
+            .map(|c| (c.place, c.base, c.guid, c.tracked, format!("{:016x}", c.fingerprint)))
+            .collect()
+    };
+    let expected = [
+        ("equipped", "lbl", 3114709512, "55d3a8f956415b19"),
+        ("equipped", "mbt", 3350356541, "419f2134df2a31a5"),
+        ("equipped", "rin", 3785561294, "3c48527352608689"),
+        ("equipped", "fhl", 2731174711, "bc3fcc46776133eb"),
+        ("equipped", "rin", 3873802297, "e8eee482156bf09d"),
+        ("mercenary", "xkp", 4166793064, "516f1d002b2149da"),
+        ("mercenary", "xar", 809000466, "c5ea5cae5f982646"),
+    ]
+    .map(|(place, base, guid, fp)| (place.to_string(), base.to_string(), guid, true, fp.to_string()));
+    assert_eq!(summary(&bytes), expected);
+
+    // The Lore helm (byte 1081), unidentified and moved to another column: the same fingerprint.
+    let mut moved = bytes.clone();
+    let lore = 1081 * 8;
+    set_bits(&mut moved, lore + 4, 1, 0); // identified
+    set_bits(&mut moved, lore + 42, 4, 7); // column
+    assert_eq!(summary(&moved), expected);
+    assert_eq!(
+        character_details(&moved, gd()).unwrap().rows[0].fingerprint,
+        u64::from_str_radix("bc3fcc46776133eb", 16).ok()
+    );
 }

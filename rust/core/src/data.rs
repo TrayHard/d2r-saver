@@ -40,6 +40,8 @@ pub(crate) const TYPE_ARMO: u8 = 4;
 pub(crate) const TYPE_WEAP: u8 = 8;
 /// Blunt weapons: the parser adds 50 to their `item_undeaddamage_percent`.
 pub(crate) const TYPE_BLUN: u8 = 16;
+/// Vendor goods (tomes, keys, arrows, bolts): their copies raise no duplicate alert.
+pub(crate) const TYPE_VENDOR: u8 = 32;
 
 /// How `addStat` keys and accumulates a stat.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
@@ -128,6 +130,8 @@ pub(crate) struct BaseInfo {
     /// `minac` / `maxac`, 0 when the base has none.
     pub min_ac: i64,
     pub max_ac: i64,
+    /// `normcode`, else the code itself: one family for the normal, exceptional and elite tier.
+    pub family: [u8; 3],
 }
 
 #[derive(Clone, Copy, Default)]
@@ -341,6 +345,10 @@ impl GameData {
                 ("armo", TYPE_ARMO),
                 ("weap", TYPE_WEAP),
                 ("blun", TYPE_BLUN),
+                ("book", TYPE_VENDOR),
+                ("key", TYPE_VENDOR),
+                ("bowq", TYPE_VENDOR),
+                ("xboq", TYPE_VENDOR),
             ];
             // text(base.namestr) || base.name || null; a missing namestr looks up "undefined".
             let namestr = entry.get("namestr").and_then(Value::as_str).unwrap_or("undefined");
@@ -352,6 +360,9 @@ impl GameData {
                 display_name: display_name.map(&mut intern),
                 min_ac: num(entry.get("minac")),
                 max_ac: num(entry.get("maxac")),
+                family: non_empty_str(entry.get("normcode"))
+                    .and_then(|n| n.as_bytes().try_into().ok())
+                    .unwrap_or(code.as_bytes().try_into().expect("slot_of took a three-byte code")),
                 types: flags.iter().filter(|f| types.contains(f.0)).fold(0, |acc, f| acc | f.1),
                 known: true,
                 preset: false,

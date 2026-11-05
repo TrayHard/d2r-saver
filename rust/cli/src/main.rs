@@ -5,26 +5,31 @@
 //! character, `{"id","ok":true,"items":{…}}` for a stash tab, `{"id","ok":false}` when the save
 //! does not read. `--details` writes the index rows instead of the counts: `"rows":[{"place",
 //! "name","base","quality","runeword","ethereal","sockets","ilvl","defense","quantity","guid",
-//! "stats","socketed"},…]`. `--bench` prints the parse time per save by category to stderr.
+//! "stats","socketed","fingerprint"},…]`. `--copies` writes every extended item instead: `"copies":[["<fingerprint
+//! hex>",guid,tracked,"place"],…]`. `--bench` prints the parse time per save by category to stderr.
 
 use base64::Engine;
-use d2r_saver_core::{character_details, character_items, stash_tab_details, stash_tab_items, DetailRow, GameData};
+use d2r_saver_core::{
+    character_details, character_items, stash_tab_details, stash_tab_items, DetailRow, GameData, ItemCopy,
+};
 use serde_json::{json, Value};
 use std::io::{BufRead, BufWriter, Write};
 use std::time::Instant;
 
 const USAGE: &str =
-    "usage: d2r-scan [--data <dir with data.json and strings.json>] [--details] [--bench] < saves.jsonl > out.jsonl";
+    "usage: d2r-scan [--data <dir with data.json and strings.json>] [--details | --copies] [--bench] < saves.jsonl > out.jsonl";
 
 fn main() {
     let mut data_dir = concat!(env!("CARGO_MANIFEST_DIR"), "/../../data").to_string();
     let mut bench = false;
     let mut details = false;
+    let mut copies = false;
     let mut args = std::env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
             "--bench" => bench = true,
             "--details" => details = true,
+            "--copies" => copies = true,
             "--data" => data_dir = args.next().unwrap_or_else(|| fail(USAGE)),
             _ => fail(USAGE),
         }
@@ -60,11 +65,29 @@ fn main() {
         let category = (!character as usize) * 2 + (!legacy as usize);
         // Only the read and the count are timed, not the output.
         let started = Instant::now();
+        if copies {
+            let result = if character {
+                character_details(&bytes, &gd).map(|c| c.copies)
+            } else {
+                stash_tab_details(&bytes, &gd).map(|t| t.copies)
+            };
+            nanos[category] += started.elapsed().as_nanos();
+            saves[category] += 1;
+            match result {
+                Ok(copies) => {
+                    let copies = Value::Array(copies.iter().map(copy_json).collect());
+                    writeln!(out, r#"{{"id":{id},"ok":true,"copies":{copies}}}"#)
+                }
+                Err(_) => writeln!(out, r#"{{"id":{id},"ok":false}}"#),
+            }
+            .unwrap();
+            continue;
+        }
         if details {
             let result = if character {
                 character_details(&bytes, &gd).map(|c| (Some((c.version, c.hardcore, c.ladder)), c.rows))
             } else {
-                stash_tab_details(&bytes, &gd).map(|rows| (None, rows))
+                stash_tab_details(&bytes, &gd).map(|t| (None, t.rows))
             };
             nanos[category] += started.elapsed().as_nanos();
             saves[category] += 1;
@@ -136,7 +159,12 @@ fn row_json(r: &DetailRow) -> Value {
         "guid": r.guid,
         "stats": r.stats,
         "socketed": r.socketed,
+        "fingerprint": r.fingerprint.map(|f| format!("{f:016x}")),
     })
+}
+
+fn copy_json(c: &ItemCopy) -> Value {
+    json!([format!("{:016x}", c.fingerprint), c.guid, c.tracked, c.place])
 }
 
 /// The version a category is filed under: byte 4 of a character, byte 8 of a stash tab.

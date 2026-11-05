@@ -6,8 +6,8 @@
 
 use crate::bits::BitReader;
 use crate::data::{
-    GameData, StatInfo, StatKind, TYPE_ARMO, TYPE_BLUN, TYPE_BOOK, TYPE_CHAR, TYPE_WEAP, UNIQUE_RUNEWORD, UNIQUE_SET,
-    UNIQUE_UNIQUE,
+    GameData, StatInfo, StatKind, NO_BASE, TYPE_ARMO, TYPE_BLUN, TYPE_BOOK, TYPE_CHAR, TYPE_VENDOR, TYPE_WEAP,
+    UNIQUE_RUNEWORD, UNIQUE_SET, UNIQUE_UNIQUE,
 };
 use crate::{Error, Result};
 use std::collections::BTreeMap;
@@ -65,6 +65,72 @@ pub struct ItemDetail {
     pub stats: BTreeMap<String, i64>,
     /// English names of the children `item.socketedItems` lists, in socket order.
     pub socketed: Vec<String>,
+    /// The identity of an extended item, see `Fingerprint`; `None` for simple items and ears.
+    pub fingerprint: Option<u64>,
+    /// Copies of the item are worth an alert: it has a guid other than 0, is superior or better or a
+    /// runeword, and is no vendor goods (tomes, keys, quivers). Normal and low quality items are left
+    /// out: every new character gets the same starter weapons, one guid for all.
+    pub tracked: bool,
+}
+
+/// An extended item anywhere in a save (slots, corpses, mercenary, socketed in another item, every
+/// stash sector), for duplicate tracking. The iron golem's item is not one.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct ItemCopy {
+    pub fingerprint: u64,
+    pub guid: u32,
+    /// `ItemDetail::tracked`.
+    pub tracked: bool,
+    /// `equipped`, `belt`, `inventory`, `cube`, `stash` (`loc<n>` for another location), `corpse`,
+    /// `mercenary`, `socketed`; `tab-page`, `tab-materials` or `tab-<sector type>` in a stash tab.
+    pub place: String,
+    /// Runeword, unique or set name, otherwise the base name.
+    pub name: String,
+    pub base: String,
+    pub quality: Option<u8>,
+}
+
+/// The item list a parser reads, for the place of an `ItemCopy`.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Section {
+    Main,
+    Corpse,
+    Mercenary,
+    Golem,
+    /// A stash tab sector of this type.
+    Tab(u8),
+}
+
+/// `NONE` stands for an absent field in the fingerprint words.
+const NONE: u32 = u32::MAX;
+
+/// The fingerprint of an extended item: FNV-1a 64 over u32 words, each fed as 4 little-endian bytes, of
+/// what play cannot change: guid, base family (`normcode`), ethereal, item level, the stored quality, icon
+/// index, auto affix, the quality block (low and superior bits, the 12 bits of a normal charm, magic
+/// affixes, set or unique id, rare names and affixes), set flags, and the main and set stat lists, each
+/// sorted and closed by `NONE`. A list leaves out `Add_one` (a bag's content) and the current charges of
+/// a charged skill. Location, identification, sockets and their content, runeword and its list,
+/// personalisation, base tier, defense, durability and quantity are not hashed: play changes them.
+struct Fingerprint(u64);
+
+impl Fingerprint {
+    fn new() -> Self {
+        Fingerprint(0xcbf2_9ce4_8422_2325)
+    }
+
+    fn word(&mut self, word: u32) {
+        for byte in word.to_le_bytes() {
+            self.0 = (self.0 ^ byte as u64).wrapping_mul(0x0100_0000_01b3);
+        }
+    }
+
+    fn list(&mut self, stats: &mut [[u32; 3]]) {
+        stats.sort_unstable();
+        for word in stats.iter().flatten() {
+            self.word(*word);
+        }
+        self.word(NONE);
+    }
 }
 
 /// A stat key as `addStat` builds it: the stat name, then `params` of `#a#b`.
@@ -141,6 +207,12 @@ pub(crate) struct Parser<'a> {
     pub presets: Vec<(u16, Item)>,
     /// With details: one per parsed item, children before their parent; `Item::detail` points here.
     pub details: Option<Vec<ItemDetail>>,
+    /// With details: every extended item outside the golem slot, children before their parent.
+    pub copies: Option<Vec<ItemCopy>>,
+    /// The list being read; its reader sets it before each list.
+    pub section: Section,
+    /// Socket nesting of the item being parsed: 0 for a top-level item.
+    depth: u32,
 }
 
 impl<'a> Parser<'a> {
@@ -151,6 +223,9 @@ impl<'a> Parser<'a> {
             legacy,
             presets: Vec::new(),
             details: details.then(Vec::new),
+            copies: details.then(Vec::new),
+            section: Section::Main,
+            depth: 0,
         }
     }
 
@@ -163,12 +238,26 @@ impl<'a> Parser<'a> {
             .map(|(_, item)| item)
     }
 
-    /// Stores the details of an item that finished parsing, when they are kept.
-    fn keep(&mut self, item: &mut Item, detail: ItemDetail) {
-        if let Some(details) = &mut self.details {
-            item.detail = details.len() as u32;
-            details.push(detail);
+    /// Stores the details of an item that finished parsing, and its copy, when they are kept.
+    fn keep(&mut self, item: &mut Item, detail: ItemDetail, location: u32, storage: u32) {
+        let Some(details) = &mut self.details else { return };
+        if let (Some(copies), Some(fingerprint), Some(place)) = (
+            &mut self.copies,
+            detail.fingerprint,
+            place(self.section, self.depth, location, storage),
+        ) {
+            copies.push(ItemCopy {
+                fingerprint,
+                guid: detail.guid.unwrap_or(0),
+                tracked: detail.tracked,
+                place,
+                name: display_name(item, self.gd),
+                base: item.code(),
+                quality: detail.quality,
+            });
         }
+        item.detail = details.len() as u32;
+        details.push(detail);
     }
 
     /// One item and its socketed children (`parseItem`).
@@ -237,7 +326,7 @@ impl<'a> Parser<'a> {
                 add_one: 0,
                 detail: NO_DETAIL,
             };
-            self.keep(&mut item, detail);
+            self.keep(&mut item, detail, location, storage);
             return Ok(at(item, Some(Key::Num)));
         }
 
@@ -270,31 +359,46 @@ impl<'a> Parser<'a> {
             let guid = r.bits(32)?;
             let ilvl = r.bits(7)?;
             let quality = r.bits(4)?;
-            if r.bits(1)? != 0 {
-                r.bits(3)?; // icon index
+            let icon = if r.bits(1)? != 0 { r.bits(3)? } else { NONE };
+            let auto_affix = if r.bits(1)? != 0 { r.bits(11)? } else { NONE };
+            let family = if base == NO_BASE || !info.known {
+                code
+            } else {
+                info.family
+            };
+            let mut fingerprint = Fingerprint::new();
+            for word in [
+                guid,
+                u32::from_le_bytes([family[0], family[1], family[2], 0]),
+                ethereal as u32,
+                ilvl,
+                quality,
+                icon,
+                auto_affix,
+            ] {
+                fingerprint.word(word);
             }
-            if r.bits(1)? != 0 {
-                r.bits(11)?; // auto affix
-            }
+            // Low quality and normal charms were skipped unchecked; a read past the end fails at the
+            // next checked read of the same item either way.
             match quality {
-                1 => r.skip_bits(3),
-                2 if info.types & TYPE_CHAR != 0 => r.skip_bits(12),
-                3 => {
-                    r.bits(3)?;
-                }
+                1 | 3 => fingerprint.word(r.bits(3)?),
+                2 if info.types & TYPE_CHAR != 0 => fingerprint.word(r.bits(12)?),
                 4 => {
-                    r.bits(11)?;
-                    r.bits(11)?;
+                    fingerprint.word(r.bits(11)?);
+                    fingerprint.word(r.bits(11)?);
                 }
-                5 => item.unique = Some(UNIQUE_SET + r.bits(12)? as u16),
-                7 => item.unique = Some(UNIQUE_UNIQUE + r.bits(12)? as u16),
+                5 | 7 => {
+                    let id = r.bits(12)?;
+                    fingerprint.word(id);
+                    let kind = if quality == 5 { UNIQUE_SET } else { UNIQUE_UNIQUE };
+                    item.unique = Some(kind + id as u16);
+                }
                 6 | 8 => {
-                    r.bits(8)?;
-                    r.bits(8)?;
+                    fingerprint.word(r.bits(8)?);
+                    fingerprint.word(r.bits(8)?);
                     for _ in 0..6 {
-                        if r.bits(1)? != 0 {
-                            r.bits(11)?;
-                        }
+                        let affix = if r.bits(1)? != 0 { r.bits(11)? } else { NONE };
+                        fingerprint.word(affix);
                     }
                 }
                 _ => {}
@@ -345,10 +449,26 @@ impl<'a> Parser<'a> {
             }
             let sockets = if socketed { r.bits(4)? } else { 0 };
             let set_flags = if quality == 5 { r.bits(5)? } else { 0 };
-            let lists = 1 + set_flags.count_ones() + runeword as u32;
+            if quality == 5 {
+                fingerprint.word(set_flags);
+            }
+            // The main list and the set lists are hashed; the runeword list comes last and is not.
+            let hashed = 1 + set_flags.count_ones();
             let mut stats = Stats::new();
-            for _ in 0..lists {
-                parse_stats(r, gd, &mut item.add_one, keep.then_some(&mut stats))?;
+            let mut raw = Vec::new();
+            for list in 0..hashed + runeword as u32 {
+                let own = keep && list < hashed;
+                parse_stats(
+                    r,
+                    gd,
+                    &mut item.add_one,
+                    keep.then_some(&mut stats),
+                    own.then_some(&mut raw),
+                )?;
+                if own {
+                    fingerprint.list(&mut raw);
+                    raw.clear();
+                }
             }
             if keep {
                 consolidate_damage(&mut stats, gd);
@@ -374,6 +494,8 @@ impl<'a> Parser<'a> {
                         .map(|(key, value)| (stat_text(key, gd), value))
                         .collect(),
                     socketed: Vec::new(),
+                    fingerprint: Some(fingerprint.0),
+                    tracked: guid != 0 && (quality >= 3 || runeword) && info.types & TYPE_VENDOR == 0,
                 };
             }
         }
@@ -392,13 +514,25 @@ impl<'a> Parser<'a> {
         }
         r.align();
 
+        self.depth += 1;
+        let mut children = Ok(());
         for _ in 0..socketed_count {
-            let child = self.parse_item()?;
-            if keep && child.key.is_some() && child.emits() {
-                detail.socketed.push(display_name(&child.item, gd));
+            match self.parse_item() {
+                Ok(child) => {
+                    if keep && child.key.is_some() && child.emits() {
+                        detail.socketed.push(display_name(&child.item, gd));
+                    }
+                }
+                Err(error) => {
+                    children = Err(error);
+                    break;
+                }
             }
         }
-        self.keep(&mut item, detail);
+        // A failed child must not leave the next list nested.
+        self.depth -= 1;
+        children?;
+        self.keep(&mut item, detail, location, storage);
 
         let key = match item.unique {
             Some(u) if !gd.uniques[u as usize].known => None,
@@ -452,6 +586,28 @@ pub(crate) fn display_name(item: &Item, gd: &GameData) -> String {
         .map_or_else(|| item.code(), |id| gd.name(id).to_string())
 }
 
+/// Where an `ItemCopy` sits; `None` for the iron golem's item.
+fn place(section: Section, depth: u32, location: u32, storage: u32) -> Option<String> {
+    let place = match section {
+        Section::Golem => return None,
+        _ if depth > 0 => "socketed",
+        Section::Corpse => "corpse",
+        Section::Mercenary => "mercenary",
+        Section::Tab(0) => "tab-page",
+        Section::Tab(1) => "tab-materials",
+        Section::Tab(kind) => return Some(format!("tab-{kind}")),
+        Section::Main => match (location, storage) {
+            (1, _) => "equipped",
+            (2, _) => "belt",
+            (_, 1) => "inventory",
+            (_, 4) => "cube",
+            (_, 5) => "stash",
+            _ => return Some(format!("loc{location}")),
+        },
+    };
+    Some(place.to_string())
+}
+
 /// `item.defense` from the stored armor class, with the parser's ethereal and eth-bug arithmetic.
 fn defense_of(ac: i64, ethereal: bool, base_min: i64, base_max: i64) -> i64 {
     let third = |v: i64| (v as f64 / 1.5).ceil() as i64;
@@ -472,8 +628,15 @@ fn defense_of(ac: i64, ethereal: bool, base_min: i64, base_max: i64) -> i64 {
 }
 
 /// One stat list up to the 511 terminator. `Add_one` always sums into `add_one`; `stats`, when
-/// given, gets every stat the way `addStat` stores it.
-fn parse_stats(r: &mut BitReader, gd: &GameData, add_one: &mut i64, mut stats: Option<&mut Stats>) -> Result<()> {
+/// given, gets every stat the way `addStat` stores it; `raw`, when given, gets the stored id, param
+/// and value of every stat but `Add_one`, a charged skill without its current charges (`value >> 8`).
+fn parse_stats(
+    r: &mut BitReader,
+    gd: &GameData,
+    add_one: &mut i64,
+    mut stats: Option<&mut Stats>,
+    mut raw: Option<&mut Vec<[u32; 3]>>,
+) -> Result<()> {
     loop {
         let mut id = r.bits(9)?;
         if id == 511 {
@@ -487,9 +650,17 @@ fn parse_stats(r: &mut BitReader, gd: &GameData, add_one: &mut i64, mut stats: O
             } else {
                 0
             };
-            let value = r.bits(info.save_bits)? as i64 - info.save_add;
+            let stored = r.bits(info.save_bits)?;
+            let value = stored as i64 - info.save_add;
             if info.add_one {
                 *add_one += value;
+            } else if let Some(raw) = raw.as_deref_mut() {
+                let stored = if info.kind == StatKind::Charged {
+                    stored >> 8
+                } else {
+                    stored
+                };
+                raw.push([id, param, stored]);
             }
             if let Some(stats) = stats.as_deref_mut() {
                 add_stat(stats, id as u16, info.kind, param as i64, value);

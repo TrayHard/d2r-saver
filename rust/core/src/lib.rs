@@ -19,8 +19,8 @@ pub use bits::BitReader;
 pub use character::{read_d2s, read_legacy_d2s, Character, Slot};
 pub use count::{character_items, character_status, item_name, stash_tab_items, CharacterCounts, Counts};
 pub use data::GameData;
-pub use details::{character_details, stash_tab_details, CharacterDetails, DetailRow};
-pub use item::{Item, ItemDetail, ListReport};
+pub use details::{character_details, stash_tab_details, CharacterDetails, DetailRow, TabDetails};
+pub use item::{Item, ItemCopy, ItemDetail, ListReport};
 pub use stash::{walk_d2i, walk_legacy_d2i, StashReport, StashSector, StashWalk};
 
 /// A read that failed. The TypeScript reader throws in the same places; the message is for logs.
