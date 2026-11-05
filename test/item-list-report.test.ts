@@ -12,6 +12,7 @@ import { readD2I, type D2IReadResult } from '../src/formats/d2i-reader.js';
 import { BinaryReader } from '../src/core/binary-reader.js';
 import { createItemParser, type BinaryParsedItem } from '../src/formats/item-parser.js';
 import { ErrorCode } from '../src/types/errors.js';
+import { locale, rawDataWith } from './helpers/stat-tables.js';
 
 const DATA_DIR = resolve(import.meta.dirname!, '..', 'data');
 const FIXTURES = resolve(import.meta.dirname!, 'fixtures');
@@ -41,10 +42,34 @@ describe('D2SReadResult.lists', () => {
       error: 'item 6/26: unknown item stat code 508',
       errorCode: ErrorCode.PARSE_ERROR,
     });
-    // The main-list desync makes the corpse header unreadable, so nothing after it is reached.
+    // The sections after the broken item are found by their headers: no corpse, the hireling list
+    // (written with D2R widths too, so it breaks on its third item), then the golem header.
     expect(lists.corpses).toEqual([]);
-    expect(lists.merc).toBeNull();
-    expect(lists.golem).toBeNull();
+    expect(lists.merc).toMatchObject({ headerOffset: 1642, declared: 3, parsed: 2, error: 'item 3/3: unknown item stat code 474' });
+    expect(lists.golem).toEqual({ headerOffset: 1840, present: false });
+  });
+
+  it('a broken main list leaves the corpse, hireling and golem sections as an intact read has them', () => {
+    // WarlockTest.d2s reads completely with the D2R table; the first code character of item 8
+    // (byte 1197) is turned into the empty Huffman branch, so the main list breaks there.
+    const d2r = GameData.fromRaw(rawDataWith('d2r'), locale());
+    const bytes = fixture('WarlockTest.d2s');
+    const broken = bytes.slice();
+    for (let i = 0; i < 9; i++) {
+      const bit = 1197 * 8 + 53 + i;
+      broken[bit >> 3] = (broken[bit >> 3] & ~(1 << (bit & 7))) | ((((232 | 256) >> i) & 1) << (bit & 7));
+    }
+    const intact = readD2S(bytes, d2r);
+    const read = readD2S(broken, d2r);
+    expect(read.lists.main).toMatchObject({ parsed: 7, endOffset: 1197, error: expect.stringMatching(/^item 8\/26: invalid item code/) });
+    expect(read.warnings).toEqual([`Main item list truncated: ${read.lists.main!.error}`]);
+    expect(read.lists.corpses).toEqual(intact.lists.corpses);
+    expect(read.lists.merc).toEqual(intact.lists.merc);
+    expect(read.lists.golem).toEqual(intact.lists.golem);
+    for (const field of ['rawCorpse', 'rawGolem', 'extraSections'] as const) expect(read.profile[field]).toEqual(intact.profile[field]);
+    const mercGuids = (r: D2SReadResult) => Object.entries(r.profile.mercItems).map(([slot, id]) => [slot, r.items[id as number].guid]);
+    expect(mercGuids(read)).toEqual(mercGuids(intact));
+    expect(Object.keys(read.profile.mercItems)).toEqual(['head', 'tors', 'rarm']);
   });
 
   it('WarlockShards.d2s: main list declares 17, parses 6, stops on stat 504', () => {
