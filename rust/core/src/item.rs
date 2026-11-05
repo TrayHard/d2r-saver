@@ -3,10 +3,8 @@
 //! The parser reads every field the TypeScript parser reads, in the same order, and keeps only
 //! what counting needs: base, unique/set/runeword id, quantity and the `Add_one` stat.
 
-use crate::bits::{BitReader, DEAD_BRANCH};
-use crate::data::{
-    GameData, NO_BASE, TYPE_ARMO, TYPE_BOOK, TYPE_CHAR, TYPE_WEAP, UNIQUE_RUNEWORD, UNIQUE_SET, UNIQUE_UNIQUE,
-};
+use crate::bits::BitReader;
+use crate::data::{GameData, TYPE_ARMO, TYPE_BOOK, TYPE_CHAR, TYPE_WEAP, UNIQUE_RUNEWORD, UNIQUE_SET, UNIQUE_UNIQUE};
 use crate::{Error, Result};
 
 /// Stored runeword ids outside the vanilla ranges (`CUSTOM_RUNEWORD_IDS`): Nightfall.
@@ -14,7 +12,7 @@ const CUSTOM_RUNEWORD_IDS: &[(u32, u32)] = &[(1396, 325)];
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Item {
-    /// Base code as read; `DEAD_BRANCH` bytes where the Huffman walk hit the dead branch.
+    /// Base code as read.
     pub code: [u8; 3],
     /// Index into the game data's bases; `NO_BASE` for a code the data does not know.
     pub(crate) base: u16,
@@ -26,12 +24,9 @@ pub struct Item {
 }
 
 impl Item {
-    /// The base code, `?` for a dead Huffman branch.
+    /// The base code.
     pub fn code(&self) -> String {
-        self.code
-            .iter()
-            .map(|&c| if c == DEAD_BRANCH { '?' } else { c as char })
-            .collect()
+        self.code.iter().map(|&c| c as char).collect()
     }
 
     /// `set###`, `unique###` or `runeword###`, as the TypeScript parser names it.
@@ -167,12 +162,7 @@ impl<'a> Parser<'a> {
         if r.code_char()? != b' ' {
             return Err(Error("invalid item code"));
         }
-        // A dead Huffman branch makes the JS base "undefined…", which no table knows.
-        let base = if code.contains(&DEAD_BRANCH) {
-            NO_BASE
-        } else {
-            gd.base_of(code)
-        };
+        let base = gd.base_of(code);
         let info = gd.base(base);
         let mut item = Item {
             code,

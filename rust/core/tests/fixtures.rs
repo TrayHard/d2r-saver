@@ -1,18 +1,37 @@
 //! The repo fixtures read like the TypeScript library with `resolveMods: false`. Expected values
-//! come from `dist/` at 0adab05 (`readD2S`/`readLegacyD2S`/`walkD2I` and the item index's
-//! `characterItems`/`stashTabItems`); `test/scan-mode.test.ts` holds the same fixtures to the
-//! same bits read by the full parser.
+//! come from the TypeScript sources of this branch (`readD2S`/`readLegacyD2S`/`walkD2I`) and the
+//! item index's `characterItems`/`stashTabItems`; `test/scan-mode.test.ts` holds the same
+//! fixtures to the same bits read by the full parser.
 
 use d2r_saver_core::*;
+use serde_json::{json, Value};
 use std::sync::OnceLock;
+
+fn repo_file(path: &str) -> String {
+    std::fs::read_to_string(format!("{}/../../{path}", env!("CARGO_MANIFEST_DIR"))).unwrap()
+}
 
 fn gd() -> &'static GameData {
     static GD: OnceLock<GameData> = OnceLock::new();
-    GD.get_or_init(|| {
-        let data =
-            |name: &str| std::fs::read_to_string(format!("{}/../../data/{name}", env!("CARGO_MANIFEST_DIR"))).unwrap();
-        GameData::from_json(&data("data.json"), &data("strings.json")).unwrap()
-    })
+    GD.get_or_init(|| GameData::from_json(&repo_file("data/data.json"), &repo_file("data/strings.json")).unwrap())
+}
+
+/// The current data with the stat table a fixture was written with (`test/fixtures/stat-tables.json`).
+fn gd_with(table: &str) -> GameData {
+    let mut data: Value = serde_json::from_str(&repo_file("data/data.json")).unwrap();
+    let tables: Value = serde_json::from_str(&repo_file("test/fixtures/stat-tables.json")).unwrap();
+    let stats = tables[table].as_object().unwrap().iter().map(|(stat, row)| {
+        let entry =
+            json!({"id": row[0], "savebits": row[1], "saveadd": row[2], "saveparambits": row[3], "csvbits": row[4]});
+        (stat.clone(), entry)
+    });
+    data["itemStatCost"] = Value::Object(stats.collect());
+    GameData::from_json(&data.to_string(), &repo_file("data/strings.json")).unwrap()
+}
+
+fn gd_d2r() -> &'static GameData {
+    static GD: OnceLock<GameData> = OnceLock::new();
+    GD.get_or_init(|| gd_with("d2r"))
 }
 
 fn fixture(name: &str) -> Vec<u8> {
@@ -39,43 +58,169 @@ fn slot_kinds(c: &Character) -> [usize; 6] {
     n
 }
 
-/// (fixture, version, main list [declared, parsed, end], slots in use, counts).
-type CharacterCase = (&'static str, u32, [u32; 3], [usize; 6], &'static [(&'static str, i64)]);
+/// (fixture, version, main list [declared, parsed, end], main list broken, slots in use, counts).
+type CharacterCase = (
+    &'static str,
+    u32,
+    [u32; 3],
+    bool,
+    [usize; 6],
+    &'static [(&'static str, i64)],
+);
+
+fn check_character(gd: &GameData, name: &str, bytes: &[u8], case: &CharacterCase) {
+    let &(_, version, [declared, parsed, end], broken, slots, expected) = case;
+    let read = if version == 99 {
+        read_legacy_d2s(bytes, gd)
+    } else {
+        read_d2s(bytes, gd)
+    }
+    .unwrap();
+    let main = read.main.unwrap();
+    assert_eq!(
+        (main.declared, main.parsed, main.end_offset, main.error),
+        (declared, parsed, end as usize, broken),
+        "{name}"
+    );
+    assert_eq!(slot_kinds(&read), slots, "{name}");
+    let c = character_items(bytes, gd).unwrap();
+    assert_eq!((c.version, c.hardcore, c.ladder), (version, false, false), "{name}");
+    assert_eq!(c.items, counts(expected), "{name}");
+}
 
 #[test]
 fn characters_read_and_count_like_the_js_reader() {
-    // The fixtures predate the current stat table, so each main list stops at an unknown stat;
-    // the items before it stay, and the sections after it are not reached.
+    // The fixtures were written with other stat tables, so with the Blizzless one each main list
+    // stops at an unknown stat. The sections after it are found by their headers: WarlockTest.d2s
+    // still has two of its three hireling items.
     let cases: [CharacterCase; 3] = [
-        ("BlizzlessTest.d2s", 99, [12, 0, 857], [0; 6], &[]),
+        ("BlizzlessTest.d2s", 99, [12, 0, 857], true, [0; 6], &[]),
         (
             "WarlockTest.d2s",
             105,
             [26, 5, 1197],
-            [5, 0, 0, 0, 0, 0],
-            &[("Lenymo", 1), ("Lore", 1)],
+            true,
+            [5, 0, 0, 0, 0, 2],
+            &[("Lenymo", 1), ("Lore", 1), ("Rockstopper", 1), ("Griswold's Heart", 1)],
         ),
-        ("WarlockShards.d2s", 105, [17, 6, 966], [0, 2, 0, 0, 4, 0], &[]),
+        ("WarlockShards.d2s", 105, [17, 6, 966], true, [0, 2, 0, 0, 4, 0], &[]),
     ];
-    for (name, version, [declared, parsed, end], slots, expected) in cases {
-        let bytes = fixture(name);
-        let read = if version == 99 {
-            read_legacy_d2s(&bytes, gd())
-        } else {
-            read_d2s(&bytes, gd())
-        }
-        .unwrap();
-        let main = read.main.unwrap();
-        assert_eq!(
-            (main.declared, main.parsed, main.end_offset, main.error),
-            (declared, parsed, end as usize, true),
-            "{name}"
-        );
-        assert_eq!(slot_kinds(&read), slots, "{name}");
-        let c = character_items(&bytes, gd()).unwrap();
-        assert_eq!((c.version, c.hardcore, c.ladder), (version, false, false), "{name}");
-        assert_eq!(c.items, counts(expected), "{name}");
+    for case in &cases {
+        check_character(gd(), case.0, &fixture(case.0), case);
     }
+}
+
+#[test]
+fn characters_read_completely_with_their_own_stat_table() {
+    let blizzless_s2: CharacterCase = (
+        "BlizzlessTest.d2s",
+        99,
+        [12, 12, 1077],
+        false,
+        [0, 12, 0, 0, 0, 0],
+        &[
+            ("Ber Rune", 10),
+            ("Nef Rune (Pure)", 1),
+            ("Horadric Cube", 1),
+            ("Horadric Sphere", 11),
+            ("Dol Rune (Pure)", 1),
+            ("Blacksmith Ingot", 11),
+            ("Sur Rune (Pure)", 1),
+            ("Resplendent Spark", 11),
+            ("Cham Rune (Pure)", 1),
+        ],
+    );
+    check_character(
+        &gd_with("blizzless-s2"),
+        blizzless_s2.0,
+        &fixture(blizzless_s2.0),
+        &blizzless_s2,
+    );
+    let d2r: [CharacterCase; 2] = [
+        (
+            "WarlockTest.d2s",
+            105,
+            [26, 26, 1636],
+            false,
+            [11, 6, 0, 1, 8, 3],
+            &[
+                ("Lenymo", 1),
+                ("The Mahim-Oak Curio", 1),
+                ("Lore", 1),
+                ("Gull", 1),
+                ("Skin of the Vipermagi", 1),
+                ("Chance Guards", 1),
+                ("Spirit", 1),
+                ("Moser's Blessed Circle", 1),
+                ("Horadric Cube", 1),
+                ("Tir Rune", 1),
+                ("Stealth", 1),
+                ("Rockstopper", 1),
+                ("Griswold's Heart", 1),
+                ("Insight", 1),
+            ],
+        ),
+        (
+            "WarlockShards.d2s",
+            105,
+            [17, 17, 1158],
+            false,
+            [1, 7, 0, 5, 4, 0],
+            &[
+                ("Southern Worldstone Shard", 1),
+                ("Deep Worldstone Shard", 1),
+                ("Western Worldstone Shard", 1),
+                ("Northern Worldstone Shard", 1),
+                ("Eastern Worldstone Shard", 1),
+                ("Worusk's End", 1),
+                ("Talic's Anguish", 1),
+                ("Korlic's Pain", 1),
+                ("Madawc's Ire", 1),
+                ("Bul-Kathos' Nightmare", 1),
+            ],
+        ),
+    ];
+    for case in &d2r {
+        check_character(gd_d2r(), case.0, &fixture(case.0), case);
+    }
+    // Every sector reads to its end, so the tabs count; (names, copies) as the item index has them.
+    for (name, names, copies) in [
+        ("SharedStashComplete.d2i", 74, 223),
+        ("SharedStashSoftCoreV2V105.d2i", 71, 216),
+        ("SharedStashSoftCoreV2V105_.d2i", 68, 94),
+    ] {
+        let c = stash_tab_items(&fixture(name), gd_d2r()).unwrap();
+        assert_eq!((c.len(), c.values().sum::<i64>()), (names, copies), "{name}");
+    }
+}
+
+#[test]
+fn a_broken_main_list_keeps_the_hireling_items() {
+    // The first code character of item 8 of WarlockTest.d2s (byte 1197) becomes the dead Huffman
+    // branch: an invalid item code, after which the hireling section is found by its header.
+    let mut bytes = fixture("WarlockTest.d2s");
+    for i in 0..9 {
+        let bit = 1197 * 8 + 53 + i;
+        let value = ((232 | 256) >> i) & 1;
+        bytes[bit >> 3] = (bytes[bit >> 3] & !(1 << (bit & 7))) | (value << (bit & 7)) as u8;
+    }
+    let broken: CharacterCase = (
+        "WarlockTest.d2s",
+        105,
+        [26, 7, 1197],
+        true,
+        [7, 0, 0, 0, 0, 3],
+        &[
+            ("Lenymo", 1),
+            ("The Mahim-Oak Curio", 1),
+            ("Lore", 1),
+            ("Gull", 1),
+            ("Rockstopper", 1),
+            ("Griswold's Heart", 1),
+            ("Insight", 1),
+        ],
+    );
+    check_character(gd_d2r(), "WarlockTest.d2s with item 8 broken", &bytes, &broken);
 }
 
 #[test]

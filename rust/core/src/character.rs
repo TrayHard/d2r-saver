@@ -1,6 +1,7 @@
 //! Port of `readCharacter` in `src/formats/d2s-reader.ts`: the header reads that can fail, then
 //! every item list in file order (main, corpses, hireling, iron golem) and the profile slots.
 
+use crate::bits::BitReader;
 use crate::item::{Item, Key, ListReport, Parsed, Parser};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC};
 use std::collections::HashMap;
@@ -150,7 +151,18 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool) -> 
 
     let mut main = None;
     let _ = (|| -> Result<()> {
-        main = Some(p.parse_item_list(|parsed| place(parsed, false))?);
+        let list = p.parse_item_list(|parsed| place(parsed, false))?;
+        main = Some(list);
+        // A failed item leaves the reader inside its bits; the sections after its list are intact.
+        if list.error {
+            resync(
+                &mut p.r,
+                data,
+                list.end_offset,
+                is_corpse_section,
+                "corpse section not found",
+            )?;
+        }
 
         // Corpses.
         if p.r.read16()? != 0x4d4a {
@@ -159,7 +171,17 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool) -> 
         let corpses = p.r.read16()?;
         for _ in 0..corpses {
             p.r.skip(12);
-            p.parse_item_list(|_| {})?;
+            let corpse = p.parse_item_list(|_| {})?;
+            if corpse.error {
+                resync(
+                    &mut p.r,
+                    data,
+                    corpse.end_offset,
+                    is_hireling_section,
+                    "hireling section not found",
+                )?;
+                break;
+            }
         }
 
         // Hireling.
@@ -168,11 +190,20 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool) -> 
                 return Err(Error("invalid hireling header"));
             }
             if p.r.byte(0)? == 0x4a && p.r.byte(1)? == 0x4d {
-                p.parse_item_list(|parsed| {
+                let merc = p.parse_item_list(|parsed| {
                     if merc_id != 0 {
                         place(parsed, true)
                     }
                 })?;
+                if merc.error {
+                    resync(
+                        &mut p.r,
+                        data,
+                        merc.end_offset,
+                        is_golem_section,
+                        "iron golem section not found",
+                    )?;
+                }
             }
         }
 
@@ -196,4 +227,47 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool) -> 
         })
         .collect();
     Ok(Character { slots, main })
+}
+
+/// Little-endian u16 that reads missing bytes as 0.
+fn u16_at(data: &[u8], at: usize) -> u32 {
+    *data.get(at).unwrap_or(&0) as u32 | (*data.get(at + 1).unwrap_or(&0) as u32) << 8
+}
+
+/// "JM" and a corpse count, then the hireling header (or EOF) without a corpse, else the corpse's
+/// "JM" list 12 bytes on.
+fn is_corpse_section(data: &[u8], at: usize) -> bool {
+    u16_at(data, at) == 0x4d4a
+        && if u16_at(data, at + 2) == 0 {
+            at + 4 == data.len() || u16_at(data, at + 4) == 0x666a
+        } else {
+            u16_at(data, at + 16) == 0x4d4a
+        }
+}
+
+/// "jf", then the hireling's "JM" list or the golem header "kf"; EOF too, where a classic character
+/// ends after its corpses.
+fn is_hireling_section(data: &[u8], at: usize) -> bool {
+    at == data.len()
+        || (u16_at(data, at) == 0x666a && (at + 2 == data.len() || matches!(u16_at(data, at + 2), 0x4d4a | 0x666b)))
+}
+
+/// "kf" and the presence byte 0 or 1.
+fn is_golem_section(data: &[u8], at: usize) -> bool {
+    u16_at(data, at) == 0x666b && data.get(at + 2).is_some_and(|&b| b <= 1)
+}
+
+/// `resync`: seek to the first byte at or after `from` where `is_start` sees the next section.
+fn resync(
+    r: &mut BitReader,
+    data: &[u8],
+    from: usize,
+    is_start: fn(&[u8], usize) -> bool,
+    not_found: &'static str,
+) -> Result<()> {
+    let at = (from..=data.len())
+        .find(|&at| is_start(data, at))
+        .ok_or(Error(not_found))?;
+    r.seek(at);
+    Ok(())
 }
