@@ -444,6 +444,27 @@ impl GameData {
         self.stats.get(id as usize).and_then(Option::as_ref)
     }
 
+    /// English name of a `SimpleCounts` key: the base name of `<code>`, the unique, set or runeword name of
+    /// `<code>:<unique key>`; `None` when the data knows neither.
+    pub fn count_name(&self, key: &str) -> Option<&str> {
+        let (code, unique) = key.split_once(':').map_or((key, None), |(c, u)| (c, Some(u)));
+        let named = unique.and_then(|u| {
+            let (kind, number) = [
+                ("set", UNIQUE_SET),
+                ("unique", UNIQUE_UNIQUE),
+                ("runeword", UNIQUE_RUNEWORD),
+            ]
+            .iter()
+            .find_map(|(prefix, kind)| u.strip_prefix(prefix).map(|n| (*kind, n)))?;
+            let index = kind as usize + number.parse::<usize>().ok().filter(|n| *n < 4096)?;
+            self.uniques[index].name
+        });
+        let code: [u8; 3] = code.as_bytes().try_into().ok()?;
+        named
+            .or_else(|| self.base(self.base_of(code)).display_name)
+            .map(|id| self.name(id))
+    }
+
     pub(crate) fn name(&self, id: u32) -> &str {
         &self.names[id as usize]
     }

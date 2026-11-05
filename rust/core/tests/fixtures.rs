@@ -638,3 +638,17 @@ fn fingerprints_equal_the_js_reference_and_ignore_what_play_changes() {
         u64::from_str_radix("bc3fcc46776133eb", 16).ok()
     );
 }
+
+#[test]
+fn count_keys_name_their_items() {
+    let gd = gd();
+    assert_eq!(gd.count_name("r01"), Some("El Rune"));
+    assert_eq!(gd.count_name("pk1"), Some("Key of Terror"));
+    assert_eq!(gd.count_name("bg1:unique456"), Some("Full Rejuvenation Potion"));
+    assert_eq!(gd.count_name("zzz"), None);
+    assert_eq!(
+        gd.count_name("bg1:unique4095"),
+        Some("Container"),
+        "an unknown unique falls back to the base"
+    );
+}
