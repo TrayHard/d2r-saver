@@ -61,6 +61,16 @@ describe('BinaryReader', () => {
       expectOverrun(() => reader.char());
     });
 
+    it('char() rejects the empty branch under "j" instead of returning undefined', () => {
+      // 'j' is 232 in 9 bits; with the 9th bit set the walk reaches the missing child 1.
+      expect(new BinaryReader(new Uint8Array([232, 0])).char()).toBe('j');
+      let caught: unknown;
+      try { new BinaryReader(new Uint8Array([232, 1])).char(); } catch (e) { caught = e; }
+      expect(caught).toBeInstanceOf(D2RSaverError);
+      expect((caught as D2RSaverError).code).toBe(ErrorCode.PARSE_ERROR);
+      expect((caught as D2RSaverError).message).toContain('invalid item code');
+    });
+
     it('reads after a positioning call past the end throw instead of returning zeros', () => {
       const reader = new BinaryReader(new Uint8Array(4));
       reader.seek(10);

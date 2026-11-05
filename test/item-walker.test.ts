@@ -49,6 +49,16 @@ function parseStandalone(bytes: Uint8Array) {
   return { report, placed: placed as { id: number | string; location?: string; slot?: number | string } | null, items: ctx.items, consumed: (reader.bitpos >> 3) - 4 };
 }
 
+/** `[value, width]` fields packed LSB-first, the order BinaryReader reads them in. */
+function packBits(fields: [number, number][]): Uint8Array {
+  const out = new Uint8Array(Math.ceil(fields.reduce((n, [, width]) => n + width, 0) / 8));
+  let pos = 0;
+  for (const [value, width] of fields) {
+    for (let i = 0; i < width; i++, pos++) if ((value >> i) & 1) out[pos >> 3] |= 1 << (pos & 7);
+  }
+  return out;
+}
+
 beforeAll(() => {
   const rawData = JSON.parse(readFileSync(resolve(DATA_DIR, 'data.json'), 'utf-8'));
   const locale = JSON.parse(readFileSync(resolve(DATA_DIR, 'strings.json'), 'utf-8'));
@@ -151,6 +161,16 @@ describe('walkItemList', () => {
     expectCode(() => walkItemList(buf, 918, gd), ErrorCode.PARSE_ERROR);
     expectCode(() => walkItemList(buf, buf.length - 2, gd), ErrorCode.BUFFER_OVERRUN);
     expectCode(() => walkItemList(buf, -1, gd), ErrorCode.INVALID_ARGUMENT);
+  });
+
+  it('an item code on the empty Huffman branch is an invalid item, not an unknown base', () => {
+    // An identified simple item in the inventory whose first code character takes bit 1 under "j",
+    // followed by "w", "w", " ", the realm flag and the quantity flag.
+    const item = packBits([[1 << 4 | 1 << 21, 32], [0, 3], [1 << 15, 18], [232 | 256, 9], [0, 5], [0, 5], [1, 2], [0, 2]]);
+    const { report } = parseStandalone(item);
+    expect(report).toMatchObject({ parsed: 0, errorCode: ErrorCode.PARSE_ERROR });
+    expect(report.error).toContain('invalid item code');
+    expectCode(() => readItemHead(item), ErrorCode.PARSE_ERROR);
   });
 
   it('a list cut mid-item stops with BUFFER_OVERRUN in the report, entries intact before it', () => {
