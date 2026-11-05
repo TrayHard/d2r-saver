@@ -8,7 +8,8 @@ import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { GameData } from '../src/game-data/game-data.js';
 import { BinaryReader } from '../src/core/binary-reader.js';
-import { createItemParser } from '../src/formats/item-parser.js';
+import { createItemParser, statIdMap } from '../src/formats/item-parser.js';
+import { readD2S } from '../src/formats/d2s-reader.js';
 import {
   walkItemList,
   walkD2I,
@@ -17,9 +18,11 @@ import {
   patchItemPosition,
   zeroItemPosition,
   type ItemHead,
+  type WalkedItem,
   type WalkResult,
 } from '../src/formats/item-walker.js';
 import { D2RSaverError, ErrorCode } from '../src/types/errors.js';
+import { locale, rawDataWith } from './helpers/stat-tables.js';
 
 const DATA_DIR = resolve(import.meta.dirname!, '..', 'data');
 const FIXTURES = resolve(import.meta.dirname!, 'fixtures');
@@ -314,6 +317,37 @@ describe('readItemHead', () => {
       }
     }
     expect(checked).toBe(7 + 1 + 1 + 56);
+  });
+
+  it('walker and coverage heads come from the parse and equal readItemHead, socketed children included', () => {
+    const d2r = GameData.fromRaw(rawDataWith('d2r'), locale());
+    const all = (entries: WalkedItem[]): WalkedItem[] => entries.flatMap((e) => [e, ...all(e.children)]);
+    let checked = 0;
+    const check = (buf: Uint8Array, entries: WalkedItem[]) => {
+      for (const e of all(entries)) {
+        expect(e.head).toEqual(readItemHead(buf, e.own.start));
+        checked++;
+      }
+    };
+    for (const f of ['SharedStashComplete.d2i', 'SharedStashSoftCoreV2V105.d2i', 'SharedStashSoftCoreV2V105_.d2i']) {
+      const buf = fixture(f);
+      for (const s of walkD2I(buf, d2r, { resolveMods: false }).sectors) check(buf, s.walk?.entries ?? []);
+    }
+    for (const f of ['WarlockTest.d2s', 'WarlockShards.d2s']) {
+      const buf = fixture(f);
+      const { coverage } = readD2S(buf, d2r, { resolveMods: false });
+      expect(coverage.complete).toBe(true);
+      check(buf, coverage.items);
+    }
+    expect(checked).toBeGreaterThan(300);
+  });
+
+  it('the stat id map is built once per stat table', () => {
+    const map = statIdMap(gd);
+    expect(statIdMap(gd)).toBe(map);
+    expect(map.size).toBe(Object.keys(gd.itemStatCost).length);
+    expect(map.get(gd.itemStatCost.strength.id)).toBe('strength');
+    expect(statIdMap(GameData.fromRaw(rawDataWith('d2r'), locale()))).not.toBe(map);
   });
 
   it('throws BUFFER_OVERRUN on a cut prefix and PARSE_ERROR on a non-item', () => {

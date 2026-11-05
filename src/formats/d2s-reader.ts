@@ -10,7 +10,7 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { detectFormat } from './detect.js';
-import { createItemParser, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace, type ReadOptions } from './item-parser.js';
+import { createItemParser, statIdMap, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace, type ReadOptions } from './item-parser.js';
 import { readD2SDemonSection, type D2SDemonSectionReport } from './d2s-demon-reader.js';
 import { d2sCoverage, type D2SParseCoverage } from './d2s-coverage.js';
 import { D2S_MAGIC } from '../types/constants.js';
@@ -232,12 +232,7 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
   reader.seek(layout.stats);
   if (reader.read16() !== 0x6667) throw Error('invalid stats header');
 
-  // Build stat map
-  const statMap = new Map<number, string>();
-  for (const key in gd.itemStatCost) {
-    statMap.set(gd.itemStatCost[key].id, key);
-  }
-
+  const statMap = statIdMap(gd);
   const charStats: Record<string, number> = {};
   let prefixComplete = classId < GameData.classes.length;
   const seenCharStats = new Set<number>();

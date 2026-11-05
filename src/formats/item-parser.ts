@@ -9,6 +9,7 @@
 
 import type { BinaryReader } from '../core/binary-reader.js';
 import type { GameData } from '../game-data/game-data.js';
+import type { ItemHead } from './item-walker.js';
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
 import { itemGetTypes, isSubType, presetItemIds } from '../items/item-types.js';
 import {
@@ -133,6 +134,8 @@ export interface ParsedItemTrace {
    * outside the tradeable filter). Dropped items are still fully parsed and byte-ranged.
    */
   registeredKey: number | string | null;
+  /** Flags, position and base code as the parser read them; equal to `readItemHead` at `item.byteRange.start`. */
+  head: ItemHead;
 }
 
 /** Options for `createItemParser`. */
@@ -391,6 +394,24 @@ function addStat(stats: Record<string, number>, stat: string, param: number, val
   stats[stat] = (stats[stat] || 0) + value;
 }
 
+// ─── Stat ids ───────────────────────────────────────────────────
+
+const statMaps = new WeakMap<object, Map<number, string>>();
+
+/**
+ * Numeric stat id → stat key of `gd.itemStatCost`, built once per table: a parser is created for
+ * every list and every `.d2i` sector, and the table does not change after loading.
+ */
+export function statIdMap(gd: GameData): Map<number, string> {
+  let map = statMaps.get(gd.itemStatCost);
+  if (!map) {
+    map = new Map();
+    for (const key in gd.itemStatCost) map.set(gd.itemStatCost[key].id, key);
+    statMaps.set(gd.itemStatCost, map);
+  }
+  return map;
+}
+
 // ─── createItemParser ───────────────────────────────────────────
 
 /**
@@ -420,11 +441,7 @@ export function createItemParser(
   /** Current reader position as an absolute byte offset (the reader is byte-aligned here). */
   const absBytePos = (): number => baseOffset + (reader.bitpos >> 3);
 
-  // Build stat map: numeric id → stat key
-  const statMap = new Map<number, string>();
-  for (const key in gd.itemStatCost) {
-    statMap.set(gd.itemStatCost[key].id, key);
-  }
+  const statMap = statIdMap(gd);
 
   function getStatInfo(stat: string): { savebits?: number; saveadd?: number; saveparambits?: number } {
     return (gd.itemStatCost as Record<string, { savebits?: number; saveadd?: number; saveparambits?: number }>)[stat] || {};
@@ -482,6 +499,10 @@ export function createItemParser(
     const invcol = reader.bits(4);
     const invrow = reader.bits(4);
     const storage = reader.bits(3);
+    const head = (base: string | null): ItemHead => ({
+      identified: !unidentified, socketed, ear, simple, ethereal, personalized, runeword, extras: !!extras,
+      loc: location, bodyloc, col: invcol, row: invrow, storage, base,
+    });
 
     // ── Ear item ──────────────────────────────────────────────
     if (ear) {
@@ -507,7 +528,7 @@ export function createItemParser(
 
       const earId = typeof idIn === 'number' ? idIn : 0;
       items[earId] = item as BinaryParsedItem;
-      onItem?.({ item: item as BinaryParsedItem, depth, registeredKey: earId });
+      onItem?.({ item: item as BinaryParsedItem, depth, registeredKey: earId, head: head(null) });
       emitLocation(earId, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);
       return;
     }
@@ -879,7 +900,7 @@ export function createItemParser(
       items[registeredKey] = item as BinaryParsedItem;
     }
 
-    onItem?.({ item: item as BinaryParsedItem, depth, registeredKey });
+    onItem?.({ item: item as BinaryParsedItem, depth, registeredKey, head: head(baseId) });
     if (registeredKey === null) return;
 
     emitLocation(registeredKey, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);

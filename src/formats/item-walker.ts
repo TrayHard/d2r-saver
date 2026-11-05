@@ -335,16 +335,15 @@ export function walkItemList(
   const ctx = createItemParser(reader, gd, options?.initialId ?? 0, {
     saveVersion: options?.saveVersion,
     resolveMods: options?.resolveMods,
-    onItem: ({ item, depth, registeredKey }) => {
+    onItem: ({ item, depth, registeredKey, head }) => {
       const children = pending[depth + 1] ?? [];
       pending[depth + 1] = [];
-      const own = item.byteRange!;
       const entry: WalkedItem = {
         index: -1,
-        own,
+        own: item.byteRange!,
         full: item.fullByteRange!,
         children,
-        head: readItemHead(buffer, own.start),
+        head,
         item,
         registeredKey,
         hasQuantity: item.quantity !== undefined,
