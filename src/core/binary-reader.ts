@@ -168,11 +168,19 @@ export class BinaryReader {
 
   // ─── Huffman ──────────────────────────────────────────────────
 
-  /** Read one Huffman-encoded character (for item type codes). */
+  /**
+   * Read one Huffman-encoded character (for item type codes).
+   *
+   * @throws {D2RSaverError} `PARSE_ERROR` on the empty branch (bit 1 under `["j"]`): no code ends
+   *   there, so the bits are not an item code.
+   */
   char(): string {
     let node: HuffmanNode = HUFFMAN_TREE;
     while (Array.isArray(node)) {
       node = node[this.bit()] as HuffmanNode;
+      if (node === undefined) {
+        throw new D2RSaverError(ErrorCode.PARSE_ERROR, `invalid item code: empty Huffman branch at bit ${this.bitpos - 1}`);
+      }
     }
     return node;
   }

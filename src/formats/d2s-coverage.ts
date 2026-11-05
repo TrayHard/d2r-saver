@@ -2,7 +2,7 @@ import { computeChecksum } from '../core/checksum.js';
 import type { D2SItemLists, D2SCharacterProfile } from './d2s-reader.js';
 import type { ByteRange, ParsedItemTrace } from './item-parser.js';
 import type { D2SDemonSectionReport } from './d2s-demon-reader.js';
-import { readItemHead, type WalkedItem } from './item-walker.js';
+import type { WalkedItem } from './item-walker.js';
 
 export interface D2SParseCoverage {
   complete: boolean;
@@ -29,12 +29,12 @@ export function d2sCoverage(data: Uint8Array, profile: Partial<D2SCharacterProfi
     if (view.getUint32(8, true) !== data.length || view.getUint32(12, true) !== computeChecksum(data)) throw Error('invalid character size or checksum');
     const pending: WalkedItem[][] = [];
     for (const trace of traces) {
-      const { item, depth, registeredKey } = trace;
+      const { item, depth, registeredKey, head } = trace;
       if (!item.byteRange || !item.fullByteRange) throw Error('unranged character item');
       const children = pending[depth + 1] ?? [];
       pending[depth + 1] = [];
       const entry: WalkedItem = { index: -1, own: item.byteRange, full: item.fullByteRange, children,
-        head: readItemHead(data, item.byteRange.start), item, registeredKey, hasQuantity: item.quantity !== undefined,
+        head, item, registeredKey, hasQuantity: item.quantity !== undefined,
         quantityField: item.quantityField };
       let cursor = entry.own.end;
       if (entry.own.start !== entry.full.start || entry.own.end <= entry.own.start) throw Error('invalid character item range');

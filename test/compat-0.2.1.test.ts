@@ -9,6 +9,10 @@
  * `lists` on the d2s result; `sectors`, `tiled`, `reachedEof` on the d2i result and
  * `list`, `rawType` on pages), so any change to a pre-existing field or value fails the test.
  * If you add another field on purpose, add it to the strip list AND regenerate deliberately.
+ *
+ * Regenerated deliberately for the two .d2s files in 0.5.0: their main lists break (they were
+ * written with D2R stat widths), and the reader now finds the corpse, hireling and golem sections
+ * by their headers instead of failing on the corpse header, so those sections are in the result.
  */
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';

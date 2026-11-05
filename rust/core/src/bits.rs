@@ -3,7 +3,7 @@
 //! Reads are bounds-checked exactly like the TypeScript reader: a read needing bits past the end
 //! fails without moving the cursor; `seek`, `skip`, `skip_bits` and `align` never check.
 
-use crate::{Result, OVERRUN};
+use crate::{Error, Result, OVERRUN};
 use std::sync::OnceLock;
 
 pub struct BitReader<'a> {
@@ -51,12 +51,13 @@ const HUFFMAN: [(u8, u32, u32); 38] = [
     (b'x', 28, 5),
     (b'y', 40, 7),
     (b'z', 27, 8),
-    // The tree node `["j"]` has no child 1: the JS walk stops there and returns `undefined`.
+    // The tree node `["j"]` has no child 1; no code ends there.
     (DEAD_BRANCH, 232 | 256, 9),
 ];
 
-/// What `code_char` returns for the dead branch of the tree.
-pub const DEAD_BRANCH: u8 = 0xFF;
+/// Table marker for the dead branch of the tree; `code_char` fails on it.
+const DEAD_BRANCH: u8 = 0xFF;
+const INVALID_CODE: Error = Error("invalid item code");
 
 /// 9-bit LSB-first window → (symbol, code length).
 fn huffman_table() -> &'static [(u8, u8); 512] {
@@ -169,7 +170,8 @@ impl<'a> BitReader<'a> {
         Ok(value as u32)
     }
 
-    /// One Huffman-coded item-code character, or `DEAD_BRANCH`.
+    /// One Huffman-coded item-code character; the dead branch is an invalid item code, after its
+    /// 9 bits like the JS walk.
     #[inline]
     pub fn code_char(&mut self) -> Result<u8> {
         if self.pos + 9 <= self.buf.len() * 8 {
@@ -177,14 +179,14 @@ impl<'a> BitReader<'a> {
             let window = self.buf[byte] as u32 | (*self.buf.get(byte + 1).unwrap_or(&0) as u32) << 8;
             let (sym, len) = huffman_table()[((window >> (self.pos & 7)) & 511) as usize];
             self.pos += len as usize;
-            return Ok(sym);
+            return if sym == DEAD_BRANCH { Err(INVALID_CODE) } else { Ok(sym) };
         }
         // Near the end, bit by bit, so an overrun leaves the cursor where the JS walk stops.
         let mut path = 0u32;
         for depth in 0..9 {
             path |= self.bits(1)? << depth;
             if let Some(&(sym, _, _)) = HUFFMAN.iter().find(|e| e.2 == depth + 1 && e.1 == path) {
-                return Ok(sym);
+                return if sym == DEAD_BRANCH { Err(INVALID_CODE) } else { Ok(sym) };
             }
         }
         unreachable!("Huffman table is complete")
@@ -213,10 +215,15 @@ mod tests {
         huffman_table();
         for &(sym, code, len) in &HUFFMAN {
             let wide = [(code & 0xFF) as u8, (code >> 8) as u8, 0, 0];
-            assert_eq!(BitReader::new(&wide).code_char().unwrap(), sym);
             let short = &wide[..(len as usize).div_ceil(8)];
             let mut r = BitReader::new(short);
-            assert_eq!(r.code_char().unwrap(), sym);
+            if sym == DEAD_BRANCH {
+                assert_eq!(BitReader::new(&wide).code_char(), Err(INVALID_CODE));
+                assert_eq!(r.code_char(), Err(INVALID_CODE));
+            } else {
+                assert_eq!(BitReader::new(&wide).code_char().unwrap(), sym);
+                assert_eq!(r.code_char().unwrap(), sym);
+            }
             assert_eq!(r.pos, len as usize);
         }
     }

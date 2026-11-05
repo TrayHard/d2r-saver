@@ -8,7 +8,8 @@ import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { GameData } from '../src/game-data/game-data.js';
 import { BinaryReader } from '../src/core/binary-reader.js';
-import { createItemParser } from '../src/formats/item-parser.js';
+import { createItemParser, statIdMap } from '../src/formats/item-parser.js';
+import { readD2S } from '../src/formats/d2s-reader.js';
 import {
   walkItemList,
   walkD2I,
@@ -17,9 +18,11 @@ import {
   patchItemPosition,
   zeroItemPosition,
   type ItemHead,
+  type WalkedItem,
   type WalkResult,
 } from '../src/formats/item-walker.js';
 import { D2RSaverError, ErrorCode } from '../src/types/errors.js';
+import { locale, rawDataWith } from './helpers/stat-tables.js';
 
 const DATA_DIR = resolve(import.meta.dirname!, '..', 'data');
 const FIXTURES = resolve(import.meta.dirname!, 'fixtures');
@@ -47,6 +50,16 @@ function parseStandalone(bytes: Uint8Array) {
   let placed: { id: number | string; location?: string; slot?: number | string } | null = null;
   const report = ctx.parseItemList((id, location, slot) => { placed = { id, location, slot }; });
   return { report, placed: placed as { id: number | string; location?: string; slot?: number | string } | null, items: ctx.items, consumed: (reader.bitpos >> 3) - 4 };
+}
+
+/** `[value, width]` fields packed LSB-first, the order BinaryReader reads them in. */
+function packBits(fields: [number, number][]): Uint8Array {
+  const out = new Uint8Array(Math.ceil(fields.reduce((n, [, width]) => n + width, 0) / 8));
+  let pos = 0;
+  for (const [value, width] of fields) {
+    for (let i = 0; i < width; i++, pos++) if ((value >> i) & 1) out[pos >> 3] |= 1 << (pos & 7);
+  }
+  return out;
 }
 
 beforeAll(() => {
@@ -151,6 +164,16 @@ describe('walkItemList', () => {
     expectCode(() => walkItemList(buf, 918, gd), ErrorCode.PARSE_ERROR);
     expectCode(() => walkItemList(buf, buf.length - 2, gd), ErrorCode.BUFFER_OVERRUN);
     expectCode(() => walkItemList(buf, -1, gd), ErrorCode.INVALID_ARGUMENT);
+  });
+
+  it('an item code on the empty Huffman branch is an invalid item, not an unknown base', () => {
+    // An identified simple item in the inventory whose first code character takes bit 1 under "j",
+    // followed by "w", "w", " ", the realm flag and the quantity flag.
+    const item = packBits([[1 << 4 | 1 << 21, 32], [0, 3], [1 << 15, 18], [232 | 256, 9], [0, 5], [0, 5], [1, 2], [0, 2]]);
+    const { report } = parseStandalone(item);
+    expect(report).toMatchObject({ parsed: 0, errorCode: ErrorCode.PARSE_ERROR });
+    expect(report.error).toContain('invalid item code');
+    expectCode(() => readItemHead(item), ErrorCode.PARSE_ERROR);
   });
 
   it('a list cut mid-item stops with BUFFER_OVERRUN in the report, entries intact before it', () => {
@@ -294,6 +317,37 @@ describe('readItemHead', () => {
       }
     }
     expect(checked).toBe(7 + 1 + 1 + 56);
+  });
+
+  it('walker and coverage heads come from the parse and equal readItemHead, socketed children included', () => {
+    const d2r = GameData.fromRaw(rawDataWith('d2r'), locale());
+    const all = (entries: WalkedItem[]): WalkedItem[] => entries.flatMap((e) => [e, ...all(e.children)]);
+    let checked = 0;
+    const check = (buf: Uint8Array, entries: WalkedItem[]) => {
+      for (const e of all(entries)) {
+        expect(e.head).toEqual(readItemHead(buf, e.own.start));
+        checked++;
+      }
+    };
+    for (const f of ['SharedStashComplete.d2i', 'SharedStashSoftCoreV2V105.d2i', 'SharedStashSoftCoreV2V105_.d2i']) {
+      const buf = fixture(f);
+      for (const s of walkD2I(buf, d2r, { resolveMods: false }).sectors) check(buf, s.walk?.entries ?? []);
+    }
+    for (const f of ['WarlockTest.d2s', 'WarlockShards.d2s']) {
+      const buf = fixture(f);
+      const { coverage } = readD2S(buf, d2r, { resolveMods: false });
+      expect(coverage.complete).toBe(true);
+      check(buf, coverage.items);
+    }
+    expect(checked).toBeGreaterThan(300);
+  });
+
+  it('the stat id map is built once per stat table', () => {
+    const map = statIdMap(gd);
+    expect(statIdMap(gd)).toBe(map);
+    expect(map.size).toBe(Object.keys(gd.itemStatCost).length);
+    expect(map.get(gd.itemStatCost.strength.id)).toBe('strength');
+    expect(statIdMap(GameData.fromRaw(rawDataWith('d2r'), locale()))).not.toBe(map);
   });
 
   it('throws BUFFER_OVERRUN on a cut prefix and PARSE_ERROR on a non-item', () => {

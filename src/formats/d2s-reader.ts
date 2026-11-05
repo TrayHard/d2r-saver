@@ -10,7 +10,7 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { detectFormat } from './detect.js';
-import { createItemParser, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace, type ReadOptions } from './item-parser.js';
+import { createItemParser, statIdMap, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace, type ReadOptions } from './item-parser.js';
 import { readD2SDemonSection, type D2SDemonSectionReport } from './d2s-demon-reader.js';
 import { d2sCoverage, type D2SParseCoverage } from './d2s-coverage.js';
 import { D2S_MAGIC } from '../types/constants.js';
@@ -232,12 +232,7 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
   reader.seek(layout.stats);
   if (reader.read16() !== 0x6667) throw Error('invalid stats header');
 
-  // Build stat map
-  const statMap = new Map<number, string>();
-  for (const key in gd.itemStatCost) {
-    statMap.set(gd.itemStatCost[key].id, key);
-  }
-
+  const statMap = statIdMap(gd);
   const charStats: Record<string, number> = {};
   let prefixComplete = classId < GameData.classes.length;
   const seenCharStats = new Set<number>();
@@ -303,9 +298,13 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
       if (location === 'belt') result.belt![slot as number] = id;
     });
     // A mid-list item failure truncates the MAIN list silently (worn/inventory/stash/cube items
-    // after the bad one are lost) and usually desyncs the sections below — surface the precise
-    // per-item reason so consumers can log/diagnose it instead of showing a silently-short list.
-    if (ctx.error) warnings.push(`Main item list truncated: ${ctx.error}`);
+    // after the bad one are lost) — surface the precise per-item reason so consumers can
+    // log/diagnose it instead of showing a silently-short list. The failed item leaves the reader
+    // inside its own bits, so the sections below are found by their headers instead.
+    if (ctx.error) {
+      warnings.push(`Main item list truncated: ${ctx.error}`);
+      resync(reader, lists.main.endOffset, isCorpseSection, 'corpse');
+    }
 
     // Corpses — captured verbatim so the writer preserves corpse items.
     const corpseStart = reader.bitpos >> 3;
@@ -314,10 +313,15 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
 
     for (let i = 0; i < corpses; ++i) {
       reader.skip(12);
-      lists.corpses.push(ctx.parseItemList(() => null));
+      const corpse = ctx.parseItemList(() => null);
+      lists.corpses.push(corpse);
       // Same invariant as the main/hireling lists: a silent mid-list break desyncs everything
       // after it (and rawCorpse below would capture a garbage byte range) — surface it.
-      if (ctx.error) warnings.push(`Corpse ${i + 1}/${corpses} item list truncated: ${ctx.error}`);
+      if (ctx.error) {
+        warnings.push(`Corpse ${i + 1}/${corpses} item list truncated: ${ctx.error}`);
+        resync(reader, corpse.endOffset, isHirelingSection, 'hireling');
+        break;
+      }
     }
     result.rawCorpse = Array.from(reader.buffer.subarray(corpseStart, reader.bitpos >> 3));
 
@@ -329,7 +333,10 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
         lists.merc = ctx.parseItemList((id, location, slot) => {
           if (mercId && location === 'body') result.mercItems![slot as string] = id;
         });
-        if (ctx.error) warnings.push(`Hireling item list truncated: ${ctx.error}`);
+        if (ctx.error) {
+          warnings.push(`Hireling item list truncated: ${ctx.error}`);
+          resync(reader, lists.merc.endOffset, isGolemSection, 'iron golem');
+        }
       }
     }
 
@@ -431,4 +438,28 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
     demons,
     coverage: d2sCoverage(data, result, lists, traces, demons, warnings, prefixComplete, layout.flags, layout.merc),
   };
+}
+
+// ─── Section search after a broken item list ────────────────────
+
+const u16 = (data: Uint8Array, at: number): number => data[at] | (data[at + 1] << 8);
+
+/** "JM" and a corpse count, then the hireling header (or EOF) without a corpse, else the corpse's "JM" list 12 bytes on. */
+const isCorpseSection = (data: Uint8Array, at: number): boolean => u16(data, at) === 0x4d4a && (u16(data, at + 2) === 0
+  ? at + 4 === data.length || u16(data, at + 4) === 0x666a
+  : u16(data, at + 16) === 0x4d4a);
+
+/** "jf", then the hireling's "JM" list or the golem header "kf"; EOF too, where a classic character ends after its corpses. */
+const isHirelingSection = (data: Uint8Array, at: number): boolean => at === data.length
+  || (u16(data, at) === 0x666a && (at + 2 === data.length || u16(data, at + 2) === 0x4d4a || u16(data, at + 2) === 0x666b));
+
+/** "kf" and the presence byte 0 or 1. */
+const isGolemSection = (data: Uint8Array, at: number): boolean => u16(data, at) === 0x666b && data[at + 2] <= 1;
+
+/** Seek to the first byte at or after `from` where `isStart` sees the next section. */
+function resync(reader: BinaryReader, from: number, isStart: (data: Uint8Array, at: number) => boolean, section: string): void {
+  for (let at = from; at <= reader.buffer.length; at++) {
+    if (isStart(reader.buffer, at)) return reader.seek(at);
+  }
+  throw Error(`${section} section not found after the truncated item list`);
 }

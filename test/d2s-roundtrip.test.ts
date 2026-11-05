@@ -1,12 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync, existsSync } from 'node:fs';
-import { D2RSaver } from '../src/index.js';
+import { D2RSaver, type BinaryParsedItem } from '../src/index.js';
 import { writeD2S } from '../src/formats/d2s-writer.js';
+import { locale, rawData } from './helpers/stat-tables.js';
 
 // Build the saver once from the bundled game data.
-const data = JSON.parse(readFileSync('data/data.json', 'utf8'));
-const strings = JSON.parse(readFileSync('data/strings.json', 'utf8'));
-const saver = D2RSaver.fromData(data, strings);
+const saver = D2RSaver.fromData(rawData(), locale());
 
 // Candidate fixtures, keeping only those that exist AND parse as a valid d2s.
 const FIXTURES = ['WarlockShards', 'WarlockTest', 'BlizzlessTest']
@@ -45,10 +44,12 @@ describe('writeD2S lossless round-trip', () => {
       expect(after.profile.merc).toBe(before.profile.merc);
       expect(after.profile.mercLevel).toBe(before.profile.mercLevel);
 
-      // Items round-trip (same count + same ids).
-      expect(Object.keys(after.items).sort()).toEqual(
-        Object.keys(before.items).sort()
-      );
+      // Items round-trip. Parse-order ids can shift (an item the reader could not finish still took
+      // an id before the hireling's items, and it is not written back); the items may not change.
+      const identities = (items: Record<string, BinaryParsedItem>) =>
+        Object.values(items).map((item) => `${item.base}:${item.guid ?? ''}:${item.unique ?? ''}`).sort();
+      expect(identities(after.items)).toEqual(identities(before.items));
+      expect(Object.keys(after.items).length).toBe(Object.keys(before.items).length);
 
       // The rewrite must never INTRODUCE parser warnings (it may produce fewer,
       // since it normalises a trailing section the original reader tripped on).

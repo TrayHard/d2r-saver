@@ -4,10 +4,10 @@
 //! only base, unique/set/runeword id, quantity and the `Add_one` stat; a parser created with
 //! details also keeps what an index row needs of `BinaryParsedItem` (`ItemDetail`).
 
-use crate::bits::{BitReader, DEAD_BRANCH};
+use crate::bits::BitReader;
 use crate::data::{
-    GameData, StatInfo, StatKind, NO_BASE, TYPE_ARMO, TYPE_BLUN, TYPE_BOOK, TYPE_CHAR, TYPE_WEAP, UNIQUE_RUNEWORD,
-    UNIQUE_SET, UNIQUE_UNIQUE,
+    GameData, StatInfo, StatKind, TYPE_ARMO, TYPE_BLUN, TYPE_BOOK, TYPE_CHAR, TYPE_WEAP, UNIQUE_RUNEWORD, UNIQUE_SET,
+    UNIQUE_UNIQUE,
 };
 use crate::{Error, Result};
 use std::collections::BTreeMap;
@@ -20,7 +20,7 @@ pub(crate) const NO_DETAIL: u32 = u32::MAX;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Item {
-    /// Base code as read; `DEAD_BRANCH` bytes where the Huffman walk hit the dead branch.
+    /// Base code as read.
     pub code: [u8; 3],
     /// Index into the game data's bases; `NO_BASE` for a code the data does not know.
     pub(crate) base: u16,
@@ -34,24 +34,9 @@ pub struct Item {
 }
 
 impl Item {
-    /// The base code, `?` for a dead Huffman branch.
+    /// The base code.
     pub fn code(&self) -> String {
-        self.code
-            .iter()
-            .map(|&c| if c == DEAD_BRANCH { '?' } else { c as char })
-            .collect()
-    }
-
-    /// `item.base` as the TypeScript parser spells it: a dead Huffman branch reads `undefined`.
-    pub fn base_text(&self) -> String {
-        let mut text = String::new();
-        for &c in &self.code {
-            match c {
-                DEAD_BRANCH => text.push_str("undefined"),
-                c => text.push(c as char),
-            }
-        }
-        text
+        self.code.iter().map(|&c| c as char).collect()
     }
 
     /// `set###`, `unique###` or `runeword###`, as the TypeScript parser names it.
@@ -260,12 +245,7 @@ impl<'a> Parser<'a> {
         if r.code_char()? != b' ' {
             return Err(Error("invalid item code"));
         }
-        // A dead Huffman branch makes the JS base "undefined…", which no table knows.
-        let base = if code.contains(&DEAD_BRANCH) {
-            NO_BASE
-        } else {
-            gd.base_of(code)
-        };
+        let base = gd.base_of(code);
         let info = gd.base(base);
         let mut item = Item {
             code,
@@ -469,7 +449,7 @@ pub(crate) fn display_name(item: &Item, gd: &GameData) -> String {
     item.unique
         .and_then(|u| gd.uniques[u as usize].name)
         .or(gd.base(item.base).display_name)
-        .map_or_else(|| item.base_text(), |id| gd.name(id).to_string())
+        .map_or_else(|| item.code(), |id| gd.name(id).to_string())
 }
 
 /// `item.defense` from the stored armor class, with the parser's ethereal and eth-bug arithmetic.

@@ -916,7 +916,30 @@
     "inventory": [],
     "cube": [],
     "stash": [],
-    "belt": []
+    "belt": [],
+    "rawCorpse": [
+      74,
+      77,
+      0,
+      0
+    ],
+    "mercItems": {
+      "head": 8,
+      "tors": 9
+    },
+    "rawGolem": [
+      107,
+      102,
+      0
+    ],
+    "extraSections": [
+      1,
+      0,
+      108,
+      102,
+      0,
+      0
+    ]
   },
   "items": {
     "0": {
@@ -1126,6 +1149,78 @@
       "custom": true,
       "quantity": 1
     },
+    "8": {
+      "itemId": 8,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {
+        "vitality": 15,
+        "item_armor_percent": 206,
+        "damageresist": 10,
+        "fireresist": 42,
+        "lightresist": 35,
+        "coldresist": 31,
+        "item_fastergethitrate": 30
+      },
+      "binaryOffset": {
+        "start": 13168,
+        "end": 13464
+      },
+      "base": "xkp",
+      "guid": 4166793064,
+      "ilvl": 63,
+      "quality": 7,
+      "unique": "unique202",
+      "defense": 63,
+      "uniqueValues": [
+        35,
+        10,
+        30,
+        206,
+        42,
+        31,
+        15
+      ]
+    },
+    "9": {
+      "itemId": 9,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": true,
+      "sockets": 3,
+      "socketedItems": [
+        "gpv",
+        "gpv",
+        "gpv"
+      ],
+      "stats": {
+        "strength": 20,
+        "armorclass": 500,
+        "item_req_percent": -40,
+        "item_addskill_tab#11": 2
+      },
+      "binaryOffset": {
+        "start": 13464,
+        "end": 13728
+      },
+      "base": "xar",
+      "guid": 809000466,
+      "ilvl": 93,
+      "quality": 5,
+      "unique": "set082",
+      "defense": 446,
+      "uniqueValues": [
+        500,
+        2,
+        3,
+        20,
+        -40,
+        350
+      ]
+    },
     "r09": {
       "itemId": 4,
       "unidentified": false,
@@ -1157,10 +1252,26 @@
       "base": "r12",
       "quality": 2,
       "quantity": 0
+    },
+    "gpv": {
+      "itemId": 12,
+      "unidentified": false,
+      "ethereal": false,
+      "socketed": false,
+      "sockets": 0,
+      "socketedItems": [],
+      "stats": {},
+      "binaryOffset": {
+        "start": 13904,
+        "end": 13992
+      },
+      "base": "gpv",
+      "quality": 2,
+      "quantity": 0
     }
   },
   "warnings": [
     "Main item list truncated: item 6/26: unknown item stat code 508",
-    "Item parsing error (some items may be missing): invalid item table header"
+    "Hireling item list truncated: item 3/3: unknown item stat code 474"
   ]
 }

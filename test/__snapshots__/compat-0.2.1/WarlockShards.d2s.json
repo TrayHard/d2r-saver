@@ -936,6 +936,26 @@
       "hp1",
       "hp1",
       "hp1"
+    ],
+    "rawCorpse": [
+      74,
+      77,
+      0,
+      0
+    ],
+    "mercItems": {},
+    "rawGolem": [
+      107,
+      102,
+      0
+    ],
+    "extraSections": [
+      1,
+      0,
+      108,
+      102,
+      0,
+      0
     ]
   },
   "items": {
@@ -986,7 +1006,6 @@
     }
   },
   "warnings": [
-    "Main item list truncated: item 7/17: unknown item stat code 504",
-    "Item parsing error (some items may be missing): invalid item table header"
+    "Main item list truncated: item 7/17: unknown item stat code 504"
   ]
 }

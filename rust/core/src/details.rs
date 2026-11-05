@@ -96,7 +96,7 @@ fn row(item: &Item, details: &[ItemDetail], gd: &GameData, place: &str, stack: O
     Some(DetailRow {
         place: place.to_string(),
         name: display_name(item, gd),
-        base: item.base_text(),
+        base: item.code(),
         quality: detail.quality,
         runeword: detail.runeword,
         ethereal: detail.ethereal,
