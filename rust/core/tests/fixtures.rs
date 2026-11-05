@@ -525,6 +525,27 @@ fn detail_rows_read_like_the_js_reference() {
         ]
     );
     assert!(stash_tab_details(&fixture("SharedStashComplete.d2i"), gd()).is_err());
+
+    // Counts: runes and keys by their stacks; the empty gem slot and the potions are no counts.
+    let counts = stash_tab_details(&fixture("MaterialsTabSeller.d2i"), gd())
+        .unwrap()
+        .counts;
+    let named: Vec<(String, i64)> = counts.into_iter().collect();
+    assert_eq!(
+        named.iter().find(|(k, _)| k == "r01").map(|c| c.1),
+        Some(5),
+        "{named:?}"
+    );
+    assert_eq!(
+        named.iter().find(|(k, _)| k == "r10").map(|c| c.1),
+        Some(3),
+        "{named:?}"
+    );
+    assert_eq!(
+        named.iter().find(|(k, _)| k == "pk1").map(|c| c.1),
+        Some(3),
+        "{named:?}"
+    );
 }
 
 /// `n` bits at bit `at`, LSB first, like the save stores them.

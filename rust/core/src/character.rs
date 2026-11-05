@@ -2,7 +2,7 @@
 //! every item list in file order (main, corpses, hireling, iron golem) and the profile slots.
 
 use crate::bits::BitReader;
-use crate::item::{Item, ItemCopy, ItemDetail, Key, ListReport, Parsed, Parser, Section};
+use crate::item::{Item, ItemCopy, ItemDetail, Key, ListReport, Parsed, Parser, Section, SimpleCounts};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC};
 use std::collections::HashMap;
 
@@ -59,6 +59,8 @@ pub struct Character {
     pub details: Vec<ItemDetail>,
     /// With details: every extended item of the main, corpse and hireling lists, socketed ones included.
     pub copies: Vec<ItemCopy>,
+    /// With details: the simple item counts of the same lists.
+    pub counts: SimpleCounts,
 }
 
 /// `readD2S`: a v105 `.d2s`.
@@ -242,6 +244,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
         main,
         details: p.details.unwrap_or_default(),
         copies: p.copies.unwrap_or_default(),
+        counts: p.counts.unwrap_or_default(),
     })
 }
 

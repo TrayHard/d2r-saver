@@ -6,7 +6,7 @@
 
 use crate::character::{read_version, Slot};
 use crate::count::{character_status, copies, read_tab, stack};
-use crate::item::{display_name, Item, ItemCopy, ItemDetail};
+use crate::item::{display_name, Item, ItemCopy, ItemDetail, SimpleCounts};
 use crate::{GameData, Result};
 use std::collections::BTreeMap;
 
@@ -43,6 +43,8 @@ pub struct CharacterDetails {
     pub rows: Vec<DetailRow>,
     /// Every extended item of the save, corpses and socketed items included, for duplicate tracking.
     pub copies: Vec<ItemCopy>,
+    /// Simple items by base code (`SimpleCounts`), corpses and the hireling included.
+    pub counts: SimpleCounts,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -51,6 +53,8 @@ pub struct TabDetails {
     pub rows: Vec<DetailRow>,
     /// Every extended item of the tab, socketed items included, for duplicate tracking.
     pub copies: Vec<ItemCopy>,
+    /// Simple items by base code (`SimpleCounts`), every sector.
+    pub counts: SimpleCounts,
 }
 
 /// The rows of a `.d2s`, read like `character_items` reads it; each row comes from the item parsed
@@ -80,6 +84,7 @@ pub fn character_details(bytes: &[u8], gd: &GameData) -> Result<CharacterDetails
         ladder,
         rows,
         copies: read.copies,
+        counts: read.counts,
     })
 }
 
@@ -88,6 +93,7 @@ pub fn stash_tab_details(bytes: &[u8], gd: &GameData) -> Result<TabDetails> {
     let report = read_tab(bytes, gd, true)?;
     let mut rows = Vec::new();
     let mut copies = Vec::new();
+    let mut counts = SimpleCounts::new();
     for sector in &report.sectors {
         let Some(walk) = &sector.walk else { continue };
         let place = match sector.kind {
@@ -99,8 +105,11 @@ pub fn stash_tab_details(bytes: &[u8], gd: &GameData) -> Result<TabDetails> {
             rows.extend(row(item, &walk.details, gd, &place, stack(sector.kind, item)));
         }
         copies.extend_from_slice(&walk.copies);
+        for (key, n) in &walk.counts {
+            *counts.entry(key.clone()).or_default() += n;
+        }
     }
-    Ok(TabDetails { rows, copies })
+    Ok(TabDetails { rows, copies, counts })
 }
 
 fn row(item: &Item, details: &[ItemDetail], gd: &GameData, place: &str, stack: Option<i64>) -> Option<DetailRow> {

@@ -42,6 +42,8 @@ pub(crate) const TYPE_WEAP: u8 = 8;
 pub(crate) const TYPE_BLUN: u8 = 16;
 /// Vendor goods (tomes, keys, arrows, bolts): their copies raise no duplicate alert.
 pub(crate) const TYPE_VENDOR: u8 = 32;
+/// Gems of every grade: counted like runes by the rollback gate.
+pub(crate) const TYPE_GEM: u8 = 64;
 
 /// How `addStat` keys and accumulates a stat.
 #[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
@@ -349,6 +351,7 @@ impl GameData {
                 ("key", TYPE_VENDOR),
                 ("bowq", TYPE_VENDOR),
                 ("xboq", TYPE_VENDOR),
+                ("gem", TYPE_GEM),
             ];
             // text(base.namestr) || base.name || null; a missing namestr looks up "undefined".
             let namestr = entry.get("namestr").and_then(Value::as_str).unwrap_or("undefined");

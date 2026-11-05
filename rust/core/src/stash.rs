@@ -1,7 +1,7 @@
 //! Port of `walkSectors` / `walkItemList` in `src/formats/item-walker.ts`: every sector of a
 //! `.d2i` stash tab and the top-level items of each sector's `JM` list.
 
-use crate::item::{Item, ItemCopy, ItemDetail, ListReport, Parser, Section};
+use crate::item::{Item, ItemCopy, ItemDetail, ListReport, Parser, Section, SimpleCounts};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC, OVERRUN};
 
 const SECTOR_HEADER_SIZE: u64 = 64;
@@ -16,6 +16,8 @@ pub struct StashWalk {
     pub details: Vec<ItemDetail>,
     /// With details: every extended item of the sector, socketed ones included.
     pub copies: Vec<ItemCopy>,
+    /// With details: the simple item counts of the sector.
+    pub counts: SimpleCounts,
 }
 
 pub struct StashSector {
@@ -131,5 +133,6 @@ fn walk_item_list(
         entries,
         details: parser.details.unwrap_or_default(),
         copies: parser.copies.unwrap_or_default(),
+        counts: parser.counts.unwrap_or_default(),
     })
 }

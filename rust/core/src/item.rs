@@ -6,8 +6,8 @@
 
 use crate::bits::BitReader;
 use crate::data::{
-    GameData, StatInfo, StatKind, NO_BASE, TYPE_ARMO, TYPE_BLUN, TYPE_BOOK, TYPE_CHAR, TYPE_VENDOR, TYPE_WEAP,
-    UNIQUE_RUNEWORD, UNIQUE_SET, UNIQUE_UNIQUE,
+    GameData, StatInfo, StatKind, NO_BASE, TYPE_ARMO, TYPE_BLUN, TYPE_BOOK, TYPE_CHAR, TYPE_GEM, TYPE_VENDOR,
+    TYPE_WEAP, UNIQUE_RUNEWORD, UNIQUE_SET, UNIQUE_UNIQUE,
 };
 use crate::{Error, Result};
 use std::collections::BTreeMap;
@@ -209,6 +209,8 @@ pub(crate) struct Parser<'a> {
     pub details: Option<Vec<ItemDetail>>,
     /// With details: every extended item outside the golem slot, children before their parent.
     pub copies: Option<Vec<ItemCopy>>,
+    /// With details: `SimpleCounts` of the items outside the golem slot, socketed ones left out.
+    pub counts: Option<SimpleCounts>,
     /// The list being read; its reader sets it before each list.
     pub section: Section,
     /// Socket nesting of the item being parsed: 0 for a top-level item.
@@ -224,6 +226,7 @@ impl<'a> Parser<'a> {
             presets: Vec::new(),
             details: details.then(Vec::new),
             copies: details.then(Vec::new),
+            counts: details.then(SimpleCounts::new),
             section: Section::Main,
             depth: 0,
         }
@@ -255,6 +258,9 @@ impl<'a> Parser<'a> {
                 base: item.code(),
                 quality: detail.quality,
             });
+        }
+        if let Some(counts) = &mut self.counts {
+            count(counts, item, &detail, self.gd, self.section, self.depth);
         }
         item.detail = details.len() as u32;
         details.push(detail);
@@ -584,6 +590,38 @@ pub(crate) fn display_name(item: &Item, gd: &GameData) -> String {
         .and_then(|u| gd.uniques[u as usize].name)
         .or(gd.base(item.base).display_name)
         .map_or_else(|| item.code(), |id| gd.name(id).to_string())
+}
+
+/// Simple items a save holds, by base code: what the fingerprint cannot follow because the item has no guid
+/// or its copies stack. A rune, gem, quest or misc item (keys, organs, essences, tokens, shards) counts
+/// its materials stack or 1, unless a fingerprint tracks it; a bag counts its content ("Items inside")
+/// under `<code>:<unique key>`, whatever its quality. Socketed items and the golem's item are left out.
+pub type SimpleCounts = BTreeMap<String, i64>;
+
+fn count(counts: &mut SimpleCounts, item: &Item, detail: &ItemDetail, gd: &GameData, section: Section, depth: u32) {
+    if depth > 0 || section == Section::Golem {
+        return;
+    }
+    let info = gd.base(item.base);
+    let (key, n) = if item.add_one > 0 {
+        let key = item
+            .unique_key()
+            .map_or_else(|| item.code(), |u| format!("{}:{u}", item.code()));
+        (key, item.add_one)
+    } else if (info.indexed || info.types & TYPE_GEM != 0) && !detail.tracked {
+        // The materials sector keeps stacks; an empty slot there stores 0.
+        let stack = if section == Section::Tab(1) {
+            item.quantity
+        } else {
+            None
+        };
+        (item.code(), stack.map_or(1, i64::from))
+    } else {
+        return;
+    };
+    if n > 0 {
+        *counts.entry(key).or_default() += n;
+    }
 }
 
 /// Where an `ItemCopy` sits; `None` for the iron golem's item.

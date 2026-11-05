@@ -6,7 +6,7 @@
 //! does not read. `--details` writes the index rows instead of the counts: `"rows":[{"place",
 //! "name","base","quality","runeword","ethereal","sockets","ilvl","defense","quantity","guid",
 //! "stats","socketed","fingerprint"},…]`. `--copies` writes every extended item instead: `"copies":[["<fingerprint
-//! hex>",guid,tracked,"place"],…]`. `--bench` prints the parse time per save by category to stderr.
+//! hex>",guid,tracked,"place"],…],"counts":{"<code>":n,…}`. `--bench` prints the parse time per save by category to stderr.
 
 use base64::Engine;
 use d2r_saver_core::{
@@ -67,16 +67,17 @@ fn main() {
         let started = Instant::now();
         if copies {
             let result = if character {
-                character_details(&bytes, &gd).map(|c| c.copies)
+                character_details(&bytes, &gd).map(|c| (c.copies, c.counts))
             } else {
-                stash_tab_details(&bytes, &gd).map(|t| t.copies)
+                stash_tab_details(&bytes, &gd).map(|t| (t.copies, t.counts))
             };
             nanos[category] += started.elapsed().as_nanos();
             saves[category] += 1;
             match result {
-                Ok(copies) => {
+                Ok((copies, counts)) => {
                     let copies = Value::Array(copies.iter().map(copy_json).collect());
-                    writeln!(out, r#"{{"id":{id},"ok":true,"copies":{copies}}}"#)
+                    let counts = json!(counts);
+                    writeln!(out, r#"{{"id":{id},"ok":true,"copies":{copies},"counts":{counts}}}"#)
                 }
                 Err(_) => writeln!(out, r#"{{"id":{id},"ok":false}}"#),
             }
