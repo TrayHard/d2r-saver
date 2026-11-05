@@ -1,0 +1,11 @@
+[package]
+name = "d2r-scan"
+version = "0.1.0"
+edition = "2021"
+description = "Counts the indexed items of D2R saves given as JSON lines"
+license = "MIT"
+
+[dependencies]
+d2r-saver-core = { path = "../core" }
+serde_json = "1"
+base64 = "0.22"

@@ -1,0 +1,9 @@
+[package]
+name = "d2r-saver-core"
+version = "0.1.0"
+edition = "2021"
+description = "Read path of d2r-saver (Blizzless D2R v105 and legacy v99 saves) without the affix solver"
+license = "MIT"
+
+[dependencies]
+serde_json = "1"
