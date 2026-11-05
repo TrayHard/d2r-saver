@@ -524,3 +524,57 @@ fn detail_rows_read_like_the_js_reference() {
     );
     assert!(stash_tab_details(&fixture("SharedStashComplete.d2i"), gd()).is_err());
 }
+
+/// `n` bits at bit `at`, LSB first, like the save stores them.
+fn get_bits(b: &[u8], at: usize, n: usize) -> u64 {
+    (0..n).fold(0, |v, i| v | (((b[(at + i) >> 3] >> ((at + i) & 7)) & 1) as u64) << i)
+}
+
+fn set_bits(b: &mut [u8], at: usize, n: usize, value: u64) {
+    for i in 0..n {
+        let (byte, bit) = ((at + i) >> 3, (at + i) & 7);
+        b[byte] = (b[byte] & !(1 << bit)) | (((value >> i) & 1) as u8) << bit;
+    }
+}
+
+#[test]
+fn detail_rows_come_from_each_copy_of_a_preset_base() {
+    // A second Tome of Town Portal with another guid in another inventory cell. Tomes are keyed by
+    // base code, so both slots point to the last copy in the dictionary; each row keeps its own.
+    let gd = gd_d2r();
+    let bytes = fixture("WarlockTest.d2s");
+    let read = read_d2s(&bytes, gd).unwrap();
+    let main = read.main.unwrap();
+    let count_at = main.first_item_offset - 2;
+    // Item k of the main list ends where a list declared with k items stops.
+    let ends: Vec<usize> = (0..=main.declared as u16)
+        .map(|k| {
+            let mut b = bytes.clone();
+            b[count_at..count_at + 2].copy_from_slice(&k.to_le_bytes());
+            read_d2s(&b, gd).unwrap().main.unwrap().end_offset
+        })
+        .collect();
+    const GUID: u64 = 2547047660;
+    let (start, end, guid_at) = ends
+        .windows(2)
+        .find_map(|w| {
+            (w[0] * 8..w[1] * 8 - 32)
+                .find(|&p| get_bits(&bytes, p, 32) == GUID)
+                .map(|p| (w[0], w[1], p))
+        })
+        .unwrap();
+    let mut copy = bytes[start..end].to_vec();
+    set_bits(&mut copy, guid_at - start * 8, 32, GUID ^ 1);
+    let free = (0..40)
+        .find(|&cell| !read.held.contains_key(&Slot::Inventory(cell)))
+        .unwrap();
+    set_bits(&mut copy, 42, 4, (free % 10) as u64); // col
+    set_bits(&mut copy, 46, 4, (free / 10) as u64); // row
+    let mut save = [&bytes[..end], &copy, &bytes[end..]].concat();
+    save[count_at..count_at + 2].copy_from_slice(&(main.declared as u16 + 1).to_le_bytes());
+
+    let c = character_details(&save, gd).unwrap();
+    let tomes: Vec<_> = c.rows.iter().filter(|r| r.base == "tbk").map(|r| r.guid).collect();
+    assert_eq!(tomes.len(), 2);
+    assert!(tomes.contains(&Some(GUID as u32)) && tomes.contains(&Some(GUID as u32 ^ 1)));
+}

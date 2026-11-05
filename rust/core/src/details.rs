@@ -41,11 +41,12 @@ pub struct CharacterDetails {
     pub rows: Vec<DetailRow>,
 }
 
-/// The rows of a `.d2s`, read like `character_items` reads it.
+/// The rows of a `.d2s`, read like `character_items` reads it; each row comes from the item parsed
+/// in its slot (`Character::held`), not from the dictionary entry a preset id points to.
 pub fn character_details(bytes: &[u8], gd: &GameData) -> Result<CharacterDetails> {
     let (version, hardcore, ladder) = character_status(bytes);
     let read = read_version(bytes, gd, version, true)?;
-    let mut slots: Vec<_> = read.slots.iter().collect();
+    let mut slots: Vec<_> = read.held.iter().collect();
     slots.sort_unstable_by_key(|(slot, _)| **slot);
     let rows = slots
         .into_iter()

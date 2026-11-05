@@ -48,7 +48,11 @@ pub enum Slot {
 pub struct Character {
     /// Each slot holds the dictionary entry its id points to. A preset id (runes, gems) points to
     /// the LAST item registered with that base code anywhere in the file, like `read.items[ref]`.
+    /// Counting reads these.
     pub slots: HashMap<Slot, Item>,
+    /// The same slots, each with the item parsed there: its own guid, level and stats where `slots`
+    /// has the last copy of a preset base. Detail rows read these.
+    pub held: HashMap<Slot, Item>,
     /// The main item list; `None` when its header did not read.
     pub main: Option<ListReport>,
     /// The details `Item::detail` points to when the save was read with details, else empty.
@@ -77,11 +81,6 @@ pub(crate) fn read_version(data: &[u8], gd: &GameData, version: u32, details: bo
         return Err(Error(error));
     }
     read_character(data, gd, layout, legacy, details)
-}
-
-enum Ref {
-    Item(Item),
-    Preset(u16),
 }
 
 fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, details: bool) -> Result<Character> {
@@ -130,7 +129,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
 
     // Items: from here a failure only stops the reading, like the JS try/catch around this part.
     let stash_columns = gd.stash_columns;
-    let mut refs: HashMap<Slot, Ref> = HashMap::new();
+    let mut refs: HashMap<Slot, (Key, Item)> = HashMap::new();
     let mut place = |parsed: &Parsed, merc: bool| {
         let Some(key) = parsed.key else { return };
         let (row, col) = (parsed.row, parsed.col);
@@ -152,11 +151,7 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
             2 => Slot::Belt(col),
             _ => return,
         };
-        let value = match key {
-            Key::Num => Ref::Item(parsed.item),
-            Key::Preset(base) => Ref::Preset(base),
-        };
-        refs.insert(slot, value);
+        refs.insert(slot, (key, parsed.item));
     };
 
     let mut main = None;
@@ -230,14 +225,15 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, det
     })();
 
     let slots = refs
-        .into_iter()
-        .filter_map(|(slot, r)| match r {
-            Ref::Item(item) => Some((slot, item)),
-            Ref::Preset(base) => p.preset(base).map(|item| (slot, *item)),
+        .iter()
+        .filter_map(|(&slot, &(key, item))| match key {
+            Key::Num => Some((slot, item)),
+            Key::Preset(base) => p.preset(base).map(|item| (slot, *item)),
         })
         .collect();
     Ok(Character {
         slots,
+        held: refs.into_iter().map(|(slot, (_, item))| (slot, item)).collect(),
         main,
         details: p.details.unwrap_or_default(),
     })
