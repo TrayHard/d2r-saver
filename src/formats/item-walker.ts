@@ -26,6 +26,7 @@ import {
   type BinaryParsedItem,
   type ByteRange,
   type ItemListReport,
+  type ReadOptions,
 } from './item-parser.js';
 
 // ─── Layout constants ───────────────────────────────────────────
@@ -145,6 +146,8 @@ export interface WalkItemListOptions {
   expectedEnd?: number;
   /** Save version of the items; 99 selects the legacy read-only layout. Defaults to 105. */
   saveVersion?: 99 | 105;
+  /** `false` skips the affix solver (0.5.0), see `ReadOptions`. Defaults to `true`. */
+  resolveMods?: boolean;
 }
 
 // ─── Bit helpers (LSB-first, same convention as BinaryReader) ───
@@ -331,6 +334,7 @@ export function walkItemList(
   const pending: WalkedItem[][] = [];
   const ctx = createItemParser(reader, gd, options?.initialId ?? 0, {
     saveVersion: options?.saveVersion,
+    resolveMods: options?.resolveMods,
     onItem: ({ item, depth, registeredKey }) => {
       const children = pending[depth + 1] ?? [];
       pending[depth + 1] = [];
@@ -386,19 +390,19 @@ function readU32(data: Uint8Array, offset: number): number {
  * @throws {D2RSaverError} `PARSE_ERROR` when a normal/extended sector has no `JM` list header;
  *   `BUFFER_OVERRUN` when a sector header claims bytes the buffer does not have for its list header.
  */
-export function walkD2I(buffer: Uint8Array, gd: GameData): D2IParseReport {
-  return walkSectors(buffer, gd, 105);
+export function walkD2I(buffer: Uint8Array, gd: GameData, options?: ReadOptions): D2IParseReport {
+  return walkSectors(buffer, gd, 105, options);
 }
 
 /**
  * Walk a legacy v99 `.d2i` for reading only. The in-place operations go through `walkD2I`, which
  * rejects these files, so a v99 tab can never reach a write.
  */
-export function walkLegacyD2I(buffer: Uint8Array, gd: GameData): D2IParseReport {
-  return walkSectors(buffer, gd, 99);
+export function walkLegacyD2I(buffer: Uint8Array, gd: GameData, options?: ReadOptions): D2IParseReport {
+  return walkSectors(buffer, gd, 99, options);
 }
 
-function walkSectors(buffer: Uint8Array, gd: GameData, saveVersion: 99 | 105): D2IParseReport {
+function walkSectors(buffer: Uint8Array, gd: GameData, saveVersion: 99 | 105, options?: ReadOptions): D2IParseReport {
   const sectors: D2IWalkedSector[] = [];
   let offset = 0;
   let stoppedEarly = false;
@@ -421,6 +425,7 @@ function walkSectors(buffer: Uint8Array, gd: GameData, saveVersion: 99 | 105): D
         initialId: 1,
         expectedEnd: offset + size,
         saveVersion,
+        resolveMods: options?.resolveMods,
       });
     }
     sectors.push({ offset, size, type, gold, walk });

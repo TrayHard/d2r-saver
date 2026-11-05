@@ -10,7 +10,7 @@ import type { LocaleArray } from './game-data/loader.js';
 import { detectFormat, type DetectedFormat } from './formats/detect.js';
 import { readD2S, readLegacyD2S, type D2SReadResult, type D2SCharacterProfile } from './formats/d2s-reader.js';
 import { readD2I, type D2IReadResult, type D2IStashPage } from './formats/d2i-reader.js';
-import type { BinaryParsedItem } from './formats/item-parser.js';
+import type { BinaryParsedItem, ReadOptions } from './formats/item-parser.js';
 import { writeD2S, type WriteD2SOptions } from './formats/d2s-writer.js';
 import {
   writeStash,
@@ -88,6 +88,7 @@ export type {
   ParsedItemTrace,
   ParserOptions,
   ParseItemListOptions,
+  ReadOptions,
 } from './formats/item-parser.js';
 export type { ExtractResult } from './operations/extract-item.js';
 export type { InsertResult, InsertD2IResult, InsertD2STarget } from './operations/insert-item.js';
@@ -268,23 +269,23 @@ export class D2RSaver {
   // ── Reading ─────────────────────────────────────────────────
 
   /** Read a .d2s character save file. */
-  readD2S(buffer: Uint8Array): D2SReadResult {
-    return readD2S(buffer, this.gd);
+  readD2S(buffer: Uint8Array, options?: ReadOptions): D2SReadResult {
+    return readD2S(buffer, this.gd, options);
   }
 
   /** Read a legacy v99 .d2s character save. Read-only: `writeD2S` refuses the result. */
-  readLegacyD2S(buffer: Uint8Array): D2SReadResult {
-    return readLegacyD2S(buffer, this.gd);
+  readLegacyD2S(buffer: Uint8Array, options?: ReadOptions): D2SReadResult {
+    return readLegacyD2S(buffer, this.gd, options);
   }
 
   /** Read a .d2i shared stash file. */
-  readD2I(buffer: Uint8Array): D2IReadResult {
-    return readD2I(buffer, this.gd);
+  readD2I(buffer: Uint8Array, options?: ReadOptions): D2IReadResult {
+    return readD2I(buffer, this.gd, options);
   }
 
   /** Auto-detect format and read a save file. */
-  readSave(buffer: Uint8Array): ReadSaveResult {
-    return readSave(buffer, this.gd);
+  readSave(buffer: Uint8Array, options?: ReadOptions): ReadSaveResult {
+    return readSave(buffer, this.gd, options);
   }
 
   // ── In-place editing: walking ───────────────────────────────
@@ -293,13 +294,13 @@ export class D2RSaver {
    * Walk every sector of a .d2i shared stash and record byte-exact item ranges (0.3.0).
    * Nothing is re-encoded; see `walkD2I` for the report shape.
    */
-  walkD2I(buffer: Uint8Array): D2IParseReport {
-    return walkD2I(buffer, this.gd);
+  walkD2I(buffer: Uint8Array, options?: ReadOptions): D2IParseReport {
+    return walkD2I(buffer, this.gd, options);
   }
 
   /** Walk a legacy v99 .d2i shared stash. Read-only: the in-place operations reject these files. */
-  walkLegacyD2I(buffer: Uint8Array): D2IParseReport {
-    return walkLegacyD2I(buffer, this.gd);
+  walkLegacyD2I(buffer: Uint8Array, options?: ReadOptions): D2IParseReport {
+    return walkLegacyD2I(buffer, this.gd, options);
   }
 
   /** Walk one `JM` item list that starts at absolute byte `headerOffset` (0.3.0). */

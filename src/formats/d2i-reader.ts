@@ -15,6 +15,7 @@ import {
   type BinaryParsedItem,
   type ItemHandler,
   type ItemListReport,
+  type ReadOptions,
 } from './item-parser.js';
 import { isSubType } from '../items/item-types.js';
 
@@ -107,7 +108,7 @@ export interface D2IReadResult {
  * @param data Raw file bytes
  * @param gd   GameData instance
  */
-export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
+export function readD2I(data: Uint8Array, gd: GameData, options?: ReadOptions): D2IReadResult {
   const buffer = new Uint8Array(data);
   const pages: D2IStashPage[] = [];
   const allItems: Record<number, BinaryParsedItem> = {};
@@ -157,7 +158,7 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
 
     if (pageType === 1) {
       // Extended page: split into 3 virtual tabs (gems, runes, materials)
-      sector.list = parseExtendedPage(reader, gd, gold, offset, sectorSize, pages, allItems, warnings, nextItemId);
+      sector.list = parseExtendedPage(reader, gd, gold, offset, sectorSize, pages, allItems, warnings, nextItemId, options);
       // Update nextItemId from the items that were just parsed
       for (const key of Object.keys(allItems)) {
         const id = Number(key);
@@ -165,7 +166,7 @@ export function readD2I(data: Uint8Array, gd: GameData): D2IReadResult {
       }
     } else {
       // Normal stash page
-      sector.list = parseNormalPage(reader, gd, gold, pageType, offset, sectorSize, pages, allItems, warnings, nextItemId);
+      sector.list = parseNormalPage(reader, gd, gold, pageType, offset, sectorSize, pages, allItems, warnings, nextItemId, options);
       for (const key of Object.keys(allItems)) {
         const id = Number(key);
         if (id >= nextItemId) nextItemId = id + 1;
@@ -198,12 +199,13 @@ function parseNormalPage(
   allItems: Record<number, BinaryParsedItem>,
   warnings: string[],
   nextItemId: number,
+  options?: ReadOptions,
 ): ItemListReport | null {
   const stash: (number | string | undefined)[] = [];
   // `baseOffset` makes the item byte ranges and the report absolute even though the reader
   // wraps `buffer.subarray(offset)`; `expectedEnd` lets the report tell a fully parsed list
   // (reader stopped exactly at the sector end) from one that merely counted to `declared`.
-  const ctx = createItemParser(reader, gd, nextItemId, { baseOffset: offset });
+  const ctx = createItemParser(reader, gd, nextItemId, { baseOffset: offset, resolveMods: options?.resolveMods });
   let list: ItemListReport | null = null;
   try {
     list = ctx.parseItemList((id, location, slot) => {
@@ -246,6 +248,7 @@ function parseExtendedPage(
   allItems: Record<number, BinaryParsedItem>,
   warnings: string[],
   nextItemId: number,
+  options?: ReadOptions,
 ): ItemListReport | null {
   const gems: (number | string)[] = [];
   const runes: (number | string)[] = [];
@@ -253,7 +256,7 @@ function parseExtendedPage(
   const gemQty: number[] = [];
   const runeQty: number[] = [];
 
-  const ctx = createItemParser(reader, gd, nextItemId, { baseOffset: offset });
+  const ctx = createItemParser(reader, gd, nextItemId, { baseOffset: offset, resolveMods: options?.resolveMods });
   let list: ItemListReport | null = null;
   try {
     const handler: ItemHandler = (id, location, _slot, item) => {

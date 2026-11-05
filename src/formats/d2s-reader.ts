@@ -10,7 +10,7 @@
 import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { detectFormat } from './detect.js';
-import { createItemParser, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace } from './item-parser.js';
+import { createItemParser, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace, type ReadOptions } from './item-parser.js';
 import { readD2SDemonSection, type D2SDemonSectionReport } from './d2s-demon-reader.js';
 import { d2sCoverage, type D2SParseCoverage } from './d2s-coverage.js';
 import { D2S_MAGIC } from '../types/constants.js';
@@ -136,20 +136,20 @@ export interface D2SReadResult {
  * @param data Raw file bytes
  * @param gd   GameData instance
  */
-export function readD2S(data: Uint8Array, gd: GameData): D2SReadResult {
+export function readD2S(data: Uint8Array, gd: GameData, options?: ReadOptions): D2SReadResult {
   const fmt = detectFormat(data);
   if (!fmt || fmt.type !== 'd2s') throw Error('invalid d2s header');
-  return readCharacter(data, gd, V105_LAYOUT);
+  return readCharacter(data, gd, V105_LAYOUT, options);
 }
 
 /**
  * Parse a legacy v99 .d2s for reading only. The profile carries no `rawHeader`, and `writeD2S`
  * refuses `legacyVersion`, so a v99 file can never be written back through the v105 writer.
  */
-export function readLegacyD2S(data: Uint8Array, gd: GameData): D2SReadResult {
+export function readLegacyD2S(data: Uint8Array, gd: GameData, options?: ReadOptions): D2SReadResult {
   const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
   if (data.length < 16 || view.getUint32(0, true) !== D2S_MAGIC || view.getUint32(4, true) !== 99) throw Error('invalid v99 d2s header');
-  return readCharacter(data, gd, V99_LAYOUT);
+  return readCharacter(data, gd, V99_LAYOUT, options);
 }
 
 /** Fixed offsets of the character header (BGS D2SSharp Character.Read, PreviewData.Read). */
@@ -166,7 +166,7 @@ interface CharacterLayout {
 const V105_LAYOUT: CharacterLayout = { version: 105, flags: 20, class: 24, merc: 163, name: 299, nameLength: 96, quests: [413, 509, 605], stats: 833 };
 const V99_LAYOUT: CharacterLayout = { version: 99, flags: 36, class: 40, merc: 179, name: 267, nameLength: 60, quests: [345, 441, 537], stats: 765 };
 
-function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout): D2SReadResult {
+function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, options?: ReadOptions): D2SReadResult {
   const warnings: string[] = [];
 
   const reader = new BinaryReader(data);
@@ -280,7 +280,11 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout):
 
   // Items
   const traces: ParsedItemTrace[] = [];
-  const ctx = createItemParser(reader, gd, 0, { saveVersion: layout.version, onItem: trace => traces.push(trace) });
+  const ctx = createItemParser(reader, gd, 0, {
+    saveVersion: layout.version,
+    resolveMods: options?.resolveMods,
+    onItem: trace => traces.push(trace),
+  });
   let demons: D2SDemonSectionReport | null = null;
   const lists: D2SItemLists = { main: null, corpses: [], merc: null, golem: null };
 

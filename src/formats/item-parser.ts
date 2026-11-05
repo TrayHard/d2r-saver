@@ -148,6 +148,20 @@ export interface ParserOptions {
   onItem?: (trace: ParsedItemTrace) => void;
   /** Save version of the items; 99 selects the legacy read-only layout. Defaults to 105. */
   saveVersion?: 99 | 105;
+  /**
+   * `false` skips the affix solver (0.5.0): `stats` stay the raw binary stats and `uniqueValues`,
+   * `propertyIndex`, `mods`, `auto`, `staff`, `crafted`, `superior` and `custom` are not filled.
+   * Everything read from the bits is the same: identity, quality, unique/set/runeword id, affix
+   * codes, quantity, sockets, locations and byte ranges. The solver takes most of the parse time,
+   * so callers that only count or locate items should pass `false`. Defaults to `true`.
+   */
+  resolveMods?: boolean;
+}
+
+/** Read options for the public save readers and walkers (0.5.0). */
+export interface ReadOptions {
+  /** See `ParserOptions.resolveMods`. Defaults to `true`. */
+  resolveMods?: boolean;
 }
 
 /** Parsed item representation from the binary reader. */
@@ -398,6 +412,7 @@ export function createItemParser(
   const baseOffset = options?.baseOffset ?? 0;
   const onItem = options?.onItem;
   const legacy = options?.saveVersion === 99;
+  const resolveMods = options?.resolveMods ?? true;
   const items: Record<number | string, BinaryParsedItem> = {};
   let itemId = initialId;
   let listError: string | null = null;
@@ -719,7 +734,9 @@ export function createItemParser(
       // ── Resolve mod sources ───────────────────────────────
       const getStats = (src: Record<string, unknown>) =>
         parseParamStats(gd, stats, src as Record<string, never>) as Record<string, never>;
-      if (item.quality === QUALITY_SET || item.quality === QUALITY_UNIQUE) {
+      if (!resolveMods) {
+        // Raw stats only: the solver below does not move the reader.
+      } else if (item.quality === QUALITY_SET || item.quality === QUALITY_UNIQUE) {
         const parsed = parseUniqueStatsHelper(gd, item as { base: string; quality: number; unique?: string }, getStats);
         if (parsed) {
           item.uniqueValues = parsed.uniqueValues;
