@@ -1,7 +1,7 @@
 //! Port of `readCharacter` in `src/formats/d2s-reader.ts`: the header reads that can fail, then
 //! every item list in file order (main, corpses, hireling, iron golem) and the profile slots.
 
-use crate::item::{Item, Key, ListReport, Parsed, Parser};
+use crate::item::{Item, ItemDetail, Key, ListReport, Parsed, Parser};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC};
 use std::collections::HashMap;
 
@@ -31,8 +31,9 @@ const V99: Layout = Layout {
     stats: 765,
 };
 
-/// A profile slot (`profile.items`, `inventory`, `cube`, `stash`, `belt`, `mercItems`).
-#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
+/// A profile slot (`profile.items`, `inventory`, `cube`, `stash`, `belt`, `mercItems`), ordered
+/// as the index lists them: place by place, then by position.
+#[derive(Clone, Copy, PartialEq, Eq, Hash, Debug, PartialOrd, Ord)]
 pub enum Slot {
     Body(u32),
     Inventory(u32),
@@ -49,23 +50,32 @@ pub struct Character {
     pub slots: HashMap<Slot, Item>,
     /// The main item list; `None` when its header did not read.
     pub main: Option<ListReport>,
+    /// The details `Item::detail` points to when the save was read with details, else empty.
+    pub details: Vec<ItemDetail>,
 }
 
 /// `readD2S`: a v105 `.d2s`.
 pub fn read_d2s(data: &[u8], gd: &GameData) -> Result<Character> {
-    // detectFormat: magic, then version 105 at offset 4 makes it a d2s.
-    if data.len() < 16 || u32_lenient(data, 0) != D2S_MAGIC || u32_lenient(data, 4) != 105 {
-        return Err(Error("invalid d2s header"));
-    }
-    read_character(data, gd, &V105, false)
+    read_version(data, gd, 105, false)
 }
 
 /// `readLegacyD2S`: a v99 `.d2s`, read only.
 pub fn read_legacy_d2s(data: &[u8], gd: &GameData) -> Result<Character> {
-    if data.len() < 16 || u32_lenient(data, 0) != D2S_MAGIC || u32_lenient(data, 4) != 99 {
-        return Err(Error("invalid v99 d2s header"));
+    read_version(data, gd, 99, false)
+}
+
+/// The v99 reader for version 99, the v105 reader for any other; `details` keeps item details.
+pub(crate) fn read_version(data: &[u8], gd: &GameData, version: u32, details: bool) -> Result<Character> {
+    let (expected, layout, legacy, error) = if version == 99 {
+        (99, &V99, true, "invalid v99 d2s header")
+    } else {
+        (105, &V105, false, "invalid d2s header")
+    };
+    // detectFormat: magic, then the version at offset 4.
+    if data.len() < 16 || u32_lenient(data, 0) != D2S_MAGIC || u32_lenient(data, 4) != expected {
+        return Err(Error(error));
     }
-    read_character(data, gd, &V99, true)
+    read_character(data, gd, layout, legacy, details)
 }
 
 enum Ref {
@@ -73,8 +83,8 @@ enum Ref {
     Preset(u16),
 }
 
-fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool) -> Result<Character> {
-    let mut p = Parser::new(data, gd, legacy);
+fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool, details: bool) -> Result<Character> {
+    let mut p = Parser::new(data, gd, legacy, details);
     let r = &mut p.r;
 
     r.seek(layout.name);
@@ -195,5 +205,9 @@ fn read_character(data: &[u8], gd: &GameData, layout: &Layout, legacy: bool) -> 
             Ref::Preset(base) => p.preset(base).map(|item| (slot, *item)),
         })
         .collect();
-    Ok(Character { slots, main })
+    Ok(Character {
+        slots,
+        main,
+        details: p.details.unwrap_or_default(),
+    })
 }

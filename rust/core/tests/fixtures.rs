@@ -326,3 +326,54 @@ fn names_come_from_the_locale_strings() {
         ]
     );
 }
+
+#[test]
+fn detail_rows_read_like_the_js_reference() {
+    // Expected rows: `dist/` read with `resolveMods: false`, filtered and named as the item index keeps them.
+    let c = character_details(&fixture("WarlockTest.d2s"), gd()).unwrap();
+    assert_eq!((c.version, c.rows.len()), (105, 5));
+    let lore = &c.rows[0];
+    assert_eq!(
+        (
+            lore.place.as_str(),
+            lore.name.as_str(),
+            lore.base.as_str(),
+            lore.quality,
+            lore.runeword
+        ),
+        ("equipped", "Lore", "fhl", Some(9), true)
+    );
+    assert_eq!(
+        (lore.sockets, lore.ilvl, lore.defense, lore.guid, lore.quantity),
+        (2, Some(40), Some(26), Some(2731174711), 1)
+    );
+    let stats: std::collections::BTreeMap<String, i64> = [
+        ("energy", 10),
+        ("item_allskills", 1),
+        ("item_lightradius", 2),
+        ("item_manaafterkill", 2),
+    ]
+    .map(|(k, v)| (k.to_string(), v))
+    .into();
+    assert_eq!(lore.stats, stats);
+    assert_eq!(lore.socketed, ["Ort Rune", "Sol Rune"]);
+    assert_eq!(c.rows[4].stats.get("item_skillongethit#38#10"), Some(&3));
+
+    // Stacks are quantities; the empty gem slot and the potion and gem stacks are no rows.
+    let rows = stash_tab_details(&fixture("MaterialsTabSeller.d2i"), gd()).unwrap();
+    let summary: Vec<_> = rows
+        .iter()
+        .map(|r| (r.place.as_str(), r.name.as_str(), r.quantity, r.guid.is_some()))
+        .collect();
+    assert_eq!(
+        summary,
+        [
+            ("tab-materials", "El Rune", 5, false),
+            ("tab-materials", "Thul Rune", 3, false),
+            ("tab-materials", "Key of Terror", 3, true),
+            ("tab-materials", "Twisted Essence of Suffering", 2, true),
+            ("tab-materials", "Talic's Anguish", 1, true),
+        ]
+    );
+    assert!(stash_tab_details(&fixture("SharedStashComplete.d2i"), gd()).is_err());
+}

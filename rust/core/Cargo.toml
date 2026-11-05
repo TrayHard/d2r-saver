@@ -7,3 +7,7 @@ license = "MIT"
 
 [dependencies]
 serde_json = "1"
+
+[features]
+# GameData::embedded(): data/data.json and data/strings.json compiled into the binary.
+embedded-data = []

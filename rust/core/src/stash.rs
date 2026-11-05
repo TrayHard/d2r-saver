@@ -1,7 +1,7 @@
 //! Port of `walkSectors` / `walkItemList` in `src/formats/item-walker.ts`: every sector of a
 //! `.d2i` stash tab and the top-level items of each sector's `JM` list.
 
-use crate::item::{Item, ListReport, Parser};
+use crate::item::{Item, ItemDetail, ListReport, Parser};
 use crate::{u32_lenient, Error, GameData, Result, D2S_MAGIC, OVERRUN};
 
 const SECTOR_HEADER_SIZE: u64 = 64;
@@ -12,6 +12,8 @@ pub struct StashWalk {
     pub complete: bool,
     /// Top-level items in list order, registered by the parser or not; socketed children are not here.
     pub entries: Vec<Item>,
+    /// The details `Item::detail` points to when the tab was walked with details, else empty.
+    pub details: Vec<ItemDetail>,
 }
 
 pub struct StashSector {
@@ -31,15 +33,20 @@ pub struct StashReport {
 
 /// `walkD2I`: a v105 stash tab.
 pub fn walk_d2i(buffer: &[u8], gd: &GameData) -> Result<StashReport> {
-    walk_sectors(buffer, gd, false)
+    walk_sectors(buffer, gd, false, false)
 }
 
 /// `walkLegacyD2I`: a v99 stash tab, read only.
 pub fn walk_legacy_d2i(buffer: &[u8], gd: &GameData) -> Result<StashReport> {
-    walk_sectors(buffer, gd, true)
+    walk_sectors(buffer, gd, true, false)
 }
 
-fn walk_sectors(buffer: &[u8], gd: &GameData, legacy: bool) -> Result<StashReport> {
+/// The v99 walker when byte 8 holds 99, the v105 walker otherwise; `details` keeps item details.
+pub(crate) fn walk_version(buffer: &[u8], gd: &GameData, details: bool) -> Result<StashReport> {
+    walk_sectors(buffer, gd, u32_lenient(buffer, 8) == 99, details)
+}
+
+fn walk_sectors(buffer: &[u8], gd: &GameData, legacy: bool, details: bool) -> Result<StashReport> {
     let len = buffer.len() as u64;
     let mut sectors = Vec::new();
     let mut offset = 0u64;
@@ -74,6 +81,7 @@ fn walk_sectors(buffer: &[u8], gd: &GameData, legacy: bool) -> Result<StashRepor
                 gd,
                 legacy,
                 offset + size,
+                details,
             )?)
         } else {
             None
@@ -99,6 +107,7 @@ fn walk_item_list(
     gd: &GameData,
     legacy: bool,
     expected_end: u64,
+    details: bool,
 ) -> Result<StashWalk> {
     if header_offset + 4 > buffer.len() {
         return Err(OVERRUN);
@@ -106,7 +115,7 @@ fn walk_item_list(
     if buffer[header_offset] != 0x4a || buffer[header_offset + 1] != 0x4d {
         return Err(Error("no JM item list header"));
     }
-    let mut parser = Parser::new(buffer, gd, legacy);
+    let mut parser = Parser::new(buffer, gd, legacy, details);
     parser.r.seek(header_offset);
     let mut entries = Vec::new();
     let report = parser.parse_item_list(|parsed| entries.push(parsed.item))?;
@@ -115,5 +124,6 @@ fn walk_item_list(
         report,
         complete,
         entries,
+        details: parser.details.unwrap_or_default(),
     })
 }

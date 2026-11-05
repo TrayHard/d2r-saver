@@ -38,6 +38,52 @@ pub(crate) const TYPE_CHAR: u8 = 1;
 pub(crate) const TYPE_BOOK: u8 = 2;
 pub(crate) const TYPE_ARMO: u8 = 4;
 pub(crate) const TYPE_WEAP: u8 = 8;
+/// Blunt weapons: the parser adds 50 to their `item_undeaddamage_percent`.
+pub(crate) const TYPE_BLUN: u8 = 16;
+
+/// How `addStat` keys and accumulates a stat.
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub(crate) enum StatKind {
+    /// Summed under its own name.
+    #[default]
+    Plain,
+    /// `item_skillon*`: `name#skill#level`, the value is the chance.
+    SkillOn,
+    /// `item_charged_skill`: `name#skill#level`, the value is the charges.
+    Charged,
+    /// Keyed `name#param`.
+    Param,
+    /// `item_addskill_tab`: `name#class*3+tab`.
+    SkillTab,
+    /// `item_min/maxdamage_percent`: the highest value wins, never below 0.
+    Highest,
+}
+
+const PARAM_STATS: &[(&str, StatKind)] = &[
+    ("item_skillonattack", StatKind::SkillOn),
+    ("item_skillonkill", StatKind::SkillOn),
+    ("item_skillondeath", StatKind::SkillOn),
+    ("item_skillonhit", StatKind::SkillOn),
+    ("item_skillonlevelup", StatKind::SkillOn),
+    ("item_skillongethit", StatKind::SkillOn),
+    ("item_charged_skill", StatKind::Charged),
+    ("item_addclassskills", StatKind::Param),
+    ("item_nonclassskill", StatKind::Param),
+    ("state", StatKind::Param),
+    ("item_singleskill", StatKind::Param),
+    ("item_elemskill", StatKind::Param),
+    ("item_aura", StatKind::Param),
+    ("item_reanimate", StatKind::Param),
+    ("item_addskill_tab", StatKind::SkillTab),
+    ("item_mindamage_percent", StatKind::Highest),
+    ("item_maxdamage_percent", StatKind::Highest),
+];
+
+/// Stats the parser consolidates by name after reading all lists: (min or max damage, secondary, throw).
+const DAMAGE_STATS: [[&str; 3]; 2] = [
+    ["mindamage", "secondary_mindamage", "item_throw_mindamage"],
+    ["maxdamage", "secondary_maxdamage", "item_throw_maxdamage"],
+];
 
 /// Index into `bases` for a code the game data does not know.
 pub(crate) const NO_BASE: u16 = u16::MAX;
@@ -56,6 +102,9 @@ pub(crate) struct StatInfo {
     pub follow: u32,
     /// The stat is `Add_one`, the "Items inside" count of a bag.
     pub add_one: bool,
+    pub kind: StatKind,
+    /// Its `itemStatCost` key, as an index into `names`.
+    pub name: u32,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -72,6 +121,13 @@ pub(crate) struct BaseInfo {
     pub stackable: bool,
     /// English name when the type is indexed, as an index into `names`.
     pub name: Option<u32>,
+    /// The type is one of `INDEXED_BASE_TYPES`.
+    pub indexed: bool,
+    /// English name of any base, `text(namestr) || name`, as an index into `names`.
+    pub display_name: Option<u32>,
+    /// `minac` / `maxac`, 0 when the base has none.
+    pub min_ac: i64,
+    pub max_ac: i64,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -89,6 +145,10 @@ pub struct GameData {
     pub(crate) uniques: Vec<UniqueInfo>,
     pub(crate) names: Vec<String>,
     pub(crate) stash_columns: u32,
+    /// Stat ids of `DAMAGE_STATS`.
+    pub(crate) damage_stats: [[u16; 3]; 2],
+    /// Stat id of `item_undeaddamage_percent`.
+    pub(crate) undead_damage: u16,
 }
 
 /// Position of a code character in the 37-symbol alphabet, `None` for the dead Huffman branch.
@@ -204,8 +264,25 @@ impl GameData {
                 csv_bits: num(entry.get("csvbits")) as u32,
                 follow: FOLLOW_STATS.iter().find(|f| f.0 == name).map_or(0, |f| f.1),
                 add_one: name == "Add_one",
+                kind: PARAM_STATS
+                    .iter()
+                    .find(|k| k.0 == name)
+                    .map_or(StatKind::Plain, |k| k.1),
+                name: intern(name),
             });
         }
+        let stat_id = |name: &str| -> Result<u16, String> {
+            isc.get(name)
+                .map(|s| num(s.get("id")) as u16)
+                .ok_or_else(|| format!("itemStatCost has no `{name}`"))
+        };
+        let mut damage_stats = [[0u16; 3]; 2];
+        for (ids, names) in damage_stats.iter_mut().zip(DAMAGE_STATS) {
+            for (id, name) in ids.iter_mut().zip(names) {
+                *id = stat_id(name)?;
+            }
+        }
+        let undead_damage = stat_id("item_undeaddamage_percent")?;
         // BitReader::bits stops at 32 bits; the JS reader would wrap wider fields.
         if stats
             .iter()
@@ -263,13 +340,18 @@ impl GameData {
                 ("book", TYPE_BOOK),
                 ("armo", TYPE_ARMO),
                 ("weap", TYPE_WEAP),
+                ("blun", TYPE_BLUN),
             ];
-            let name = ty.filter(|t| INDEXED_BASE_TYPES.contains(t)).and_then(|_| {
-                // text(base.namestr) || base.name || null; a missing namestr looks up "undefined".
-                let namestr = entry.get("namestr").and_then(Value::as_str).unwrap_or("undefined");
-                text(namestr).or_else(|| non_empty_str(entry.get("name")))
-            });
+            // text(base.namestr) || base.name || null; a missing namestr looks up "undefined".
+            let namestr = entry.get("namestr").and_then(Value::as_str).unwrap_or("undefined");
+            let display_name = text(namestr).or_else(|| non_empty_str(entry.get("name")));
+            let indexed = ty.is_some_and(|t| INDEXED_BASE_TYPES.contains(&t));
+            let name = display_name.filter(|_| indexed);
             bases[i] = BaseInfo {
+                indexed,
+                display_name: display_name.map(&mut intern),
+                min_ac: num(entry.get("minac")),
+                max_ac: num(entry.get("maxac")),
                 types: flags.iter().filter(|f| types.contains(f.0)).fold(0, |acc, f| acc | f.1),
                 known: true,
                 preset: false,
@@ -327,6 +409,8 @@ impl GameData {
             uniques,
             names,
             stash_columns,
+            damage_stats,
+            undead_damage,
         })
     }
 
@@ -348,5 +432,21 @@ impl GameData {
 
     pub(crate) fn name(&self, id: u32) -> &str {
         &self.names[id as usize]
+    }
+
+    /// The `itemStatCost` key of a stat id the parser read (or looked up at load).
+    pub(crate) fn stat_name(&self, id: u16) -> &str {
+        self.name(self.stats[id as usize].expect("stat id from the data").name)
+    }
+}
+
+#[cfg(feature = "embedded-data")]
+impl GameData {
+    /// The game data of this d2r-saver checkout (`data/`), compiled into the binary.
+    pub fn embedded() -> Result<GameData, String> {
+        Self::from_json(
+            include_str!("../../../data/data.json"),
+            include_str!("../../../data/strings.json"),
+        )
     }
 }

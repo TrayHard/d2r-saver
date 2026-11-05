@@ -1,7 +1,9 @@
 //! Port of `ItemIndex/src/items.mjs`: how many of each named item a save holds.
 
+use crate::character::read_version;
 use crate::item::Item;
-use crate::{read_d2s, read_legacy_d2s, u32_lenient, walk_d2i, walk_legacy_d2i, Error, GameData, Result};
+use crate::stash::{walk_version, StashReport};
+use crate::{u32_lenient, Error, GameData, Result};
 use std::collections::{BTreeMap, HashMap};
 
 /// Item name → copies, sorted by name.
@@ -34,14 +36,18 @@ fn name_id(item: &Item, gd: &GameData) -> Option<u32> {
     }
 }
 
-/// `add`: a bag counts its "Items inside", a materials slot its stack, anything else one.
-fn add(counts: &mut HashMap<u32, i64>, item: &Item, gd: &GameData, stack: Option<i64>) {
-    let Some(name) = name_id(item, gd) else { return };
-    let n = if item.add_one > 0 {
+/// `copies`: a bag stands for its "Items inside", a materials slot for its stack, anything else for one.
+pub(crate) fn copies(item: &Item, stack: Option<i64>) -> i64 {
+    if item.add_one > 0 {
         item.add_one
     } else {
         stack.unwrap_or(1)
-    };
+    }
+}
+
+fn add(counts: &mut HashMap<u32, i64>, item: &Item, gd: &GameData, stack: Option<i64>) {
+    let Some(name) = name_id(item, gd) else { return };
+    let n = copies(item, stack);
     if n > 0 {
         *counts.entry(name).or_default() += n;
     }
@@ -54,11 +60,7 @@ fn named(counts: HashMap<u32, i64>, gd: &GameData) -> Counts {
 /// `characterItems`: slot references of a character (body, inventory, cube, stash, belt, mercenary).
 pub fn character_items(bytes: &[u8], gd: &GameData) -> Result<CharacterCounts> {
     let (version, hardcore, ladder) = character_status(bytes);
-    let read = if version == 99 {
-        read_legacy_d2s(bytes, gd)?
-    } else {
-        read_d2s(bytes, gd)?
-    };
+    let read = read_version(bytes, gd, version, false)?;
     let mut counts = HashMap::new();
     for item in read.slots.values() {
         add(&mut counts, item, gd, None);
@@ -73,29 +75,39 @@ pub fn character_items(bytes: &[u8], gd: &GameData) -> Result<CharacterCounts> {
 
 /// `stashTabItems`: top-level entries of every sector; stacks count only in the materials sector.
 pub fn stash_tab_items(bytes: &[u8], gd: &GameData) -> Result<Counts> {
-    let report = if u32_lenient(bytes, 8) == 99 {
-        walk_legacy_d2i(bytes, gd)?
-    } else {
-        walk_d2i(bytes, gd)?
-    };
-    if !report.reached_eof {
-        return Err(Error("Stash tab ends in an unknown sector"));
-    }
+    let report = read_tab(bytes, gd, false)?;
     let mut counts = HashMap::new();
     for sector in &report.sectors {
         let Some(walk) = &sector.walk else { continue };
-        if !walk.complete {
-            return Err(Error("Stash sector is not fully readable"));
-        }
         for item in &walk.entries {
-            // An empty materials slot stores 0; elsewhere the field is ammunition or charges.
-            let stack = if sector.kind == 1 {
-                item.quantity.map(i64::from)
-            } else {
-                None
-            };
-            add(&mut counts, item, gd, stack);
+            add(&mut counts, item, gd, stack(sector.kind, item));
         }
     }
     Ok(named(counts, gd))
+}
+
+/// A stash tab walked whole: it ends after a known sector and every item list reads completely.
+pub(crate) fn read_tab(bytes: &[u8], gd: &GameData, details: bool) -> Result<StashReport> {
+    let report = walk_version(bytes, gd, details)?;
+    if !report.reached_eof {
+        return Err(Error("Stash tab ends in an unknown sector"));
+    }
+    if report
+        .sectors
+        .iter()
+        .any(|s| s.walk.as_ref().is_some_and(|w| !w.complete))
+    {
+        return Err(Error("Stash sector is not fully readable"));
+    }
+    Ok(report)
+}
+
+/// The stack of a stash entry: only the materials sector (1) keeps stacks, and an empty slot there
+/// stores 0; elsewhere the field is ammunition or charges.
+pub(crate) fn stack(sector_kind: u8, item: &Item) -> Option<i64> {
+    if sector_kind == 1 {
+        item.quantity.map(i64::from)
+    } else {
+        None
+    }
 }
