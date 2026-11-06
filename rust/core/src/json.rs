@@ -1,7 +1,52 @@
 //! A JSON text writer. Documents are written key by key in the order the TypeScript reader creates
 //! its objects, so `JSON.parse` gives objects with the same keys in the same order.
 
-use std::fmt::{Display, Write};
+use std::fmt::Write;
+
+/// A number as JSON text. Integers are written digit by digit: `fmt` is slow in WebAssembly and a
+/// document is mostly numbers.
+pub(crate) trait Number {
+    fn write(self, out: &mut String);
+}
+
+fn int(out: &mut String, value: i64) {
+    let mut digits = [0u8; 20];
+    let mut n = value.unsigned_abs();
+    let mut at = digits.len();
+    loop {
+        at -= 1;
+        digits[at] = b'0' + (n % 10) as u8;
+        n /= 10;
+        if n == 0 {
+            break;
+        }
+    }
+    if value < 0 {
+        out.push('-');
+    }
+    out.extend(digits[at..].iter().map(|&d| d as char));
+}
+
+macro_rules! integers {
+    ($($t:ty),*) => {$(
+        impl Number for $t {
+            fn write(self, out: &mut String) {
+                int(out, self as i64);
+            }
+        }
+    )*};
+}
+integers!(u8, u32, i32, u64, usize, i64);
+
+impl Number for f64 {
+    fn write(self, out: &mut String) {
+        if self.fract() == 0.0 && self.abs() < 9_007_199_254_740_992.0 {
+            int(out, self as i64);
+        } else {
+            write!(out, "{self}").unwrap();
+        }
+    }
+}
 
 pub(crate) struct Json {
     pub out: String,
@@ -53,9 +98,9 @@ impl Json {
         self.first = true;
     }
 
-    pub fn num(&mut self, value: impl Display) {
+    pub fn num(&mut self, value: impl Number) {
         self.sep();
-        write!(self.out, "{value}").unwrap();
+        value.write(&mut self.out);
     }
 
     pub fn bool(&mut self, value: bool) {
@@ -75,6 +120,11 @@ impl Json {
 
     fn quoted(&mut self, value: &str) {
         self.out.push('"');
+        if !value.bytes().any(|b| b == b'"' || b == b'\\' || b < b' ') {
+            self.out.push_str(value);
+            self.out.push('"');
+            return;
+        }
         for c in value.chars() {
             match c {
                 '"' => self.out.push_str("\\\""),
@@ -87,7 +137,7 @@ impl Json {
     }
 
     /// `"key":value` pairs.
-    pub fn field(&mut self, key: &str, value: impl Display) {
+    pub fn field(&mut self, key: &str, value: impl Number) {
         self.key(key);
         self.num(value);
     }
@@ -129,7 +179,18 @@ mod tests {
         j.close();
         j.close_array();
         j.field_bool("c", false);
+        j.key("d");
+        j.open_array();
+        for n in [0, -7, i64::MIN, i64::MAX] {
+            j.num(n);
+        }
+        j.num(12.5);
+        j.num(1034.0);
+        j.close_array();
         j.close();
-        assert_eq!(j.out, r#"{"a":1,"b":["q\"\\\u000a\u0001ж",null,{}],"c":false}"#);
+        assert_eq!(
+            j.out,
+            r#"{"a":1,"b":["q\"\\\u000a\u0001ж",null,{}],"c":false,"d":[0,-7,-9223372036854775808,9223372036854775807,12.5,1034]}"#
+        );
     }
 }

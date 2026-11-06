@@ -53,7 +53,7 @@ pub fn read_d2i(data: &[u8], gd: &GameData, solve: bool) -> String {
         j.open_array();
         for (slot, reference) in &page.stash {
             j.open_array();
-            j.num(slot);
+            j.num(*slot);
             write_ref(&mut j, Some(*reference));
             j.close_array();
         }
@@ -64,7 +64,7 @@ pub fn read_d2i(data: &[u8], gd: &GameData, solve: bool) -> String {
                 j.key("quantities");
                 j.open_array();
                 for q in list {
-                    j.num(q);
+                    j.num(*q);
                 }
                 j.close_array();
             }
@@ -72,7 +72,7 @@ pub fn read_d2i(data: &[u8], gd: &GameData, solve: bool) -> String {
                 j.key("quantities");
                 j.open();
                 for (slot, q) in slots {
-                    j.field(&slot.to_string(), q);
+                    j.field(&slot.to_string(), *q);
                 }
                 j.close();
             }
