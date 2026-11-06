@@ -24,6 +24,8 @@ The reader requires a u16 version `1`, u16 marker `0x666c`, and u16 `0` or `1` (
 
 The stat blob starts with `0x6667`, followed by 9-bit stat IDs and unsigned 32-bit values, then the 9-bit `0x1ff` terminator. Only IDs `0..15`, whose `CSvParam` is zero in the bundled Blizzless source table, are certified. Duplicate IDs, unsupported schemas, nonzero alignment bits and unused bytes fail. The blob must end at its declared boundary, and the final section must end at EOF. Missing sections, unknown versions, unsupported presence/count, unknown demon types and extra suffixes fail.
 
+The reader runs in the Rust core (`read_demons` in `rust/core/src/character.rs`) since 1.0.0.
+
 Wire schema evidence: [D2SSharp DemonSection.cs, DemonData.Read and ReadDemonStats](https://github.com/ResurrectedTrader/D2SSharp/blob/main/src/D2SSharp/Model/DemonSection.cs). The existing library reader independently supplies item boundaries; it is not replaced by marker scanning. Reserved descriptor metadata stays uninterpreted within its fixed structural range. No raw item or unknown tail is certified through preservation alone.
 
 Private regression tests read saved SCL3V3 responses only when `STASH_PRIVATE_GRANT_FIXTURE_DIR` points to the local grant operation directory. No private bytes are embedded in tests or package files. The existing materials encoder gates remain unchanged; an existing record at quantity zero can be patched without appending a record.

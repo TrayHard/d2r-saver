@@ -2,9 +2,16 @@
 
 Blizzless D2R v105 save file reader/writer library. Ported from d2planner.
 
+Every save is read by a Rust core (`rust/core`) compiled to WebAssembly and embedded in the
+package: one artifact for Node on Windows, Linux and in Docker and for browsers, with no
+native addon and no `.wasm` file to serve. The objects are the same as those of the 0.4
+TypeScript reader. The affix solver and the writers stay in TypeScript.
+
 ## Features
 
-- Read/write `.d2s` (character) and `.d2i` (shared stash) files
+- Read/write `.d2s` (character) and `.d2i` (shared stash) files, legacy v99 saves read-only
+- Reads through the Rust core; `{ resolveMods: false }` skips the affix solver when you only count
+  or locate items
 - Extract and insert items between save files
 - Byte-exact list walking for in-place editing: item ranges, list reports, position patching (0.3.0)
 - In-place `.d2i` operations: cut and paste raw item bytes in a stash tab without rebuilding the
@@ -33,6 +40,17 @@ const saver = await D2RSaver.create({
 const saver = D2RSaver.fromData(dataJson, stringsJson);
 ```
 
+The WebAssembly reader compiles on the first read. A browser may refuse to compile it
+synchronously on the main thread; there, wait for it once before reading (`D2RSaver.create`
+already does):
+
+```ts
+import { D2RSaver, ready } from 'd2r-saver';
+
+await ready();
+const saver = D2RSaver.fromData(dataJson, stringsJson);
+```
+
 ## Reading Save Files
 
 ```ts
@@ -43,6 +61,13 @@ const result = saver.readSave(buffer);
 // Or explicitly
 const d2s = saver.readD2S(buffer);  // character file
 const d2i = saver.readD2I(buffer);  // shared stash
+
+// Legacy v99 saves, read-only (the writers refuse them)
+const old = saver.readLegacyD2S(buffer);
+const tab = saver.walkLegacyD2I(buffer);
+
+// Without the affix solver: same bits, raw stats, no uniqueValues/mods
+const fast = saver.readD2S(buffer, { resolveMods: false });
 ```
 
 ### Did the parser understand the whole file?
@@ -363,14 +388,59 @@ Codes added in 0.4.0 for the materials tab: `MATERIAL_LAYOUT`, `MATERIAL_DUPLICA
 ```
 src/
   index.ts              — D2RSaver facade + re-exports
-  core/                 — BinaryReader (bounds-checked), BitWriter, Huffman, checksum
+  engine/               — the WebAssembly read core: loading, engines per GameData, objects from its documents
+  core/                 — BitWriter, Huffman, checksum; BinaryReader (bounds-checked, used by tests)
   types/                — Constants, enums, errors
   game-data/            — GameData class (data.json + strings.json)
-  formats/              — D2S/D2I readers/writers, item parser/writer, item walker
-  items/                — Item types, stats, serializer, icons, DTO
+  formats/              — D2S/D2I readers and walker (on the engine), writers, affix solver entry
+  items/                — Item types, stats and affix solver, serializer, icons, DTO
   inventory/            — Grid, placement, dimensions, raw grid from walked items
   operations/           — Extract, insert, readSave, in-place .d2i, materials tab, exact diff
+rust/
+  core/                 — d2r-saver-core: the read path, bit for bit like the 0.4 TypeScript reader,
+                          plus item counting and the rows of the Blizzless item index
+  wasm/                 — d2r-saver-wasm: the core as a WebAssembly module with plain exports
+  cli/                  — d2r-scan: counts, index rows or item copies of saves given as JSON lines
 ```
+
+A read copies the save into the module, which writes a JSON document of everything the reader
+returns (`rust/core/src/doc.rs`), in the key order the objects had. `src/engine/engine.ts`
+parses it, runs the affix solver between the two halves of each extended item and links the
+dictionary, walked trees and slot arrays to the same item objects. Native Rust programs can use
+`d2r-saver-core` directly.
+
+### Equality with the 0.4 reader
+
+The 1.0.0 reads were compared with those of the TypeScript reader they replace (0.4.10 plus the
+fixes listed in the changelog) as canonical text: key order, array holes, `undefined` and thrown
+errors included.
+
+| Input | Saves | Reads compared | Differences |
+|---|---|---|---|
+| June 2026 Blizzless dump (characters v105 and v99, stash tabs v105 and v99) | 855,323 | 2,480,656 | 0 |
+| Cut and bit-flipped copies of those saves | 290,232 | 621,795 | 0 |
+| Test fixtures and 100 cuts of each | 10 files | every cut | 0 |
+
+The reads are `readD2S`/`readLegacyD2S` with and without the solver, `readD2I` with and without
+it, and `walkD2I`/`walkLegacyD2I`.
+
+### Read time
+
+Same dump, one thread, Node 24, Intel Core Ultra 9 275HX; all 27,959 characters, the stash tabs
+of one account in three (274,447 tabs of 2,596 accounts). Mean (p95), milliseconds:
+
+| Read | 0.4 TypeScript | 1.0.0 Rust core |
+|---|---|---|
+| Character, `readD2S` | 8.20 (27.6) | 7.53 (25.0) |
+| Character, `readD2S` without the solver | 0.252 (0.717) | 0.280 (0.723) |
+| Stash tab, `walkD2I` | 0.261 (0.0025) | 0.245 (0.0082) |
+| Stash tab, `readD2I` | 0.0067 (0.0021) | 0.0077 (0.0049) |
+| Whole shared stash of an account, `walkD2I` | 27.6 (144) | 25.9 (132) |
+
+The affix solver still takes most of a full read and is the same code. A read now has a fixed
+cost of about 10 µs (copying in, the JSON document, building the objects), so tiny saves and
+reads without the solver are a little slower: an 8-item materials list walks in 0.026 ms
+instead of 0.015 ms.
 
 ## Test fixtures
 
@@ -424,15 +494,23 @@ is committed); it is skipped otherwise.
 
 ## Development
 
+Building from source needs Rust with the WebAssembly target:
+
 ```bash
+rustup target add wasm32-unknown-unknown
+```
+
+```bash
+npm run build:wasm      # build rust/wasm and embed it as src/engine/wasm-module.ts (needed before tests)
 npm test                # run tests (vitest)
-npm run build           # compile TypeScript
+npm run build           # build:wasm, then compile TypeScript
 npm run probe           # build, then run test/probe/inplace-probe.mjs (in-place editing on the public API)
 npm run build:fixtures  # regenerate test/fixtures/SharedStashComplete.d2i
 npm run build:fixtures:materials  # regenerate test/fixtures/MaterialsTab{Seller,Buyer}.d2i
+cd rust && cargo test   # the Rust core against the fixtures
 ```
 
 ## Requirements
 
-- Node.js ≥ 18
-- Blizzless v105 save files only
+- Node.js ≥ 18, or a browser (any runtime with WebAssembly, `TextDecoder` and `atob`)
+- Blizzless v105 save files; legacy v99 saves read-only

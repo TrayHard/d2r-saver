@@ -2,6 +2,12 @@
 
 Полная документация по внутреннему устройству библиотеки.
 
+> **Since 1.0.0** every save is read by the Rust core (`rust/core`, compiled to WebAssembly in
+> `rust/wasm` and loaded by `src/engine/engine.ts`). `BinaryReader` and `createItemParser` below
+> describe the 0.4 TypeScript read path, which the Rust core follows bit for bit; `createItemParser`
+> is gone and `BinaryReader` remains for tests. The affix solver (`solveItem` in
+> `src/formats/item-parser.ts`, `src/items/item-stats-parser.ts`) and the writers are TypeScript.
+
 ## Содержание
 
 - [Обзор](#обзор)
