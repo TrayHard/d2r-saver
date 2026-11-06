@@ -89,6 +89,9 @@ const DAMAGE_STATS: [[&str; 3]; 2] = [
     ["maxdamage", "secondary_maxdamage", "item_throw_maxdamage"],
 ];
 
+/// `GameData.classes.length` when the data does not list the classes.
+const DEFAULT_CLASSES: u32 = 8;
+
 /// Index into `bases` for a code the game data does not know.
 pub(crate) const NO_BASE: u16 = u16::MAX;
 
@@ -103,6 +106,8 @@ pub(crate) struct StatInfo {
     pub save_bits: u32,
     pub save_add: i64,
     pub csv_bits: u32,
+    /// `Number.isInteger(csvbits)`: the character reader certifies only integer widths.
+    pub csv_int: bool,
     pub follow: u32,
     /// The stat is `Add_one`, the "Items inside" count of a bag.
     pub add_one: bool,
@@ -134,6 +139,31 @@ pub(crate) struct BaseInfo {
     pub max_ac: i64,
     /// `normcode`, else the code itself: one family for the normal, exceptional and elite tier.
     pub family: [u8; 3],
+    /// `invwidth || 1`, `invheight || 1`: the cells of an extended stash page's misc grid.
+    pub inv_width: u32,
+    pub inv_height: u32,
+    /// The extended page an item of this base goes to: its `type` is a gem, a rune, or neither.
+    pub page: Page,
+}
+
+/// The virtual page of an extended stash sector (`readD2I`).
+#[derive(Clone, Copy, Default, PartialEq, Eq, Debug)]
+pub(crate) enum Page {
+    Gem,
+    Rune,
+    #[default]
+    Misc,
+}
+
+/// What the bind-demon descriptor of a warlock looks up: `superUniques`, `uniqueMods`, `monsters`.
+#[derive(Default)]
+pub(crate) struct BindTables {
+    /// Super unique id → (`class`, the `uniqueMods` keys of `mod1`..`mod3`).
+    pub super_uniques: HashMap<String, (Option<String>, [Option<String>; 3])>,
+    /// `uniqueMods` key → its `uniquemod`, when truthy.
+    pub unique_mods: HashMap<String, String>,
+    /// `monsters` in key order with their `hcidx`.
+    pub monsters: Vec<(String, Option<f64>)>,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -146,6 +176,14 @@ pub(crate) struct UniqueInfo {
 pub struct GameData {
     pub(crate) stats: Vec<Option<StatInfo>>,
     pub(crate) quest_difficulty_bits: u32,
+    pub(crate) quest_difficulty_add: i64,
+    /// `rarePrefix[v - 156]` and `rareSuffix[v - 1]` of each stored 8-bit value, localized, `''`
+    /// for a row the table lacks.
+    pub(crate) rare_prefix: Vec<String>,
+    pub(crate) rare_suffix: Vec<String>,
+    /// `GameData.classes.length`.
+    pub(crate) class_count: u32,
+    pub(crate) bind: BindTables,
     code_index: Vec<u16>,
     pub(crate) bases: Vec<BaseInfo>,
     pub(crate) uniques: Vec<UniqueInfo>,
@@ -268,6 +306,10 @@ impl GameData {
                 save_bits: num(entry.get("savebits")) as u32,
                 save_add: num(entry.get("saveadd")),
                 csv_bits: num(entry.get("csvbits")) as u32,
+                csv_int: entry
+                    .get("csvbits")
+                    .and_then(Value::as_f64)
+                    .is_some_and(|f| f.fract() == 0.0),
                 follow: FOLLOW_STATS.iter().find(|f| f.0 == name).map_or(0, |f| f.1),
                 add_one: name == "Add_one",
                 kind: PARAM_STATS
@@ -300,6 +342,7 @@ impl GameData {
         let quest_difficulty_bits = isc
             .get("questitemdifficulty")
             .map_or(0, |s| num(s.get("savebits")) as u32);
+        let quest_difficulty_add = isc.get("questitemdifficulty").map_or(0, |s| num(s.get("saveadd")));
 
         // Item type tree: type -> [equiv1, equiv2].
         let equivs: Equivs = table(&raw, "itemTypes")?
@@ -312,12 +355,16 @@ impl GameData {
             })
             .collect();
 
-        // gd.items = { ...armor, ...misc, ...weapons }.
+        // gd.items = { ...armor, ...misc, ...weapons }, or the merged table itself.
         let mut items: Vec<(&str, &Value)> = Vec::new();
-        for name in ["armor", "misc", "weapons"] {
-            for (code, entry) in table(&raw, name)? {
-                items.retain(|(c, _)| c != code);
-                items.push((code, entry));
+        if let Some(merged) = raw.get("items").and_then(Value::as_object) {
+            items.extend(merged.iter().map(|(code, entry)| (code.as_str(), entry)));
+        } else {
+            for name in ["armor", "misc", "weapons"] {
+                for (code, entry) in table(&raw, name)? {
+                    items.retain(|(c, _)| c != code);
+                    items.push((code, entry));
+                }
             }
         }
 
@@ -373,6 +420,15 @@ impl GameData {
                 quest_difficulty: truthy(entry.get("quest")) && truthy(entry.get("questdiffcheck")),
                 stackable: truthy(entry.get("stackable")),
                 name: name.map(&mut intern),
+                inv_width: Some(num(entry.get("invwidth")) as u32).filter(|&w| w != 0).unwrap_or(1),
+                inv_height: Some(num(entry.get("invheight")) as u32)
+                    .filter(|&h| h != 0)
+                    .unwrap_or(1),
+                page: match ty.filter(|t| !t.is_empty()) {
+                    Some(t) if is_sub_type(&equivs, t, "gem") => Page::Gem,
+                    Some(t) if is_sub_type(&equivs, t, "rune") => Page::Rune,
+                    _ => Page::Misc,
+                },
             };
         }
         for code in PRESET_ITEM_IDS {
@@ -415,9 +471,66 @@ impl GameData {
             .filter(|c| truthy(Some(c)))
             .map_or(16, |c| num(Some(c)) as u32);
 
+        // item.name of a rare: `${text(name1) || name1 || ''} ${…}`.trim(), name1 = rarePrefix[v - 156]?.name.
+        let rare_text = |table: Option<&Value>, offset: i64| -> Vec<String> {
+            (0..256i64)
+                .map(|v| {
+                    let index = v - offset;
+                    let row = match table {
+                        Some(Value::Array(rows)) => usize::try_from(index).ok().and_then(|i| rows.get(i)),
+                        Some(Value::Object(rows)) => rows.get(&index.to_string()),
+                        _ => None,
+                    };
+                    let name = row.and_then(|r| r.get("name")).and_then(Value::as_str);
+                    // strings[undefined] looks up the key "undefined".
+                    text(name.unwrap_or("undefined"))
+                        .or(name.filter(|n| !n.is_empty()))
+                        .unwrap_or("")
+                        .to_string()
+                })
+                .collect()
+        };
+        let rare_prefix = rare_text(raw.get("rarePrefix"), 156);
+        let rare_suffix = rare_text(raw.get("rareSuffix"), 1);
+
+        // A JS property key from a JSON value: `uniqueMods[su.mod1 ?? '']`.
+        let js_key = |v: Option<&Value>| match v {
+            None | Some(Value::Null) => Some(String::new()),
+            Some(Value::String(s)) => Some(s.clone()),
+            Some(Value::Number(n)) => Some(n.as_i64().map_or_else(|| n.to_string(), |i| i.to_string())),
+            Some(_) => None,
+        };
+        let objects = |name: &str| raw.get(name).and_then(Value::as_object).into_iter().flatten();
+        let bind = BindTables {
+            super_uniques: objects("superUniques")
+                .map(|(k, su)| {
+                    let class = su.get("class").and_then(Value::as_str).map(str::to_string);
+                    (k.clone(), (class, ["mod1", "mod2", "mod3"].map(|m| js_key(su.get(m)))))
+                })
+                .collect(),
+            unique_mods: objects("uniqueMods")
+                .filter_map(|(k, m)| {
+                    let um = non_empty_str(m.get("uniquemod"))?;
+                    Some((k.clone(), um.to_string()))
+                })
+                .collect(),
+            monsters: objects("monsters")
+                .map(|(k, m)| (k.clone(), m.get("hcidx").and_then(Value::as_f64)))
+                .collect(),
+        };
+        let class_count = raw
+            .get("classes")
+            .and_then(Value::as_array)
+            .map_or(DEFAULT_CLASSES, |c| c.len() as u32);
+
         Ok(GameData {
             stats,
             quest_difficulty_bits,
+            quest_difficulty_add,
+            rare_prefix,
+            rare_suffix,
+            class_count,
+            bind,
             code_index,
             bases,
             uniques,

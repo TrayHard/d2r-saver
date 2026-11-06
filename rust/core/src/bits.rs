@@ -1,9 +1,10 @@
 //! Port of `src/core/binary-reader.ts` and the Huffman decode of `src/core/huffman.ts`.
 //!
 //! Reads are bounds-checked exactly like the TypeScript reader: a read needing bits past the end
-//! fails without moving the cursor; `seek`, `skip`, `skip_bits` and `align` never check.
+//! fails without moving the cursor, with the same message; `seek`, `skip`, `skip_bits` and `align`
+//! never check.
 
-use crate::{Error, Result, OVERRUN};
+use crate::{Error, ErrorKind, Result};
 use std::sync::OnceLock;
 
 pub struct BitReader<'a> {
@@ -57,7 +58,6 @@ const HUFFMAN: [(u8, u32, u32); 38] = [
 
 /// Table marker for the dead branch of the tree; `code_char` fails on it.
 const DEAD_BRANCH: u8 = 0xFF;
-const INVALID_CODE: Error = Error("invalid item code");
 
 /// 9-bit LSB-first window → (symbol, code length).
 fn huffman_table() -> &'static [(u8, u8); 512] {
@@ -81,16 +81,25 @@ impl<'a> BitReader<'a> {
         Self { buf, pos: 0 }
     }
 
+    /// Length of the buffer in bytes.
+    pub fn len(&self) -> usize {
+        self.buf.len()
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.buf.is_empty()
+    }
+
     #[inline]
     fn ensure_at(&self, at: usize, count: usize) -> Result<()> {
         if at + count > self.buf.len() * 8 {
-            Err(OVERRUN)
+            Err(Error::overrun(count, at, self.buf.len()))
         } else {
             Ok(())
         }
     }
 
-    /// Checks that `count` bits can be read at the cursor (the JS `ensure`; `utf8` uses it alone).
+    /// Checks that `count` bits can be read at the cursor (the JS `ensure`).
     #[inline]
     pub fn ensure(&self, count: usize) -> Result<()> {
         self.ensure_at(self.pos, count)
@@ -150,24 +159,56 @@ impl<'a> BitReader<'a> {
         self.pos >= self.buf.len() * 8
     }
 
-    /// `count` bits LSB-first, `count <= 32` (the widest field in the game data). The JS reader
-    /// returns an int32, which only differs for 32-bit fields this port does not keep.
+    /// `count` bits LSB-first, `count <= 32` (the widest field in the game data), unsigned.
     #[inline]
     pub fn bits(&mut self, count: u32) -> Result<u32> {
         debug_assert!(count <= 32);
         self.ensure(count as usize)?;
+        Ok(self.bits_unchecked(count))
+    }
+
+    /// `bits` as the JS reader returns it: an int32, so a 32-bit field with its top bit set is negative.
+    #[inline]
+    pub fn bits_js(&mut self, count: u32) -> Result<i64> {
+        let value = self.bits(count)?;
+        Ok(if count == 32 { value as i32 as i64 } else { value as i64 })
+    }
+
+    /// `count` bits where the JS reader skips them unchecked: bits past the end read as 0.
+    #[inline]
+    pub fn bits_unchecked(&mut self, count: u32) -> u32 {
         if count == 0 {
-            return Ok(0);
+            return 0;
         }
         let byte = self.pos >> 3;
         let window = if byte + 8 <= self.buf.len() {
             u64::from_le_bytes(self.buf[byte..byte + 8].try_into().unwrap())
         } else {
-            self.buf[byte..].iter().rev().fold(0u64, |v, &b| v << 8 | b as u64)
+            self.buf
+                .get(byte..)
+                .unwrap_or(&[])
+                .iter()
+                .rev()
+                .fold(0u64, |v, &b| v << 8 | b as u64)
         };
         let value = (window >> (self.pos & 7)) & ((1u64 << count) - 1);
         self.pos += count as usize;
-        Ok(value as u32)
+        value as u32
+    }
+
+    /// Bytes `[start, end)` of the buffer, cut at its end.
+    pub fn slice(&self, start: usize, end: usize) -> &'a [u8] {
+        self.buf.get(start..end.min(self.buf.len())).unwrap_or(&[])
+    }
+
+    /// `utf8(length)`: a NUL-terminated UTF-8 field of `length` bytes, decoded like `TextDecoder`.
+    pub fn utf8(&mut self, length: usize) -> Result<String> {
+        self.ensure(length << 3)?;
+        let start = self.pos >> 3;
+        let field = &self.buf[start..start + length];
+        let end = field.iter().position(|&b| b == 0).unwrap_or(length);
+        self.pos = (start + length) << 3;
+        Ok(decode_utf8(&field[..end]))
     }
 
     /// One Huffman-coded item-code character; the dead branch is an invalid item code, after its
@@ -179,18 +220,39 @@ impl<'a> BitReader<'a> {
             let window = self.buf[byte] as u32 | (*self.buf.get(byte + 1).unwrap_or(&0) as u32) << 8;
             let (sym, len) = huffman_table()[((window >> (self.pos & 7)) & 511) as usize];
             self.pos += len as usize;
-            return if sym == DEAD_BRANCH { Err(INVALID_CODE) } else { Ok(sym) };
+            return if sym == DEAD_BRANCH {
+                Err(self.dead_branch())
+            } else {
+                Ok(sym)
+            };
         }
         // Near the end, bit by bit, so an overrun leaves the cursor where the JS walk stops.
         let mut path = 0u32;
         for depth in 0..9 {
             path |= self.bits(1)? << depth;
             if let Some(&(sym, _, _)) = HUFFMAN.iter().find(|e| e.2 == depth + 1 && e.1 == path) {
-                return if sym == DEAD_BRANCH { Err(INVALID_CODE) } else { Ok(sym) };
+                return if sym == DEAD_BRANCH {
+                    Err(self.dead_branch())
+                } else {
+                    Ok(sym)
+                };
             }
         }
         unreachable!("Huffman table is complete")
     }
+
+    /// The JS walk throws after reading the bit that leads nowhere.
+    fn dead_branch(&self) -> Error {
+        Error::new(
+            ErrorKind::Parse,
+            format!("invalid item code: empty Huffman branch at bit {}", self.pos - 1),
+        )
+    }
+}
+
+/// `new TextDecoder('utf-8').decode(bytes)`: a leading BOM is dropped, invalid sequences become U+FFFD.
+pub(crate) fn decode_utf8(bytes: &[u8]) -> String {
+    String::from_utf8_lossy(bytes.strip_prefix(b"\xEF\xBB\xBF").unwrap_or(bytes)).into_owned()
 }
 
 #[cfg(test)]
@@ -202,12 +264,31 @@ mod tests {
         let mut r = BitReader::new(&[0b1010_1101, 0xFF]);
         assert_eq!(r.bits(3).unwrap(), 0b101);
         assert_eq!(r.bits(7).unwrap(), 0b11_10101);
-        assert_eq!(r.bits(7), Err(OVERRUN));
+        let error = r.bits(7).unwrap_err();
+        assert_eq!(error.kind, ErrorKind::Overrun);
+        assert_eq!(
+            error.message,
+            "buffer overrun: reading 7 bit(s) at bit 10 (byte 1) past the end of a 2-byte buffer"
+        );
         assert_eq!(r.pos, 10);
         assert_eq!(r.bits(6).unwrap(), 0b11_1111);
         r.skip_bits(5);
         // A zero-width read past the end fails too, like the JS `ensure`.
-        assert_eq!(r.bits(0), Err(OVERRUN));
+        assert_eq!(r.bits(0).unwrap_err().kind, ErrorKind::Overrun);
+    }
+
+    #[test]
+    fn reads_32_bits_as_an_int32_and_unchecked_bits_as_zero() {
+        let mut r = BitReader::new(&[0xFF, 0xFF, 0xFF, 0xFF, 0x01]);
+        assert_eq!(r.bits_js(32).unwrap(), -1);
+        assert_eq!(r.bits_unchecked(12), 1);
+        assert_eq!(r.pos, 44);
+    }
+
+    #[test]
+    fn decodes_utf8_like_text_decoder() {
+        assert_eq!(decode_utf8(b"\xEF\xBB\xBFab"), "ab");
+        assert_eq!(decode_utf8(b"a\xFFb"), "a\u{FFFD}b");
     }
 
     #[test]
@@ -218,8 +299,9 @@ mod tests {
             let short = &wide[..(len as usize).div_ceil(8)];
             let mut r = BitReader::new(short);
             if sym == DEAD_BRANCH {
-                assert_eq!(BitReader::new(&wide).code_char(), Err(INVALID_CODE));
-                assert_eq!(r.code_char(), Err(INVALID_CODE));
+                let message = "invalid item code: empty Huffman branch at bit 8";
+                assert_eq!(BitReader::new(&wide).code_char().unwrap_err().message, message);
+                assert_eq!(r.code_char().unwrap_err().message, message);
             } else {
                 assert_eq!(BitReader::new(&wide).code_char().unwrap(), sym);
                 assert_eq!(r.code_char().unwrap(), sym);

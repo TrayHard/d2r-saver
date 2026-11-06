@@ -90,14 +90,14 @@ pub fn stash_tab_items(bytes: &[u8], gd: &GameData) -> Result<Counts> {
 pub(crate) fn read_tab(bytes: &[u8], gd: &GameData, details: bool) -> Result<StashReport> {
     let report = walk_version(bytes, gd, details)?;
     if !report.reached_eof {
-        return Err(Error("Stash tab ends in an unknown sector"));
+        return Err(Error::plain("Stash tab ends in an unknown sector"));
     }
     if report
         .sectors
         .iter()
         .any(|s| s.walk.as_ref().is_some_and(|w| !w.complete))
     {
-        return Err(Error("Stash sector is not fully readable"));
+        return Err(Error::plain("Stash sector is not fully readable"));
     }
     Ok(report)
 }

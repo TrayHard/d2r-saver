@@ -76,7 +76,7 @@ fn check_character(gd: &GameData, name: &str, bytes: &[u8], case: &CharacterCase
         read_d2s(bytes, gd)
     }
     .unwrap();
-    let main = read.main.unwrap();
+    let main = read.main.as_ref().unwrap();
     assert_eq!(
         (main.declared, main.parsed, main.end_offset, main.error),
         (declared, parsed, end as usize, broken),
@@ -257,7 +257,7 @@ fn check_walk(name: &str, sectors: &[Sector]) {
         match (&got.walk, want.3) {
             (None, None) => {}
             (Some(walk), Some(([declared, parsed, end], complete, entries))) => {
-                let r = walk.report;
+                let r = &walk.report;
                 assert_eq!(
                     (r.declared, r.parsed, r.end_offset, walk.complete),
                     (declared, parsed, end as usize, complete),
