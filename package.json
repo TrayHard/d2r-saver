@@ -1,7 +1,7 @@
 {
   "name": "d2r-saver",
-  "version": "0.4.10",
-  "description": "Blizzless D2R (Diablo II: Resurrected v105) save file reader/writer for .d2s characters and .d2i shared stashes. Lossless writes preserve all save sections; supports item insert/extract and gold/attribute edits.",
+  "version": "1.0.0",
+  "description": "Blizzless D2R (Diablo II: Resurrected v105) save file reader/writer for .d2s characters and .d2i shared stashes. Reads every save through a Rust core compiled to WebAssembly (no native addon); lossless writes preserve all save sections; supports item insert/extract and gold/attribute edits.",
   "license": "MIT",
   "author": "TrayHard",
   "homepage": "https://github.com/TrayHard/d2r-saver#readme",
@@ -22,7 +22,10 @@
     "d2s",
     "d2i",
     "binary-parser",
-    "game-data"
+    "game-data",
+    "webassembly",
+    "wasm",
+    "rust"
   ],
   "type": "module",
   "main": "dist/index.js",
@@ -41,6 +44,7 @@
     "data/data.json",
     "data/strings.json",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "engines": {
