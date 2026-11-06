@@ -1,12 +1,12 @@
 /**
  * Item walker — byte-exact traversal of `JM` item lists for in-place editing.
  *
- * The walker runs the regular item parser as a LENGTH ORACLE and records, for every top-level
- * item, the byte range of the item alone and of the item together with its socketed children.
- * Nothing is re-encoded: a range can be cut out of, or pasted into, the original buffer as-is.
- * Items the parser drops from its dictionary (unknown uniques, non-tradeable base types) are
- * still walked, ranged and headed, so a raw layout built from a walk is complete for every item
- * the parser could get past.
+ * The Rust core parses the list as a LENGTH ORACLE (`walk_item_list` in `rust/core/src/stash.rs`)
+ * and records, for every top-level item, the byte range of the item alone and of the item
+ * together with its socketed children. Nothing is re-encoded: a range can be cut out of, or
+ * pasted into, the original buffer as-is. Items the parser drops from its dictionary (unknown
+ * uniques, non-tradeable base types) are still walked, ranged and headed, so a raw layout built
+ * from a walk is complete for every item the parser could get past.
  *
  * Facts this module relies on (verified on the fixtures, see the reconnaissance notes):
  * - every item starts and ends on a byte boundary (`parseItem` aligns at the end);
@@ -16,18 +16,19 @@
  *   `parseItem`, so "reader position before/after `parseItem`" is the parent's full range.
  */
 
-import { BinaryReader } from '../core/binary-reader.js';
 import type { GameData } from '../game-data/game-data.js';
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
-import { D2S_MAGIC } from '../types/constants.js';
-import { detectFormat } from './detect.js';
+import type { BinaryParsedItem, ByteRange, ItemListReport, ReadOptions } from './item-parser.js';
 import {
-  createItemParser,
-  type BinaryParsedItem,
-  type ByteRange,
-  type ItemListReport,
-  type ReadOptions,
-} from './item-parser.js';
+  dictOf,
+  engineItemHead,
+  engineWalkD2I,
+  engineWalkList,
+  entriesOf,
+  itemsOf,
+  type ItemsDoc,
+  type Node,
+} from '../engine/engine.js';
 
 // ─── Layout constants ───────────────────────────────────────────
 
@@ -44,8 +45,6 @@ export const ITEM_ROW_BIT = 46;
 /** Bytes needed to hold the flags and the position block (bits 0–52). */
 const ITEM_HEAD_MIN_BYTES = 7;
 
-/** Sector header size of a `.d2i` page; the `JM` list starts right after it. */
-const SECTOR_HEADER_SIZE = 64;
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -189,49 +188,15 @@ function requireInt(name: string, value: number, max: number): void {
  */
 export function readItemHead(bytes: Uint8Array, offset = 0): ItemHead {
   requireInt('offset', offset, Number.MAX_SAFE_INTEGER);
-  const reader = new BinaryReader(bytes);
-  reader.bitpos = offset * 8;
-
-  // Same reads, in the same order, as the item parser's flag block (35 bits).
-  reader.skipbits(4);
-  const identified = !!reader.bits(1);
-  reader.skipbits(6);
-  const socketed = !!reader.bits(1);
-  reader.skipbits(4);
-  const ear = !!reader.bits(1);
-  reader.skipbits(4);
-  const simple = !!reader.bits(1);
-  const ethereal = !!reader.bits(1);
-  reader.skipbits(1);
-  const personalized = !!reader.bits(1);
-  reader.skipbits(1);
-  const runeword = !!reader.bits(1);
-  reader.skipbits(1);
-  const extras = !!reader.bits(1);
-  reader.skipbits(6);
-
-  const loc = reader.bits(3);
-  const bodyloc = reader.bits(4);
-  const col = reader.bits(4);
-  const row = reader.bits(4);
-  const storage = reader.bits(3);
-
-  let base: string | null = null;
-  if (!ear) {
-    const a = reader.char();
-    const b = reader.char();
-    const c = reader.char();
-    const terminator = reader.char();
-    if (terminator !== ' ') {
-      throw new D2RSaverError(
-        ErrorCode.PARSE_ERROR,
-        `invalid item code at byte ${offset}: expected a space after "${a}${b}${c}", got "${terminator}"`,
-      );
-    }
-    base = a + b + c;
+  if (offset >= bytes.length) {
+    // The first flag bit already lies past the end; the core takes offsets inside the buffer only.
+    const at = offset * 8 + 4;
+    throw new D2RSaverError(
+      ErrorCode.BUFFER_OVERRUN,
+      `buffer overrun: reading 1 bit(s) at bit ${at} (byte ${at >> 3}) past the end of a ${bytes.byteLength}-byte buffer`,
+    );
   }
-
-  return { identified, socketed, ear, simple, ethereal, personalized, runeword, extras, loc, bodyloc, col, row, storage, base };
+  return engineItemHead(bytes, offset);
 }
 
 /**
@@ -322,62 +287,15 @@ export function walkItemList(
       `item list header at byte ${headerOffset} runs past the end of a ${buffer.length}-byte buffer`,
     );
   }
-  if (buffer[headerOffset] !== 0x4a || buffer[headerOffset + 1] !== 0x4d) {
-    throw new D2RSaverError(ErrorCode.PARSE_ERROR, `no "JM" item list header at byte ${headerOffset}`);
-  }
-
-  const reader = new BinaryReader(buffer);
-  reader.seek(headerOffset);
-
-  // Children finish before their parent, so collect per depth and hand the pending children
-  // to the next item that completes one level up.
-  const pending: WalkedItem[][] = [];
-  const ctx = createItemParser(reader, gd, options?.initialId ?? 0, {
-    saveVersion: options?.saveVersion,
-    resolveMods: options?.resolveMods,
-    onItem: ({ item, depth, registeredKey, head }) => {
-      const children = pending[depth + 1] ?? [];
-      pending[depth + 1] = [];
-      const entry: WalkedItem = {
-        index: -1,
-        own: item.byteRange!,
-        full: item.fullByteRange!,
-        children,
-        head,
-        item,
-        registeredKey,
-        hasQuantity: item.quantity !== undefined,
-        quantityField: item.quantityField,
-      };
-      (pending[depth] ??= []).push(entry);
-    },
-  });
-
-  const report = ctx.parseItemList(() => {}, { expectedEnd: options?.expectedEnd });
-  const entries = pending[0] ?? [];
-  if (entries.length !== report.parsed) {
-    throw new D2RSaverError(
-      ErrorCode.PARSE_ERROR,
-      `walker recorded ${entries.length} top-level items but the parser reports ${report.parsed}`,
-    );
-  }
-  numberEntries(entries);
-  return { report, entries, items: ctx.items };
-}
-
-/** Assign `index` per level: position among siblings (top-level list, or a parent's sockets). */
-function numberEntries(entries: WalkedItem[]): void {
-  entries.forEach((entry, i) => {
-    entry.index = i;
-    if (entry.children.length) numberEntries(entry.children);
-  });
+  const doc = engineWalkList<ItemsDoc & { report: ItemListReport; entries: Node[] }>(
+    gd, buffer, headerOffset, options?.saveVersion === 99, options?.initialId ?? 0, options?.expectedEnd,
+    options?.resolveMods ?? true,
+  );
+  const items = itemsOf(doc, gd);
+  return { report: doc.report, entries: entriesOf(doc.entries, items, doc.traces), items: dictOf(items, doc.traces) };
 }
 
 // ─── .d2i walk ──────────────────────────────────────────────────
-
-function readU32(data: Uint8Array, offset: number): number {
-  return (data[offset] | (data[offset + 1] << 8) | (data[offset + 2] << 16) | (data[offset + 3] << 24)) >>> 0;
-}
 
 /**
  * Walk every sector of a `.d2i` shared stash. Sectors are addressed by their byte offset from
@@ -390,7 +308,7 @@ function readU32(data: Uint8Array, offset: number): number {
  *   `BUFFER_OVERRUN` when a sector header claims bytes the buffer does not have for its list header.
  */
 export function walkD2I(buffer: Uint8Array, gd: GameData, options?: ReadOptions): D2IParseReport {
-  return walkSectors(buffer, gd, 105, options);
+  return walkSectors(buffer, gd, false, options);
 }
 
 /**
@@ -398,42 +316,34 @@ export function walkD2I(buffer: Uint8Array, gd: GameData, options?: ReadOptions)
  * rejects these files, so a v99 tab can never reach a write.
  */
 export function walkLegacyD2I(buffer: Uint8Array, gd: GameData, options?: ReadOptions): D2IParseReport {
-  return walkSectors(buffer, gd, 99, options);
+  return walkSectors(buffer, gd, true, options);
 }
 
-function walkSectors(buffer: Uint8Array, gd: GameData, saveVersion: 99 | 105, options?: ReadOptions): D2IParseReport {
-  const sectors: D2IWalkedSector[] = [];
-  let offset = 0;
-  let stoppedEarly = false;
+/** The walk document of the read core: every sector's items in one list, each walk naming its range. */
+interface SectorsDoc extends ItemsDoc {
+  sectors: Array<Omit<D2IWalkedSector, 'walk'> & {
+    walk: { report: ItemListReport; entries: Node[]; from: number; to: number } | null;
+  }>;
+  tiled: boolean;
+  reachedEof: boolean;
+}
 
-  while (offset < buffer.length) {
-    if (offset + SECTOR_HEADER_SIZE > buffer.length) { stoppedEarly = true; break; }
-    if (saveVersion === 105) {
-      const fmt = detectFormat(buffer.subarray(offset));
-      if (!fmt || fmt.type !== 'd2i') { stoppedEarly = true; break; }
-    } else if (readU32(buffer, offset) !== D2S_MAGIC || readU32(buffer, offset + 8) !== saveVersion) { stoppedEarly = true; break; }
-
-    const gold = readU32(buffer, offset + 12);
-    const size = readU32(buffer, offset + 16);
-    const type = buffer[offset + 20];
-    if (size < SECTOR_HEADER_SIZE) { stoppedEarly = true; break; }
-
-    let walk: WalkResult | null = null;
-    if (type !== 2) {
-      walk = walkItemList(buffer, offset + SECTOR_HEADER_SIZE, gd, {
-        initialId: 1,
-        expectedEnd: offset + size,
-        saveVersion,
-        resolveMods: options?.resolveMods,
-      });
-    }
-    sectors.push({ offset, size, type, gold, walk });
-    offset += size;
-  }
-
+function walkSectors(buffer: Uint8Array, gd: GameData, legacy: boolean, options?: ReadOptions): D2IParseReport {
+  const doc = engineWalkD2I<SectorsDoc>(gd, buffer, legacy, options?.resolveMods ?? true);
+  const items = itemsOf(doc, gd);
   return {
-    sectors,
-    tiled: sectors.length > 0 && offset === buffer.length && !stoppedEarly,
-    reachedEof: !stoppedEarly,
+    sectors: doc.sectors.map(({ offset, size, type, gold, walk }) => ({
+      offset,
+      size,
+      type,
+      gold,
+      walk: walk && {
+        report: walk.report,
+        entries: entriesOf(walk.entries, items, doc.traces),
+        items: dictOf(items, doc.traces, walk.from, walk.to),
+      },
+    })),
+    tiled: doc.tiled,
+    reachedEof: doc.reachedEof,
   };
 }

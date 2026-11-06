@@ -9,8 +9,8 @@ import { resolve } from 'node:path';
 import { GameData } from '../src/game-data/game-data.js';
 import { readD2S, type D2SReadResult } from '../src/formats/d2s-reader.js';
 import { readD2I, type D2IReadResult } from '../src/formats/d2i-reader.js';
-import { BinaryReader } from '../src/core/binary-reader.js';
-import { createItemParser, type BinaryParsedItem } from '../src/formats/item-parser.js';
+import type { BinaryParsedItem } from '../src/formats/item-parser.js';
+import { parseList } from './helpers/parse-list.js';
 import { ErrorCode } from '../src/types/errors.js';
 import { locale, rawDataWith } from './helpers/stat-tables.js';
 
@@ -299,9 +299,9 @@ describe('parseItemList report on a hand-built list', () => {
   it('reports complete=true when parsed === declared and the reader stops at expectedEnd', () => {
     const potion = fixture('WarlockShards.d2s').slice(907, 917); // one hp1, 10 bytes
     const list = listOf(potion, potion, potion);
-    const reader = new BinaryReader(list);
-    const ctx = createItemParser(reader, gd, 0, { baseOffset: 1000 });
-    const report = ctx.parseItemList(() => {}, { expectedEnd: 1000 + list.length });
+    const placedAt1000 = new Uint8Array(1000 + list.length);
+    placedAt1000.set(list, 1000);
+    const { report } = parseList(placedAt1000, gd, { headerOffset: 1000, expectedEnd: 1000 + list.length });
     expect(report).toEqual({
       headerOffset: 1000,
       declared: 3,
@@ -321,8 +321,7 @@ describe('parseItemList report on a hand-built list', () => {
     const potion = fixture('WarlockShards.d2s').slice(907, 917);
     const list = listOf(potion, potion);
     list[2] = 3; // claim three items, provide two
-    const ctx = createItemParser(new BinaryReader(list), gd);
-    const report = ctx.parseItemList(() => {});
+    const { report } = parseList(list, gd);
     expect(report).toMatchObject({ declared: 3, parsed: 2, endOffset: 24, truncated: true, complete: false, errorCode: ErrorCode.BUFFER_OVERRUN });
     expect(report.error).toMatch(/^item 3\/3: buffer overrun/);
   });
@@ -332,18 +331,13 @@ describe('parseItemList report on a hand-built list', () => {
     const list = listOf(potion);
     const padded = new Uint8Array(list.length + 5);
     padded.set(list);
-    const ctx = createItemParser(new BinaryReader(padded), gd);
-    const report = ctx.parseItemList(() => {}, { expectedEnd: padded.length });
+    const { report } = parseList(padded, gd, { expectedEnd: padded.length });
     expect(report).toMatchObject({ declared: 1, parsed: 1, endOffset: 14, expectedEnd: 19, reachedEnd: false, truncated: false, complete: false, error: null });
   });
 
   it('onItem fires for every item, children before parents, with registration keys', () => {
     const helmWithRunes = fixture('WarlockTest.d2s').slice(1081, 1134);
-    const trace: Array<[string, number, number | string | null]> = [];
-    const ctx = createItemParser(new BinaryReader(listOf(helmWithRunes)), gd, 0, {
-      onItem: t => trace.push([t.item.base, t.depth, t.registeredKey]),
-    });
-    ctx.parseItemList(() => {});
+    const trace = parseList(listOf(helmWithRunes), gd).traces;
     expect(trace).toEqual([['r09', 1, 'r09'], ['r12', 1, 'r12'], ['fhl', 0, 0]]);
   });
 });

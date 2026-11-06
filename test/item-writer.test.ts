@@ -1,12 +1,11 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { BinaryReader } from '../src/core/binary-reader.js';
+import { parseList } from './helpers/parse-list.js';
 import { GameData } from '../src/game-data/game-data.js';
 import { readD2S } from '../src/formats/d2s-reader.js';
 import { readD2I } from '../src/formats/d2i-reader.js';
 import {
-  createItemParser,
   type BinaryParsedItem,
 } from '../src/formats/item-parser.js';
 import {
@@ -104,12 +103,7 @@ describe('Item writer', () => {
       expect(bytes[1]).toBe(0x4d); // 'M'
 
       // Re-parse
-      const reader = new BinaryReader(bytes);
-      const ctx = createItemParser(reader, gd, 100);
-      const locations: Array<{ id: number; location?: string; slot?: number | string }> = [];
-      ctx.parseItemList((id, location, slot) => {
-        locations.push({ id, location, slot });
-      });
+      const locations = parseList(bytes, gd, { initialId: 100 }).placed;
 
       expect(locations.length).toBe(1);
       expect(locations[0].location).toBe('stash');
@@ -153,10 +147,7 @@ describe('Item writer', () => {
       const bytes = writeItemList(entries, items, gd);
 
       // Re-parse
-      const reader = new BinaryReader(bytes);
-      const ctx = createItemParser(reader, gd, 100);
-      const locations: Array<{ id: number; location?: string }> = [];
-      ctx.parseItemList((id, location) => locations.push({ id, location }));
+      const locations = parseList(bytes, gd, { initialId: 100 }).placed;
 
       expect(locations.length).toBe(2);
     });
@@ -193,9 +184,7 @@ describe('Item writer', () => {
         wrapper.set(bytes, 4);
 
         try {
-          const reader = new BinaryReader(wrapper);
-          const ctx = createItemParser(reader, gd, 1000);
-          ctx.parseItemList(() => {});
+          const ctx = parseList(wrapper, gd, { initialId: 1000 });
 
           // Check that the re-parsed item has same base
           const reItems = Object.values(ctx.items);
@@ -240,9 +229,7 @@ describe('Item writer', () => {
         wrapper.set(bytes, 4);
 
         try {
-          const reader = new BinaryReader(wrapper);
-          const ctx = createItemParser(reader, gd, 2000);
-          ctx.parseItemList(() => {});
+          const ctx = parseList(wrapper, gd, { initialId: 2000 });
 
           const reItems = Object.values(ctx.items);
           expect(reItems.length).toBeGreaterThanOrEqual(1);
@@ -287,9 +274,7 @@ describe('Item writer', () => {
       wrapper[3] = 0;
       wrapper.set(bytes, 4);
 
-      const reader = new BinaryReader(wrapper);
-      const ctx = createItemParser(reader, gd, 500);
-      ctx.parseItemList(() => {});
+      const ctx = parseList(wrapper, gd, { initialId: 500 });
 
       const reItems = Object.values(ctx.items);
       expect(reItems.length).toBe(1);
@@ -321,9 +306,7 @@ describe('Item writer', () => {
       wrapper[3] = 0;
       wrapper.set(bytes, 4);
 
-      const reader = new BinaryReader(wrapper);
-      const ctx = createItemParser(reader, gd, 500);
-      ctx.parseItemList(() => {});
+      const ctx = parseList(wrapper, gd, { initialId: 500 });
 
       const reItems = Object.values(ctx.items);
       expect(reItems.length).toBe(1);

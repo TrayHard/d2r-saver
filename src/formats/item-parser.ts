@@ -1,17 +1,15 @@
 /**
- * Item binary parser — reads items from D2R v105 save files.
+ * Parsed item types and the affix solver.
  *
- * Ported from d2planner/src/logic/binary/index.js → createItemParser().
- * Simplified: Blizzless v105 only (D2R=true, V105=true, version=105).
- *
- * Uses GameData instead of global Data singleton.
+ * The bits are read by the Rust core (`rust/core/src/item.rs`, through `src/engine/engine.ts`);
+ * `solveItem` is the part of the 0.4 parser that reads no bits: it reconstructs affixes and
+ * unique/set/runeword values from the stats the core returns.
  */
 
-import type { BinaryReader } from '../core/binary-reader.js';
 import type { GameData } from '../game-data/game-data.js';
 import type { ItemHead } from './item-walker.js';
-import { D2RSaverError, ErrorCode } from '../types/errors.js';
-import { itemGetTypes, isSubType, presetItemIds } from '../items/item-types.js';
+import type { ErrorCode } from '../types/errors.js';
+import { itemGetTypes } from '../items/item-types.js';
 import {
   parseParamStats,
   parseUniqueStats as parseUniqueStatsHelper,
@@ -21,62 +19,15 @@ import {
 
 // ─── Constants ──────────────────────────────────────────────────
 
-/** Maps the 4-bit quality field from the binary format to our Quality enum values. */
-export const gameQualityMap = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const;
-// Index:                     0  1  2  3  4  5  6  7  8
-// Quality: none, LOW, NORMAL, SUPERIOR, MAGIC, SET, RARE, UNIQUE, CRAFTED
-
-const QUALITY_LOW = 1;
-const QUALITY_NORMAL = 2;
-const QUALITY_SUPERIOR = 3;
-const QUALITY_MAGIC = 4;
 const QUALITY_SET = 5;
-const QUALITY_RARE = 6;
 const QUALITY_UNIQUE = 7;
-const QUALITY_CRAFTED = 8;
 const QUALITY_RUNEWORD = 9;
-
-/** Maps body slot indices to slot names. */
-const bodyMap = [
-  null, 'head', 'neck', 'tors', 'rarm', 'larm',
-  'rrin', 'lrin', 'belt', 'feet', 'glov', 'rarm2', 'larm2',
-] as const;
-
-/** Zero-pad a number to 3 digits (for mod IDs like "mp001"). */
-function mkid(n: number): string {
-  return n.toString().padStart(3, '0');
-}
-
-/**
- * Blizzless mod custom runewords whose in-game stored ID falls OUTSIDE the vanilla Eye() ranges
- * handled below, so the range-offset mapping would leave them unmapped (→ dropped as "unknown
- * runeword"). Map the raw stored ID → runes.json index explicitly. Extend as more custom runewords
- * are confirmed from real saves (read the raw `bits(12)` value the game stores, map it to the
- * `runeword###` key `runesToJson` derives from that runeword's `Runeword###` name).
- *   1396 → 325: "Nightfall" (Runeword300, El+Zod, necro head).
- */
-const CUSTOM_RUNEWORD_IDS: Record<number, number> = {
-  1396: 325,
-};
-
-/**
- * Stats followed by N consecutive stat IDs in the binary stream.
- * (e.g. item_maxdamage_percent followed by 1 stat, coldmindam by 2.)
- */
-const followStats: Record<string, number> = {
-  item_maxdamage_percent: 1,
-  firemindam: 1,
-  lightmindam: 1,
-  magicmindam: 1,
-  coldmindam: 2,
-  poisonmindam: 2,
-};
 
 // ─── Types ──────────────────────────────────────────────────────
 
 /**
- * Half-open byte range `[start, end)` in ABSOLUTE file offsets (the parser adds its
- * `baseOffset`, so ranges of `.d2i` items already include the sector offset).
+ * Half-open byte range `[start, end)` in ABSOLUTE file offsets (ranges of `.d2i` items already
+ * include the sector offset).
  */
 export interface ByteRange {
   start: number;
@@ -84,8 +35,8 @@ export interface ByteRange {
 }
 
 /**
- * What one `JM` item list looked like to the parser. Produced by `parseItemList` and surfaced
- * by the readers (`D2SReadResult.lists`, `D2IStashPage.list`) and by the walker.
+ * What one `JM` item list looked like to the parser. Surfaced by the readers
+ * (`D2SReadResult.lists`, `D2IStashPage.list`) and by the walker.
  * All offsets are absolute bytes in the file buffer.
  */
 export interface ItemListReport {
@@ -121,8 +72,8 @@ export interface ItemListReport {
 }
 
 /**
- * Trace record handed to `ParserOptions.onItem` once per parsed item (top-level AND socketed,
- * registered in `items` or dropped), after its socketed children were consumed.
+ * Trace record of one parsed item (top-level AND socketed, registered in `items` or dropped),
+ * after its socketed children were consumed.
  */
 export interface ParsedItemTrace {
   item: BinaryParsedItem;
@@ -138,32 +89,28 @@ export interface ParsedItemTrace {
   head: ItemHead;
 }
 
-/** Options for `createItemParser`. */
+/** Options of the 0.4 TypeScript item parser, kept for the type surface. */
 export interface ParserOptions {
   forceStackable?: boolean;
-  /**
-   * Byte offset of `reader.buffer[0]` inside the whole file. Added to every `ByteRange` and to
-   * the `ItemListReport` offsets so they are absolute even when the reader wraps a sub-array
-   * (the `.d2i` reader parses each sector through `buffer.subarray(offset)`). Default 0.
-   */
+  /** Byte offset of the reader's first byte inside the whole file. Default 0. */
   baseOffset?: number;
   /** Called for every item the parser finishes, including ones it does not register. */
   onItem?: (trace: ParsedItemTrace) => void;
   /** Save version of the items; 99 selects the legacy read-only layout. Defaults to 105. */
   saveVersion?: 99 | 105;
-  /**
-   * `false` skips the affix solver (0.5.0): `stats` stay the raw binary stats and `uniqueValues`,
-   * `propertyIndex`, `mods`, `auto`, `staff`, `crafted`, `superior` and `custom` are not filled.
-   * Everything read from the bits is the same: identity, quality, unique/set/runeword id, affix
-   * codes, quantity, sockets, locations and byte ranges. The solver takes most of the parse time,
-   * so callers that only count or locate items should pass `false`. Defaults to `true`.
-   */
+  /** See `ReadOptions.resolveMods`. */
   resolveMods?: boolean;
 }
 
-/** Read options for the public save readers and walkers (0.5.0). */
+/** Read options for the public save readers and walkers. */
 export interface ReadOptions {
-  /** See `ParserOptions.resolveMods`. Defaults to `true`. */
+  /**
+   * `false` skips the affix solver: `stats` stay the raw binary stats and `uniqueValues`,
+   * `propertyIndex`, `mods`, `auto`, `staff`, `crafted`, `superior` and `custom` are not filled.
+   * Everything read from the bits is the same: identity, quality, unique/set/runeword id, affix
+   * codes, quantity, sockets, locations and byte ranges. The solver takes most of the read time,
+   * so callers that only count or locate items should pass `false`. Defaults to `true`.
+   */
   resolveMods?: boolean;
 }
 
@@ -236,14 +183,13 @@ export interface BinaryParsedItem {
   /** Active set-bonus property bits (5-bit field for SET quality items). */
   setflags?: number;
   /**
-   * Bit range in the reader's buffer (relative to `reader.buffer[0]`, so relative to the
-   * SECTOR for `.d2i`). `end` is set BEFORE the socketed children are parsed, i.e. it covers
-   * the item alone. Kept as-is for compatibility; prefer the byte ranges below.
+   * Bit range in the reader's buffer (relative to the SECTOR for `.d2i` read by `readD2I`). `end`
+   * covers the item alone. Kept as-is for compatibility; prefer the byte ranges below.
    */
   binaryOffset: { start: number; end: number };
   /**
    * Absolute byte range of the item alone (without socketed children). Always set by the
-   * parser; optional in the type only so hand-built items (tests, the legacy writer) still
+   * readers; optional in the type only so hand-built items (tests, the legacy writer) still
    * type-check.
    */
   byteRange?: ByteRange;
@@ -268,22 +214,6 @@ export type ItemHandler = (
 export interface ParseItemListOptions {
   /** Absolute byte offset where the list must end (sector end for `.d2i`), if known. */
   expectedEnd?: number;
-}
-
-/** Return type of createItemParser. */
-export interface ItemParserContext {
-  parseItem: (itemId: number, handler: ItemHandler) => void;
-  /**
-   * Parse one `JM` list from the current reader position. Throws only when the header is not
-   * `JM`; an item failure mid-list is swallowed into the report (`error`, `truncated`) and the
-   * reader stays positioned wherever the failed item stopped.
-   */
-  parseItemList: (handler: ItemHandler, options?: ParseItemListOptions) => ItemListReport;
-  items: Record<number | string, BinaryParsedItem>;
-  nextId: () => number;
-  readonly currentId: number;
-  /** Non-fatal error from the last parseItemList call (set when an item mid-list throws). */
-  readonly error: string | null;
 }
 
 // ─── extractValuesFromStats (fallback for unique/set/runeword) ──
@@ -343,650 +273,78 @@ function extractValuesFromStats(
   return { values: result, propertyIndex };
 }
 
-// ─── Stat helper ────────────────────────────────────────────────
+// ─── solveItem ──────────────────────────────────────────────────
 
 /**
- * Add a stat value to the stats accumulator.
- * Handles special cases: skill-on-event encoding, addclass/single/aura skill params, enhanced damage max.
+ * The affix solver of an extended item: the fields the 0.4 parser set between the stats and the
+ * post-stats quantity, in the order it set them (`uniqueValues`, `propertyIndex`, `mods`, `auto`,
+ * `staff`, `crafted`, `superior`, `custom`). `item` holds what the bits gave up to the stats,
+ * `stats` before the blunt-weapon bonus; `mods` lists the auto affix and the affix codes as read.
  */
-function addStat(stats: Record<string, number>, stat: string, param: number, value: number): void {
-  let param2: number;
-  switch (stat) {
-    case 'item_skillonattack':
-    case 'item_skillonkill':
-    case 'item_skillondeath':
-    case 'item_skillonhit':
-    case 'item_skillonlevelup':
-    case 'item_skillongethit':
-      param2 = value;
-      value = param & 63;
-      param = param >> 6;
-      stat = `${stat}#${param}#${param2}`;
-      break;
-    case 'item_charged_skill':
-      value = value >> 8;
-      param2 = param & 63;
-      param = param >> 6;
-      stat = `${stat}#${param}#${param2}`;
-      break;
-    case 'item_addclassskills':
-    case 'item_nonclassskill':
-    case 'state':
-    case 'item_singleskill':
-    case 'item_elemskill':
-    case 'item_aura':
-    case 'item_reanimate':
-      stat = `${stat}#${param}`;
-      break;
-    case 'item_addskill_tab':
-      param = (param >> 3) * 3 + (param & 7);
-      stat = `${stat}#${param}`;
-      break;
-  }
-
-  // Enhanced damage workaround: follow stats can read item_mindamage_percent
-  // twice; summing would double-count. Use Math.max.
-  if (stat === 'item_mindamage_percent' || stat === 'item_maxdamage_percent') {
-    stats[stat] = Math.max(stats[stat] || 0, value);
-    return;
-  }
-
-  stats[stat] = (stats[stat] || 0) + value;
-}
-
-// ─── Stat ids ───────────────────────────────────────────────────
-
-const statMaps = new WeakMap<object, Map<number, string>>();
-
-/**
- * Numeric stat id → stat key of `gd.itemStatCost`, built once per table: a parser is created for
- * every list and every `.d2i` sector, and the table does not change after loading.
- */
-export function statIdMap(gd: GameData): Map<number, string> {
-  let map = statMaps.get(gd.itemStatCost);
-  if (!map) {
-    map = new Map();
-    for (const key in gd.itemStatCost) map.set(gd.itemStatCost[key].id, key);
-    statMaps.set(gd.itemStatCost, map);
-  }
-  return map;
-}
-
-// ─── createItemParser ───────────────────────────────────────────
-
-/**
- * Create a parser context for reading items from a BinaryReader.
- * V105 only — no version branching.
- *
- * @param reader    BinaryReader positioned before item data
- * @param gd        GameData instance
- * @param initialId Starting item ID (default 0)
- * @param options   Parser options
- */
-export function createItemParser(
-  reader: BinaryReader,
-  gd: GameData,
-  initialId = 0,
-  options?: ParserOptions,
-): ItemParserContext {
-  const forceStackable = options?.forceStackable ?? false;
-  const baseOffset = options?.baseOffset ?? 0;
-  const onItem = options?.onItem;
-  const legacy = options?.saveVersion === 99;
-  const resolveMods = options?.resolveMods ?? true;
-  const items: Record<number | string, BinaryParsedItem> = {};
-  let itemId = initialId;
-  let listError: string | null = null;
-
-  /** Current reader position as an absolute byte offset (the reader is byte-aligned here). */
-  const absBytePos = (): number => baseOffset + (reader.bitpos >> 3);
-
-  const statMap = statIdMap(gd);
-
-  function getStatInfo(stat: string): { savebits?: number; saveadd?: number; saveparambits?: number } {
-    return (gd.itemStatCost as Record<string, { savebits?: number; saveadd?: number; saveparambits?: number }>)[stat] || {};
-  }
-
-  function itemTypeTreeFilter(type: string): boolean {
-    const tradeableTypes = [
-      'helm', 'tors', 'glov', 'boot', 'belt', 'shld',
-      'amul', 'ring', 'jewl', 'char',
-      'mele', 'miss', 'orb', 'comb',
-    ];
-    return tradeableTypes.some(t => isSubType(gd, type, t));
-  }
-
-  const stashColumns = gd.info?.stash?.columns || 16;
-
-  function parseItem(idIn: number | string, handler: ItemHandler, depth = 0): void {
-    const startBit = reader.bitpos;
-    const startByte = absBytePos();
-
-    // ── Flags (35 bits, D2R v105) ─────────────────────────────
-    reader.skipbits(4);
-    const unidentified = !reader.bits(1);
-    reader.skipbits(6);
-    const socketed = !!reader.bits(1);
-    reader.skipbits(4);
-    const ear = !!reader.bits(1);
-    reader.skipbits(4);
-    const simple = !!reader.bits(1);
-    const ethereal = !!reader.bits(1);
-    reader.skipbits(1);
-    const personalized = !!reader.bits(1);
-    reader.skipbits(1);
-    const runeword = !!reader.bits(1);
-    // D2R: 1 unk + chronicle flag (bit 28) + compact-chronicle flag (bit 29) + 5 unk
-    reader.skipbits(1);
-    const extras = reader.bits(1);
-    const compactChronicle = reader.bits(1);
-    reader.skipbits(5);
-
-    const item: Partial<BinaryParsedItem> = {
-      itemId: typeof idIn === 'number' ? idIn : 0,
-      unidentified,
-      ethereal,
-      socketed,
-      sockets: 0,
-      socketedItems: [],
-      stats: {},
-      binaryOffset: { start: startBit, end: 0 },
-    };
-
-    // ── Location ──────────────────────────────────────────────
-    const location = reader.bits(3);
-    const bodyloc = reader.bits(4);
-    const invcol = reader.bits(4);
-    const invrow = reader.bits(4);
-    const storage = reader.bits(3);
-    const head = (base: string | null): ItemHead => ({
-      identified: !unidentified, socketed, ear, simple, ethereal, personalized, runeword, extras: !!extras,
-      loc: location, bodyloc, col: invcol, row: invrow, storage, base,
-    });
-
-    // ── Ear item ──────────────────────────────────────────────
-    if (ear) {
-      const earClass = reader.bits(3);
-      const earLevel = reader.bits(7);
-      // Ear names are 8-bit UTF-8 in saves above v97 (BGS D2SSharp Item.ReadString), then the same realm
-      // and post-stats quantity flags as any compact item.
-      const nameBytes: number[] = [];
-      let ch: number;
-      while ((ch = reader.bits(8))) nameBytes.push(ch);
-      const earName = new TextDecoder('utf-8').decode(new Uint8Array(nameBytes));
-      if (reader.bits(1)) reader.skipbits(128);
-      if (!legacy && reader.bits(1)) reader.skipbits(8);
-      item.ear = { class: earClass, level: earLevel, name: earName };
-      item.base = 'ear';
-      item.quality = QUALITY_NORMAL;
-      reader.align();
-      item.binaryOffset!.end = reader.bitpos;
-      // An ear never has socketed children, so its own range is also its full range.
-      item.byteRange = { start: startByte, end: absBytePos() };
-      item.fullByteRange = { start: startByte, end: absBytePos() };
-      item.socketedByteRanges = [];
-
-      const earId = typeof idIn === 'number' ? idIn : 0;
-      items[earId] = item as BinaryParsedItem;
-      onItem?.({ item: item as BinaryParsedItem, depth, registeredKey: earId, head: head(null) });
-      emitLocation(earId, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);
-      return;
-    }
-
-    // ── Item code (Huffman: 3 letters + space) ────────────────
-    const basea = reader.char();
-    const baseb = reader.char();
-    const basec = reader.char();
-    const based = reader.char();
-    if (based !== ' ') throw Error(`invalid item code`);
-    const baseId = basea + baseb + basec;
-    // Unknown bases are tolerated (parsed as generic) to match d2planner-HEAD.
-    item.base = baseId;
-
-    const base = (gd.items[baseId] || {}) as unknown as Record<string, unknown>;
-    let socketedItemsCount = 0;
-    const types = itemGetTypes(gd, baseId);
-
-    if (simple) {
-      // Compact quest items with questdiffcheck store their difficulty (stat 356 width) first (BGS D2SSharp Item.ReadCompactItem).
-      if (base.quest && base.questdiffcheck) {
-        const info = getStatInfo('questitemdifficulty');
-        item.questDifficulty = reader.bits(info.savebits ?? 0) - (info.saveadd || 0);
+export function solveItem(gd: GameData, item: BinaryParsedItem, mods: string[]): Partial<BinaryParsedItem> {
+  const solved: Partial<BinaryParsedItem> = {};
+  const stats = item.stats;
+  const getStats = (src: Record<string, unknown>) =>
+    parseParamStats(gd, stats, src as Record<string, never>) as Record<string, never>;
+  if (item.quality === QUALITY_SET || item.quality === QUALITY_UNIQUE) {
+    const parsed = parseUniqueStatsHelper(gd, item as { base: string; quality: number; unique?: string }, getStats);
+    if (parsed) {
+      solved.uniqueValues = parsed.uniqueValues;
+      if (parsed.propertyIndex && Object.keys(parsed.propertyIndex).length) {
+        solved.propertyIndex = parsed.propertyIndex;
       }
-      // Compact items have no sockets; this bit is the realm flag (BGS D2SSharp Item.ReadCompactItem).
-      if (reader.bits(1)) reader.skipbits(128);
-      item.quality = QUALITY_NORMAL;
     } else {
-      socketedItemsCount = reader.bits(3);
-
-
-      // Persistent 32-bit D2 item id (GUID). `bits(32)` needs `>>> 0` because the accumulator is a
-      // signed int32, so a high-bit-set value would come out negative. Same bit-advance as the old
-      // `skipbits(32)`, so parser alignment is unchanged.
-      item.guid = reader.bits(32) >>> 0; // item ID (persistent GUID)
-      item.ilvl = reader.bits(7);
-      const qualityRaw = gameQualityMap[reader.bits(4)];
-      item.quality = runeword ? QUALITY_RUNEWORD : qualityRaw;
-
-      if (reader.bits(1)) {
-        item.iconIndex = reader.bits(3);
-      }
-
-      const mods: string[] = [];
-      if (reader.bits(1)) {
-        mods.push(`am${mkid(reader.bits(11))}`);
-      }
-
-      let modid: number;
-      switch (qualityRaw) {
-        case QUALITY_LOW:
-          reader.skipbits(3);
-          break;
-        case QUALITY_NORMAL:
-          if (types.has('char')) reader.skipbits(12);
-          break;
-        case QUALITY_SUPERIOR:
-          mods.push(`qm${mkid(reader.bits(3))}`);
-          mods.pop(); // too many mismatches (mirrors d2planner)
-          break;
-        case QUALITY_MAGIC: {
-          const p = reader.bits(11);
-          if (p) { const c = `mp${mkid(p)}`; mods.push(c); item.magicPrefixCode = c; (item.prefixCodes ??= []).push(c); }
-          const s = reader.bits(11);
-          if (s) { const c = `ms${mkid(s)}`; mods.push(c); item.magicSuffixCode = c; (item.suffixCodes ??= []).push(c); }
-          break;
-        }
-        case QUALITY_SET:
-          item.unique = `set${mkid(reader.bits(12))}`;
-          break;
-        case QUALITY_UNIQUE:
-          item.unique = `unique${mkid(reader.bits(12))}`;
-          break;
-        case QUALITY_RARE:
-        case QUALITY_CRAFTED: {
-          const name1 = (gd.rarePrefix as Record<string, { name?: string }>)[reader.bits(8) - 156]?.name;
-          const name2 = (gd.rareSuffix as Record<string, { name?: string }>)[reader.bits(8) - 1]?.name;
-          item.name = `${gd.locale.strings[name1!] || name1 || ''} ${gd.locale.strings[name2!] || name2 || ''}`.trim();
-
-          // Up to 3 prefix + 3 suffix affix ids, interleaved. Capture every one into ordered
-          // code arrays so the backend can fill the Prefix/Suffix NAME slots (the stats stay flat
-          // in lot.mods — affixes are never re-attributed). magicPrefix/SuffixCode stay unset for
-          // rares (multi-affix), so single-code consumers must read prefixCodes/suffixCodes.
-          const pushPrefix = () => { const c = `mp${mkid(reader.bits(11))}`; mods.push(c); (item.prefixCodes ??= []).push(c); };
-          const pushSuffix = () => { const c = `ms${mkid(reader.bits(11))}`; mods.push(c); (item.suffixCodes ??= []).push(c); };
-          if (reader.bits(1)) pushPrefix();
-          if (reader.bits(1)) pushSuffix();
-          if (reader.bits(1)) pushPrefix();
-          if (reader.bits(1)) pushSuffix();
-          if (reader.bits(1)) pushPrefix();
-          if (reader.bits(1)) pushSuffix();
-          break;
-        }
-      }
-
-      if (runeword) {
-        let rwid = reader.bits(12);
-        // Eye() mapping (maxroll): stored D2S runeword ID → sequential index.
-        if (rwid === 2718) rwid = 48;
-        // Blizzless mod custom runewords with IDs outside the vanilla ranges (e.g. Nightfall=1396).
-        else if (CUSTOM_RUNEWORD_IDS[rwid] != null) rwid = CUSTOM_RUNEWORD_IDS[rwid];
-        else if (rwid > 3194) rwid -= 3194;
-        else if (rwid > 2869) rwid -= 2869;
-        else if (rwid > 2588) rwid -= 2588;
-        item.unique = `runeword${mkid(rwid)}`;
-        reader.skipbits(4);
-      }
-
-      if (personalized) {
-        const bytes: number[] = [];
-        let chr: number;
-        while ((chr = reader.bits(8))) bytes.push(chr);
-        item.personalized = String.fromCharCode(...bytes);
-      }
-
-      if (types.has('book')) {
-        reader.skipbits(5);
-      }
-
-      // Realm data: 4 x uint32 for any item type (BGS D2SSharp Item.ReadRealmData).
-      if (reader.bits(1)) reader.skipbits(128);
-
-      // ── Armor defense ─────────────────────────────────────
-      if (types.has('armo')) {
-        let minac = reader.bits(11) - 10;
-        let maxac = minac;
-        if (item.ethereal) {
-          minac = Math.ceil(minac / 1.5);
-          maxac = Math.ceil((maxac + 1) / 1.5) - 1;
-        }
-        const baseMaxAc = 'maxac' in base ? (base.maxac as number) : 0;
-        const baseMinAc = 'minac' in base ? (base.minac as number) : 0;
-        if (minac <= baseMaxAc + 1 && maxac >= baseMinAc) {
-          item.defense = (Math.max(minac, baseMinAc) + Math.min(maxac, baseMaxAc + 1)) >> 1;
-        } else {
-          const minac2 = Math.ceil(minac / 1.5);
-          const maxac2 = Math.ceil((maxac + 1) / 1.5) - 1;
-          if (minac <= baseMaxAc && maxac >= baseMinAc) {
-            item.defense = (Math.max(minac2, baseMinAc) + Math.min(maxac2, baseMaxAc)) >> 1;
-            item.ethbugged = true;
-          } else {
-            item.defense = (minac + maxac) >> 1;
-          }
-        }
-      }
-
-      // ── Durability ────────────────────────────────────────
-      if (types.has('weap') || types.has('armo')) {
-        if (reader.bits(8)) reader.skipbits(9);
-      }
-
-      // ── V105 pre-stats quantity (1-bit flag + 9-bit value) ─
-      const preQuantityFlagBit = reader.bitpos - startBit;
-      if (legacy) {
-        // Up to v104 only stackable bases store a quantity, with no presence flag (BGS D2SSharp Item.ReadCompleteItem).
-        if (base.stackable) item.quantity = reader.bits(9);
-      } else if (reader.bits(1)) {
-        item.quantity = reader.bits(9);
-        item.quantityField = { placement: 'pre-stats', flagBit: preQuantityFlagBit, width: 9 };
-      } else if (forceStackable && !types.has('ques')) {
-        // legacy fixture path — V105 never enters here
-      }
-
-      if (socketed) item.sockets = reader.bits(4);
-
-      // ── Set flags ─────────────────────────────────────────
-      const setflags = (qualityRaw === QUALITY_SET ? reader.bits(5) : 0);
-      if (setflags) item.setflags = setflags;
-
-      // ── Stats ─────────────────────────────────────────────
-      const stats: Record<string, number> = {};
-
-      function parseStats(): void {
-        // eslint-disable-next-line no-constant-condition
-        while (true) {
-          let id = reader.bits(9);
-          if (id === 511) break;
-          const stat = statMap.get(id);
-          if (!stat) throw Error(`unknown item stat code ${id}`);
-          const info = getStatInfo(stat);
-          if (!info) throw Error(`unknown item stat code ${id}`);
-          const param = info.saveparambits ? reader.bits(info.saveparambits) : 0;
-          const value = reader.bits(info.savebits ?? 0) - (info.saveadd || 0);
-          addStat(stats, stat, param, value);
-
-          let follow = followStats[stat] || 0;
-          while (follow--) {
-            const followStat = statMap.get(++id);
-            if (!followStat) break;
-            const followInfo = getStatInfo(followStat) || {};
-            const followParam = followInfo.saveparambits ? reader.bits(followInfo.saveparambits) : 0;
-            const followValue = reader.bits(followInfo.savebits ?? 0) - (followInfo.saveadd || 0);
-            addStat(stats, followStat, followParam, followValue);
-          }
-        }
-      }
-
-      parseStats();
-      if (setflags & 1) parseStats();
-      if (setflags & 2) parseStats();
-      if (setflags & 4) parseStats();
-      if (setflags & 8) parseStats();
-      if (setflags & 16) parseStats();
-      if (runeword) parseStats();
-
-      // Damage stat consolidation
-      if (stats.mindamage || stats.secondary_mindamage || stats.item_throw_mindamage) {
-        stats.mindamage = Math.max(
-          ...[stats.mindamage, stats.secondary_mindamage, stats.item_throw_mindamage].filter(Boolean) as number[],
-        );
-        delete stats.secondary_mindamage;
-        delete stats.item_throw_mindamage;
-      }
-      if (stats.maxdamage || stats.secondary_maxdamage || stats.item_throw_maxdamage) {
-        stats.maxdamage = Math.max(
-          ...[stats.maxdamage, stats.secondary_maxdamage, stats.item_throw_maxdamage].filter(Boolean) as number[],
-        );
-        delete stats.secondary_maxdamage;
-        delete stats.item_throw_maxdamage;
-      }
-
-      item.stats = stats;
-
-      // ── Resolve mod sources ───────────────────────────────
-      const getStats = (src: Record<string, unknown>) =>
-        parseParamStats(gd, stats, src as Record<string, never>) as Record<string, never>;
-      if (!resolveMods) {
-        // Raw stats only: the solver below does not move the reader.
-      } else if (item.quality === QUALITY_SET || item.quality === QUALITY_UNIQUE) {
-        const parsed = parseUniqueStatsHelper(gd, item as { base: string; quality: number; unique?: string }, getStats);
-        if (parsed) {
-          item.uniqueValues = parsed.uniqueValues;
-          if (parsed.propertyIndex && Object.keys(parsed.propertyIndex).length) {
-            item.propertyIndex = parsed.propertyIndex;
-          }
-        } else {
-          const def = (gd.uniqueItems[item.unique!] || gd.setItems[item.unique!]) as unknown as Record<string, unknown> | undefined;
-          const extracted = extractValuesFromStats(gd, def, 'prop', 'max', stats);
-          if (extracted) {
-            item.uniqueValues = extracted.values;
-            if (Object.keys(extracted.propertyIndex).length) item.propertyIndex = extracted.propertyIndex;
-          }
-        }
-      } else if (item.quality === QUALITY_RUNEWORD) {
-        const parsed = parseRunewordStatsHelper(
-          gd,
-          item as { base: string; quality: number; unique?: string },
-          null,
-          getStats,
-          mods,
-        );
-        if (parsed) {
-          Object.assign(item, parsed);
-        } else {
-          const def = gd.runes[item.unique!] as unknown as Record<string, unknown> | undefined;
-          const extracted = extractValuesFromStats(gd, def, 't1code', 't1max', stats);
-          if (extracted) item.uniqueValues = extracted.values;
-        }
-      } else {
-        // Type-mismatch guard: if any magic prefix/suffix is unknown or out of
-        // type tree, skip the solver (it'd otherwise yield garbage) and mark custom.
-        const hasMismatch = mods.some(mid => {
-          const isPfx = mid.startsWith('mp'), isSfx = mid.startsWith('ms');
-          if (!isPfx && !isSfx) return false;
-          const modDef = isPfx
-            ? gd.magicPrefix[mid] as Record<string, unknown> | undefined
-            : gd.magicSuffix[mid] as Record<string, unknown> | undefined;
-          if (!modDef) return true;
-          const itypes = [modDef.itype1, modDef.itype2, modDef.itype3, modDef.itype4]
-            .filter(Boolean) as string[];
-          return itypes.length > 0 && !itypes.some(t => types.has(t));
-        });
-        if (hasMismatch) {
-          item.mods = {};
-          item.custom = true;
-        } else {
-          // The brute-force affix solver can THROW on Blizzless data (e.g. a missing mod table
-          // like `crafted`, or an unhandled staffmod). A throw here used to abort the WHOLE
-          // item list (one bad item hid every item after it). Treat any solver failure as
-          // "unsolved" → the item keeps its raw stats (the backend rebuilds mods from those),
-          // it just isn't marked with reconstructed affixes.
-          let parsed: ReturnType<typeof parseModStatsHelper> | null = null;
-          try {
-            parsed = parseModStatsHelper(
-              gd,
-              item as { base: string; quality: number; unique?: string },
-              null,
-              null,
-              null,
-              getStats,
-              mods,
-            );
-          } catch {
-            parsed = null;
-          }
-          if (parsed) {
-            Object.assign(item, parsed);
-          } else {
-            item.mods = mods.length ? {} : undefined;
-            if (Object.keys(stats).length) item.custom = true;
-          }
-        }
-      }
-
-      // Blunt weapon undead damage bonus
-      if (types.has('blun')) {
-        stats.item_undeaddamage_percent = (stats.item_undeaddamage_percent || 0) + 50;
+      const def = (gd.uniqueItems[item.unique!] || gd.setItems[item.unique!]) as unknown as Record<string, unknown> | undefined;
+      const extracted = extractValuesFromStats(gd, def, 'prop', 'max', stats);
+      if (extracted) {
+        solved.uniqueValues = extracted.values;
+        if (Object.keys(extracted.propertyIndex).length) solved.propertyIndex = extracted.propertyIndex;
       }
     }
-
-    // ── Post-stats: D2R extras + chronicle + V105 quantity ───
-    if (extras && !legacy) {
-      // Chronicle record (flag bit 28), as the game server writes it (BGS D2SSharp Item.ReadChronicle):
-      // 16-bit id; then, unless compact (flag bit 29), a 32-bit timestamp and a 4-bit recipient
-      // count capped at 8; each recipient is 64 bits. A compact chronicle has exactly one recipient.
-      // Reading the count as a single bit misaligned every item after one with 2+ recipients.
-      reader.skipbits(16);
-      if (!compactChronicle) reader.skipbits(32);
-      const recipients = compactChronicle ? 1 : Math.min(reader.bits(4), 8);
-      reader.skipbits(64 * recipients);
+  } else if (item.quality === QUALITY_RUNEWORD) {
+    const parsed = parseRunewordStatsHelper(gd, item as { base: string; quality: number; unique?: string }, null, getStats, mods);
+    if (parsed) {
+      Object.assign(solved, parsed);
+    } else {
+      const def = gd.runes[item.unique!] as unknown as Record<string, unknown> | undefined;
+      const extracted = extractValuesFromStats(gd, def, 't1code', 't1max', stats);
+      if (extracted) solved.uniqueValues = extracted.values;
     }
-    // V105: post-stats quantity (1-bit flag + 8-bit value).
-    const postQuantityFlagBit = reader.bitpos - startBit;
-    if (!legacy && reader.bits(1)) {
-      item.quantity = reader.bits(8);
-      item.quantityField = { placement: 'post-stats', flagBit: postQuantityFlagBit, width: 8 };
-    }
-
-    reader.align();
-    item.binaryOffset!.end = reader.bitpos;
-    // The item's own bytes end here; the socketed children follow and extend `fullByteRange`.
-    item.byteRange = { start: startByte, end: absBytePos() };
-    item.socketedByteRanges = [];
-
-    // ── Socketed sub-items (recursive) ────────────────────────
-    if (socketedItemsCount > 0) {
-      item.socketedItems = [];
-      for (let i = 0; i < socketedItemsCount; ++i) {
-        const childStart = absBytePos();
-        parseItem(itemId++, (sockId) => {
-          // Preset items (runes/gems) emit their base code as id; non-preset
-          // sub-items emit numeric ids. Both are valid.
-          item.socketedItems!.push(sockId as number | string);
-        }, depth + 1);
-        // Recorded from the reader, not from the handler: a child the parser drops (unknown
-        // unique in a socket) never reaches the handler but still occupies these bytes.
-        item.socketedByteRanges.push({ start: childStart, end: absBytePos() });
-      }
-    }
-    item.fullByteRange = { start: startByte, end: absBytePos() };
-
-    // ── Validate / store / emit ───────────────────────────────
-    let registeredKey: number | string | null = null;
-    if (item.unique && !(gd.uniqueItems[item.unique] || gd.setItems[item.unique] || gd.runes[item.unique])) {
-      // Unknown unique/set/runeword: drop without registering, but the stream
-      // has already been consumed correctly via socketed-item recursion above.
-    } else if (presetItemIds.has(item.base!) && !item.unique) {
-      // Preset items (runes, gems, potions, etc.) are keyed by their base code
-      // so the items dict can identify them by type. This matches the d2r-saver
-      // convention and lets callers find e.g. r01 via items['r01'].
-      registeredKey = item.base!;
-      items[registeredKey] = item as BinaryParsedItem;
-    } else if (
-      (gd.items[item.base!] && itemTypeTreeFilter((gd.items[item.base!] as unknown as Record<string, unknown>).type as string)) ||
-      item.unique ||
-      location === 6
-    ) {
-      registeredKey = idIn;
-      items[registeredKey] = item as BinaryParsedItem;
-    }
-
-    onItem?.({ item: item as BinaryParsedItem, depth, registeredKey, head: head(baseId) });
-    if (registeredKey === null) return;
-
-    emitLocation(registeredKey, location, bodyloc, storage, invrow, invcol, item as BinaryParsedItem, handler);
-  }
-
-  function emitLocation(
-    id: number | string,
-    location: number,
-    bodyloc: number,
-    storage: number,
-    invrow: number,
-    invcol: number,
-    item: BinaryParsedItem,
-    handler: ItemHandler,
-  ): void {
-    switch (location) {
-      case 0:
-      case 4: // Blizzless: crafting materials (e.g. Ingot) use location 4 with storage 5
-        if (storage === 1) handler(id, 'inventory', invrow * 10 + invcol, item);
-        if (storage === 4) handler(id, 'cube', invrow * 3 + invcol, item);
-        if (storage === 5) handler(id, 'stash', invrow * stashColumns + invcol, item);
-        break;
-      case 1:
-        if (bodyMap[bodyloc]) handler(id, 'body', bodyMap[bodyloc]!, item);
-        break;
-      case 2:
-        handler(id, 'belt', invcol, item);
-        break;
-      case 6:
-        handler(id);
-        break;
-    }
-  }
-
-  function parseItemList(handler: ItemHandler, listOptions?: ParseItemListOptions): ItemListReport {
-    listError = null; // per-call: a stale error from a previous list must not leak into this one
-    let errorCode: ErrorCode | null = null;
-    const headerOffset = absBytePos();
-    if (reader.read16() !== 0x4d4a) throw Error('invalid item table header');
-    const count = reader.read16();
-    const firstItemOffset = absBytePos();
-    let parsed = 0;
-    let endOffset = firstItemOffset;
-    for (let i = 0; i < count; ++i) {
+  } else {
+    // Type-mismatch guard: if any magic prefix/suffix is unknown or out of
+    // type tree, skip the solver (it'd otherwise yield garbage) and mark custom.
+    const types = itemGetTypes(gd, item.base);
+    const hasMismatch = mods.some(mid => {
+      const isPfx = mid.startsWith('mp'), isSfx = mid.startsWith('ms');
+      if (!isPfx && !isSfx) return false;
+      const modDef = isPfx
+        ? gd.magicPrefix[mid] as Record<string, unknown> | undefined
+        : gd.magicSuffix[mid] as Record<string, unknown> | undefined;
+      if (!modDef) return true;
+      const itypes = [modDef.itype1, modDef.itype2, modDef.itype3, modDef.itype4]
+        .filter(Boolean) as string[];
+      return itypes.length > 0 && !itypes.some(t => types.has(t));
+    });
+    if (hasMismatch) {
+      solved.mods = {};
+      solved.custom = true;
+    } else {
+      // The brute-force affix solver can THROW on Blizzless data (e.g. a missing mod table
+      // like `crafted`, or an unhandled staffmod). Treat any solver failure as "unsolved": the
+      // item keeps its raw stats, it just isn't marked with reconstructed affixes.
+      let parsed: ReturnType<typeof parseModStatsHelper> | null = null;
       try {
-        parseItem(itemId++, handler);
-        parsed++;
-        endOffset = absBytePos();
-      } catch (e) {
-        // A bitstream desync cannot be resynced safely mid-list — stop here. Every item after
-        // this one is LOST for this list, so callers MUST surface `error` (see readers) or the
-        // truncation is invisible to users (e.g. an entire character import coming up short).
-        listError = `item ${i + 1}/${count}: ${(e as Error).message}`;
-        errorCode = e instanceof D2RSaverError && e.code === ErrorCode.BUFFER_OVERRUN
-          ? ErrorCode.BUFFER_OVERRUN
-          : ErrorCode.PARSE_ERROR;
-        break;
+        parsed = parseModStatsHelper(gd, item as { base: string; quality: number; unique?: string }, null, null, null, getStats, mods);
+      } catch {
+        parsed = null;
+      }
+      if (parsed) {
+        Object.assign(solved, parsed);
+      } else {
+        solved.mods = mods.length ? {} : undefined;
+        if (Object.keys(stats).length) solved.custom = true;
       }
     }
-    const expectedEnd = listOptions?.expectedEnd ?? null;
-    const reachedEnd = expectedEnd === null ? null : endOffset === expectedEnd;
-    return {
-      headerOffset,
-      declared: count,
-      parsed,
-      firstItemOffset,
-      endOffset,
-      expectedEnd,
-      reachedEnd,
-      truncated: parsed < count,
-      complete: parsed === count && listError === null && reachedEnd !== false,
-      error: listError,
-      errorCode,
-    };
   }
-
-  function nextId(): number {
-    return itemId++;
-  }
-
-  return {
-    parseItem: (id: number, handler: ItemHandler) => parseItem(id, handler, 0),
-    parseItemList,
-    items,
-    nextId,
-    get currentId() { return itemId; },
-    get error() { return listError; },
-  };
+  return solved;
 }

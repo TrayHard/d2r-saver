@@ -7,8 +7,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { createHash } from 'node:crypto';
 import { GameData } from '../src/game-data/game-data.js';
-import { BinaryReader } from '../src/core/binary-reader.js';
-import { createItemParser, statIdMap } from '../src/formats/item-parser.js';
+import { parseList } from './helpers/parse-list.js';
 import { readD2S } from '../src/formats/d2s-reader.js';
 import {
   walkItemList,
@@ -45,11 +44,8 @@ function parseStandalone(bytes: Uint8Array) {
   const wrapped = new Uint8Array(4 + bytes.length);
   wrapped[0] = 0x4a; wrapped[1] = 0x4d; wrapped[2] = 1; wrapped[3] = 0;
   wrapped.set(bytes, 4);
-  const reader = new BinaryReader(wrapped);
-  const ctx = createItemParser(reader, gd);
-  let placed: { id: number | string; location?: string; slot?: number | string } | null = null;
-  const report = ctx.parseItemList((id, location, slot) => { placed = { id, location, slot }; });
-  return { report, placed: placed as { id: number | string; location?: string; slot?: number | string } | null, items: ctx.items, consumed: (reader.bitpos >> 3) - 4 };
+  const { report, placed, items, consumed } = parseList(wrapped, gd);
+  return { report, placed: placed.at(-1) ?? null, items, consumed };
 }
 
 /** `[value, width]` fields packed LSB-first, the order BinaryReader reads them in. */
@@ -340,14 +336,6 @@ describe('readItemHead', () => {
       check(buf, coverage.items);
     }
     expect(checked).toBeGreaterThan(300);
-  });
-
-  it('the stat id map is built once per stat table', () => {
-    const map = statIdMap(gd);
-    expect(statIdMap(gd)).toBe(map);
-    expect(map.size).toBe(Object.keys(gd.itemStatCost).length);
-    expect(map.get(gd.itemStatCost.strength.id)).toBe('strength');
-    expect(statIdMap(GameData.fromRaw(rawDataWith('d2r'), locale()))).not.toBe(map);
   });
 
   it('throws BUFFER_OVERRUN on a cut prefix and PARSE_ERROR on a non-item', () => {

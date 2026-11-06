@@ -1,9 +1,7 @@
 export { detectFormat, type DetectedFormat } from './detect.js';
 export {
-  createItemParser,
   type BinaryParsedItem,
   type ItemHandler,
-  type ItemParserContext,
   type ByteRange,
   type ItemListReport,
   type ParsedItemTrace,

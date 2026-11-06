@@ -1,19 +1,15 @@
 /**
- * D2S (character save) reader — Blizzless v105 only.
+ * D2S (character save) reader — Blizzless v105, and legacy v99 read-only.
  *
- * Ported from d2planner/src/logic/binary/index.js → parseCharacter().
- * Simplified: v105 only — all offsets use v105 values.
- *
- * Uses GameData instead of global Data singleton.
+ * The Rust core reads the file (`rust/core/src/character.rs`); this module builds the profile
+ * from its document: names, slots and the derived base stats.
  */
 
-import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
-import { detectFormat } from './detect.js';
-import { createItemParser, statIdMap, type BinaryParsedItem, type ItemListReport, type ParsedItemTrace, type ReadOptions } from './item-parser.js';
-import { readD2SDemonSection, type D2SDemonSectionReport } from './d2s-demon-reader.js';
-import { d2sCoverage, type D2SParseCoverage } from './d2s-coverage.js';
-import { D2S_MAGIC } from '../types/constants.js';
+import type { BinaryParsedItem, ItemListReport, ReadOptions } from './item-parser.js';
+import type { D2SDemonSectionReport } from './d2s-demon-reader.js';
+import type { D2SParseCoverage } from './d2s-coverage.js';
+import { dictOf, engineReadD2S, entriesOf, itemsOf, type ItemsDoc, type Node } from '../engine/engine.js';
 
 // ─── Types ──────────────────────────────────────────────────────
 
@@ -137,9 +133,7 @@ export interface D2SReadResult {
  * @param gd   GameData instance
  */
 export function readD2S(data: Uint8Array, gd: GameData, options?: ReadOptions): D2SReadResult {
-  const fmt = detectFormat(data);
-  if (!fmt || fmt.type !== 'd2s') throw Error('invalid d2s header');
-  return readCharacter(data, gd, V105_LAYOUT, options);
+  return readCharacter(data, gd, false, options);
 }
 
 /**
@@ -147,60 +141,57 @@ export function readD2S(data: Uint8Array, gd: GameData, options?: ReadOptions): 
  * refuses `legacyVersion`, so a v99 file can never be written back through the v105 writer.
  */
 export function readLegacyD2S(data: Uint8Array, gd: GameData, options?: ReadOptions): D2SReadResult {
-  const view = new DataView(data.buffer, data.byteOffset, data.byteLength);
-  if (data.length < 16 || view.getUint32(0, true) !== D2S_MAGIC || view.getUint32(4, true) !== 99) throw Error('invalid v99 d2s header');
-  return readCharacter(data, gd, V99_LAYOUT, options);
+  return readCharacter(data, gd, true, options);
 }
 
-/** Fixed offsets of the character header (BGS D2SSharp Character.Read, PreviewData.Read). */
-interface CharacterLayout {
-  version: 99 | 105;
-  flags: number;
-  class: number;
-  merc: number;
-  name: number;
-  nameLength: number;
-  quests: [number, number, number];
-  stats: number;
+/** The character document of the read core (`rust/core/src/doc.rs`). */
+interface CharacterDoc extends ItemsDoc {
+  profile: {
+    name: string;
+    classId: number;
+    /** `mercName`, hireling type, experience. */
+    merc: [number, number, number] | null;
+    quests: boolean[][];
+    attributes: Record<string, number>;
+    skills: Record<number, number>;
+    /** `[place, slot, id]`: 0 body, 1 inventory, 2 cube, 3 stash, 4 belt, 5 hireling body. */
+    slots: Array<[number, number, number | string]>;
+    mercSection: boolean;
+    ironGolem: number | null;
+    corpse: [number, number] | null;
+    golem: [number, number] | null;
+    extra: number | null;
+    bindDemon: D2SCharacterProfile['bindDemon'] | null;
+  };
+  lists: D2SItemLists;
+  demons: D2SDemonSectionReport | null;
+  warnings: string[];
+  coverage: Omit<D2SParseCoverage, 'items'> & { items: Node[] };
 }
-const V105_LAYOUT: CharacterLayout = { version: 105, flags: 20, class: 24, merc: 163, name: 299, nameLength: 96, quests: [413, 509, 605], stats: 833 };
-const V99_LAYOUT: CharacterLayout = { version: 99, flags: 36, class: 40, merc: 179, name: 267, nameLength: 60, quests: [345, 441, 537], stats: 765 };
 
-function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, options?: ReadOptions): D2SReadResult {
-  const warnings: string[] = [];
+/** Body slot names by `bodyloc`. */
+const bodyMap = [
+  null, 'head', 'neck', 'tors', 'rarm', 'larm',
+  'rrin', 'lrin', 'belt', 'feet', 'glov', 'rarm2', 'larm2',
+] as const;
 
-  const reader = new BinaryReader(data);
-  reader.seek(16);
-
+function readCharacter(data: Uint8Array, gd: GameData, legacy: boolean, options?: ReadOptions): D2SReadResult {
+  const doc = engineReadD2S<CharacterDoc>(gd, data, legacy, options?.resolveMods ?? true);
+  const items = itemsOf(doc, gd);
+  const p = doc.profile;
+  const bytes = (start: number, end?: number) => Array.from(data.subarray(start, end));
   const result: Partial<D2SCharacterProfile> = {};
 
-  // Preserve the fixed 833-byte v105 header verbatim for lossless round-tripping.
-  // (The stats section always starts at offset 833 in this format.)
-  if (layout.version === 105) result.rawHeader = Array.from(data.subarray(0, 833));
-  else result.legacyVersion = layout.version;
-
-  // v105: 4 zero bytes at offset 0x10
-  reader.skip(4);
-
-  // A UTF-8 field, so a Cyrillic name is longer than 16 bytes.
-  if (!result.name) {
-    const savedPos = reader.bitpos;
-    reader.seek(layout.name);
-    result.name = reader.utf8(layout.nameLength);
-    reader.bitpos = savedPos;
-  }
-
-  reader.seek(layout.class);
-  const classId = reader.read8();
-  result.class = GameData.classes[classId] || `unknown_${classId}`;
-
-  reader.seek(layout.merc);
-  const mercId = reader.read32();
-  if (mercId) {
-    result.mercName = reader.read16();
-    result.merc = reader.read16().toString();
-    const mercXP = reader.read32();
-    const mercData = (gd.hireling[result.merc!] as unknown as Array<{ level: number; explvl: number }>)?.[0];
+  // The fixed 833-byte v105 header, verbatim for lossless round-tripping.
+  if (legacy) result.legacyVersion = 99;
+  else result.rawHeader = bytes(0, 833);
+  result.name = p.name;
+  result.class = GameData.classes[p.classId] || `unknown_${p.classId}`;
+  if (p.merc) {
+    const [mercName, mercType, mercXP] = p.merc;
+    result.mercName = mercName;
+    result.merc = mercType.toString();
+    const mercData = (gd.hireling[result.merc] as unknown as Array<{ level: number; explvl: number }>)?.[0];
     if (mercData) {
       let L = mercData.level;
       const M = mercData.explvl;
@@ -210,48 +201,17 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
       result.mercLevel = L;
     }
   }
+  result.quests = p.quests.map(q => ({
+    denofevil: q[0],
+    radamentslair: q[1],
+    thegoldenbird: q[2],
+    lamessenstome: q[3],
+    thefallenangel: q[4],
+    prisonofice: q[5],
+  }));
 
-  // Quests
-  function readQuestTable() {
-    return {
-      denofevil: (reader.byte(2) & 1) !== 0,
-      radamentslair: (reader.byte(18) & 1) !== 0,
-      thegoldenbird: (reader.byte(40) & 1) !== 0,
-      lamessenstome: (reader.byte(34) & 1) !== 0,
-      thefallenangel: (reader.byte(50) & 1) !== 0,
-      prisonofice: (reader.byte(74) & 1) !== 0,
-    };
-  }
-
-  result.quests = [];
-  for (const offset of layout.quests) { // normal, nightmare, hell
-    reader.seek(offset);
-    result.quests.push(readQuestTable());
-  }
-
-  reader.seek(layout.stats);
-  if (reader.read16() !== 0x6667) throw Error('invalid stats header');
-
-  const statMap = statIdMap(gd);
-  const charStats: Record<string, number> = {};
-  let prefixComplete = classId < GameData.classes.length;
-  const seenCharStats = new Set<number>();
-  while (true) {
-    const statId = reader.bits(9);
-    if (statId === 511) break;
-    const stat = statMap.get(statId);
-    if (!stat) throw Error(`unknown stat code ${statId}`);
-    const width = gd.itemStatCost[stat].csvbits;
-    // The bundled tables certify zero-CsvParam base attributes only (IDs 0..15).
-    if (statId > 15 || seenCharStats.has(statId) || !Number.isInteger(width) || width! <= 0 || width! > 32) prefixComplete = false;
-    seenCharStats.add(statId);
-    charStats[stat] = reader.bits(width ?? 0);
-  }
-  const statsPadding = (8 - (reader.bitpos % 8)) % 8;
-  if (reader.bits(statsPadding) !== 0) prefixComplete = false;
-  reader.align();
-
-  const classStats = gd.charStats[result.class!] as Record<string, unknown> | undefined;
+  const charStats = p.attributes;
+  const classStats = gd.charStats[result.class] as Record<string, unknown> | undefined;
   result.stats = {
     str: charStats.strength - ((classStats?.str as number) || 0),
     dex: charStats.dexterity - ((classStats?.dex as number) || 0),
@@ -262,204 +222,37 @@ function readCharacter(data: Uint8Array, gd: GameData, layout: CharacterLayout, 
   result.gold = charStats.gold ?? 0;
   result.goldStash = charStats.goldbank ?? 0;
   result.attributes = charStats;
-
-  // Skills
-  if (reader.read16() !== 0x6669) throw Error('invalid skills header');
-  result.skills = {};
-  const skillBases = [6, 36, 66, 96, 126, 221, 251, 373];
-  const skillBase = skillBases[classId] ?? (classId < 5 ? classId * 30 + 6 : (classId - 5) * 30 + 221);
-  for (let i = 0; i < 30; ++i) {
-    const level = reader.read8();
-    if (level) result.skills[i + skillBase] = level;
-  }
-
-  // Items
-  const traces: ParsedItemTrace[] = [];
-  const ctx = createItemParser(reader, gd, 0, {
-    saveVersion: layout.version,
-    resolveMods: options?.resolveMods,
-    onItem: trace => traces.push(trace),
-  });
-  let demons: D2SDemonSectionReport | null = null;
-  const lists: D2SItemLists = { main: null, corpses: [], merc: null, golem: null };
+  result.skills = p.skills;
 
   result.items = {};
   result.inventory = [];
   result.cube = [];
   result.stash = [];
   result.belt = [];
-
-  try {
-    lists.main = ctx.parseItemList((id, location, slot) => {
-      if (location === 'body') result.items![slot as string] = id;
-      if (location === 'inventory') result.inventory![slot as number] = id;
-      if (location === 'cube') result.cube![slot as number] = id;
-      if (location === 'stash') result.stash![slot as number] = id;
-      if (location === 'belt') result.belt![slot as number] = id;
-    });
-    // A mid-list item failure truncates the MAIN list silently (worn/inventory/stash/cube items
-    // after the bad one are lost) — surface the precise per-item reason so consumers can
-    // log/diagnose it instead of showing a silently-short list. The failed item leaves the reader
-    // inside its own bits, so the sections below are found by their headers instead.
-    if (ctx.error) {
-      warnings.push(`Main item list truncated: ${ctx.error}`);
-      resync(reader, lists.main.endOffset, isCorpseSection, 'corpse');
-    }
-
-    // Corpses — captured verbatim so the writer preserves corpse items.
-    const corpseStart = reader.bitpos >> 3;
-    if (reader.read16() !== 0x4d4a) throw Error('invalid item table header');
-    const corpses = reader.read16();
-
-    for (let i = 0; i < corpses; ++i) {
-      reader.skip(12);
-      const corpse = ctx.parseItemList(() => null);
-      lists.corpses.push(corpse);
-      // Same invariant as the main/hireling lists: a silent mid-list break desyncs everything
-      // after it (and rawCorpse below would capture a garbage byte range) — surface it.
-      if (ctx.error) {
-        warnings.push(`Corpse ${i + 1}/${corpses} item list truncated: ${ctx.error}`);
-        resync(reader, corpse.endOffset, isHirelingSection, 'hireling');
-        break;
-      }
-    }
-    result.rawCorpse = Array.from(reader.buffer.subarray(corpseStart, reader.bitpos >> 3));
-
-    // Hireling items
-    if (!reader.eof()) {
-      if (reader.read16() !== 0x666a) throw Error('invalid hireling header');
-      result.mercItems = {};
-      if (reader.byte(0) === 0x4a && reader.byte(1) === 0x4d) {
-        lists.merc = ctx.parseItemList((id, location, slot) => {
-          if (mercId && location === 'body') result.mercItems![slot as string] = id;
-        });
-        if (ctx.error) {
-          warnings.push(`Hireling item list truncated: ${ctx.error}`);
-          resync(reader, lists.merc.endOffset, isGolemSection, 'iron golem');
-        }
-      }
-    }
-
-    // Iron golem — captured verbatim so the writer preserves the golem item.
-    if (!reader.eof()) {
-      const golemStart = reader.bitpos >> 3;
-      if (reader.read16() !== 0x666b) throw Error('invalid iron golem header');
-      const golemPresent = reader.read8() !== 0;
-      lists.golem = { headerOffset: golemStart, present: golemPresent };
-      if (golemPresent) {
-        ctx.parseItem(ctx.nextId(), id => { result.ironGolem = typeof id === 'number' ? id : 0; });
-      }
-      result.rawGolem = Array.from(reader.buffer.subarray(golemStart, reader.bitpos >> 3));
-    }
-
-    // Preserve extra sections (0x666c warlock demon data) as raw bytes,
-    // and best-effort parse the bind-demon descriptor.
-    if (!reader.eof()) {
-      const bytePos = reader.bitpos >> 3;
-      result.extraSections = Array.from(reader.buffer.subarray(bytePos));
-      demons = readD2SDemonSection(data, bytePos, gd);
-      if (!demons.complete) warnings.push(`Demon section incomplete: ${demons.error}`);
-      try {
-        if (reader.read16() === 1 && reader.read16() === 0x666c) {
-          const count = reader.read16();
-          if (count > 0) {
-            reader.read16(); // entrySize
-            const idType = reader.read16(); // 1=normal monster by hcidx, 2=super unique
-            const binaryId = reader.read16();
-            const monId = binaryId - 1; // hcidx (1-indexed in binary)
-            reader.read16(); // skip
-            const monType = reader.read16(); // 8=unique, 12=champion
-            reader.read16(); // skip
-            reader.read8(); // diff
-            reader.skip(11);
-            const area = reader.read32();
-            const level = reader.read32();
-            reader.skip(48);
-            let monClass: string | undefined;
-            let demonId: string | undefined;
-            let monsterType: string | undefined;
-            if (idType === 2) {
-              const su = gd.superUniques?.[String(monId)];
-              monClass = su?.class;
-              demonId = String(monId);
-              monsterType = 'super';
-            } else if (idType === 1) {
-              const entry = Object.entries(gd.monsters).find(
-                ([, v]) => (v as { hcidx?: number })?.hcidx === monId,
-              );
-              monClass = entry?.[0];
-              demonId = monClass;
-              monsterType = monType === 12 ? 'champion' : 'unique';
-            }
-            if (monClass && demonId && monsterType) {
-              result.bindDemon = {
-                revive: 'bind',
-                id: demonId,
-                monsterType,
-                monster: monClass,
-                area,
-                level,
-                unit: `bind_${monClass}`,
-                group: 'binddemon',
-                minion: monType !== 16,
-                skill: '382',
-              };
-              const presetMods = idType === 2
-                ? [
-                  (gd.uniqueMods?.[(gd.superUniques?.[String(monId)] as { mod1?: string })?.mod1 ?? ''] as { uniquemod?: string } | undefined)?.uniquemod,
-                  (gd.uniqueMods?.[(gd.superUniques?.[String(monId)] as { mod2?: string })?.mod2 ?? ''] as { uniquemod?: string } | undefined)?.uniquemod,
-                  (gd.uniqueMods?.[(gd.superUniques?.[String(monId)] as { mod3?: string })?.mod3 ?? ''] as { uniquemod?: string } | undefined)?.uniquemod,
-                ].filter(Boolean)
-                : [];
-              const allMods = new Set<string>();
-              for (let m = 0; m < 8; m++) {
-                const um = (gd.uniqueMods?.[String(reader.read8())] as { uniquemod?: string } | undefined)?.uniquemod;
-                if (um) allMods.add(um);
-              }
-              const demonMods = [...allMods].filter(m => !presetMods.includes(m));
-              if (demonMods.length) result.bindDemon.mods = demonMods;
-            }
-          }
-        }
-      } catch {
-        // best-effort; non-critical
-      }
-    }
-  } catch (e) {
-    const warning = `Item parsing error (some items may be missing): ${(e as Error).message}`;
-    warnings.push(warning);
+  const places = [result.items, result.inventory, result.cube, result.stash, result.belt];
+  for (const [place, slot, id] of p.slots) {
+    if (place === 0) result.items[bodyMap[slot]!] = id;
+    else if (place < 5) (places[place] as (number | string)[])[slot] = id;
   }
+  if (p.corpse) result.rawCorpse = bytes(...p.corpse);
+  if (p.mercSection) {
+    result.mercItems = {};
+    for (const [place, slot, id] of p.slots) {
+      if (place === 5) result.mercItems[bodyMap[slot]!] = id;
+    }
+  }
+  if (p.ironGolem !== null) result.ironGolem = p.ironGolem;
+  if (p.golem) result.rawGolem = bytes(...p.golem);
+  if (p.extra !== null) result.extraSections = bytes(p.extra);
+  if (p.bindDemon) result.bindDemon = p.bindDemon;
 
+  const coverage = doc.coverage;
   return {
     profile: result as D2SCharacterProfile,
-    items: ctx.items,
-    warnings,
-    lists,
-    demons,
-    coverage: d2sCoverage(data, result, lists, traces, demons, warnings, prefixComplete, layout.flags, layout.merc),
+    items: dictOf(items, doc.traces),
+    warnings: doc.warnings,
+    lists: doc.lists,
+    demons: doc.demons,
+    coverage: { ...coverage, items: entriesOf(coverage.items, items, doc.traces) },
   };
-}
-
-// ─── Section search after a broken item list ────────────────────
-
-const u16 = (data: Uint8Array, at: number): number => data[at] | (data[at + 1] << 8);
-
-/** "JM" and a corpse count, then the hireling header (or EOF) without a corpse, else the corpse's "JM" list 12 bytes on. */
-const isCorpseSection = (data: Uint8Array, at: number): boolean => u16(data, at) === 0x4d4a && (u16(data, at + 2) === 0
-  ? at + 4 === data.length || u16(data, at + 4) === 0x666a
-  : u16(data, at + 16) === 0x4d4a);
-
-/** "jf", then the hireling's "JM" list or the golem header "kf"; EOF too, where a classic character ends after its corpses. */
-const isHirelingSection = (data: Uint8Array, at: number): boolean => at === data.length
-  || (u16(data, at) === 0x666a && (at + 2 === data.length || u16(data, at + 2) === 0x4d4a || u16(data, at + 2) === 0x666b));
-
-/** "kf" and the presence byte 0 or 1. */
-const isGolemSection = (data: Uint8Array, at: number): boolean => u16(data, at) === 0x666b && data[at + 2] <= 1;
-
-/** Seek to the first byte at or after `from` where `isStart` sees the next section. */
-function resync(reader: BinaryReader, from: number, isStart: (data: Uint8Array, at: number) => boolean, section: string): void {
-  for (let at = from; at <= reader.buffer.length; at++) {
-    if (isStart(reader.buffer, at)) return reader.seek(at);
-  }
-  throw Error(`${section} section not found after the truncated item list`);
 }

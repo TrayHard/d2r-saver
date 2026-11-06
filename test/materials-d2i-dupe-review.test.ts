@@ -93,7 +93,7 @@ describe('materials edit, review: nothing outside the authoritative counter ever
       }
     }
     expect(edits).toBe((8 + 5 + 56) * 100);
-  });
+  }, 30_000); // 6,900 edits, each walked and verified twice: seconds, not the 5 s default
 
   it('never writes above the cap or below zero, whatever the starting quantity', () => {
     const report = readMaterialsD2I(seller, gd, { sectorOffset: 0 });

@@ -9,12 +9,11 @@
  * for insertion into any save file.
  */
 
-import { BinaryReader } from '../core/binary-reader.js';
 import { GameData } from '../game-data/game-data.js';
 import { TOKEN_PREFIX } from '../types/constants.js';
 import type { BinaryParsedItem } from '../formats/item-parser.js';
 import { writeItem, type ItemWriteLocation } from '../formats/item-writer.js';
-import { createItemParser } from '../formats/item-parser.js';
+import { walkItemList } from '../formats/item-walker.js';
 
 // ─── Public API ─────────────────────────────────────────────────
 
@@ -61,7 +60,7 @@ export function deserializeItem(
     throw new Error('INVALID_TOKEN: payload too short');
   }
 
-  // Parse item using a JM-wrapped buffer so createItemParser works
+  // Parse item using a JM-wrapped buffer so the list walker reads it
   // We wrap: JM header (2 bytes) + count=1 (2 bytes) + item bytes
   const wrapped = new Uint8Array(4 + bytes.length);
   wrapped[0] = 0x4a; // 'J'
@@ -70,15 +69,10 @@ export function deserializeItem(
   wrapped[3] = 0;
   wrapped.set(bytes, 4);
 
-  const reader = new BinaryReader(wrapped);
-  const ctx = createItemParser(reader, gd);
+  // The zeroed location matches no slot, so the items are taken from the parser's dictionary.
+  const { items } = walkItemList(wrapped, 0, gd);
 
-  // Parse items — the handler may not fire because we use a zeroed location
-  // (location=0, storage=0), which doesn't match any known slot.
-  // Instead, we collect items directly from ctx.items after parsing.
-  ctx.parseItemList(() => {});
-
-  const allParsed = Object.values(ctx.items);
+  const allParsed = Object.values(items);
   if (allParsed.length === 0) {
     throw new Error('INVALID_TOKEN: no item parsed from token');
   }
@@ -88,7 +82,7 @@ export function deserializeItem(
 
   return {
     item: mainItem,
-    allItems: ctx.items,
+    allItems: items,
   };
 }
 

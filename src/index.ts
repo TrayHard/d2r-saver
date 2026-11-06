@@ -50,6 +50,7 @@ import {
   type WalkResult,
 } from './formats/item-walker.js';
 import { buildRawGrid } from './inventory/raw-grid.js';
+import { ready } from './engine/engine.js';
 import type { GridSize } from './inventory/dimensions.js';
 import {
   extractInPlaceD2I,
@@ -76,6 +77,7 @@ import {
 // ─── Re-exports ─────────────────────────────────────────────────
 
 export { GameData } from './game-data/game-data.js';
+export { ready } from './engine/engine.js';
 export { D2RSaverError, ErrorCode } from './types/errors.js';
 export type { DetectedFormat } from './formats/detect.js';
 export type { D2SReadResult, D2SCharacterProfile, D2SItemLists } from './formats/d2s-reader.js';
@@ -236,12 +238,13 @@ export class D2RSaver {
    * @param options  Paths to data.json and strings.json.
    */
   static async create(options: D2RSaverCreateOptions): Promise<D2RSaver> {
-    const gd = await GameData.fromFile(options.dataPath, options.stringsPath);
+    const [gd] = await Promise.all([GameData.fromFile(options.dataPath, options.stringsPath), ready()]);
     return new D2RSaver(gd);
   }
 
   /**
-   * Create a D2RSaver from pre-parsed JSON objects.
+   * Create a D2RSaver from pre-parsed JSON objects. On a browser's main thread, `await ready()`
+   * before the first read: the WebAssembly reader cannot compile synchronously there.
    *
    * @param rawData   Parsed data.json content.
    * @param locale    Parsed strings.json content.
