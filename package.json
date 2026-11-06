@@ -47,19 +47,20 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "node scripts/build-wasm.mjs && tsc",
     "build:data": "tsx src/data-parser/index.ts",
     "build:fixtures": "tsx test/fixtures/build-shared-stash-complete.ts",
     "build:fixtures:materials": "tsx test/fixtures/build-materials-fixtures.ts",
-    "prepare": "tsc",
+    "prepare": "npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
     "probe": "npm run build && node test/probe/inplace-probe.mjs",
     "lint": "eslint src --ext .ts",
-    "prepublishOnly": "npm test && npm run build",
+    "prepublishOnly": "npm run build && npm test",
     "release:patch": "npm version patch -m \"release: %s\" && npm publish && git push --follow-tags",
     "release:minor": "npm version minor -m \"release: %s\" && npm publish && git push --follow-tags",
-    "release:major": "npm version major -m \"release: %s\" && npm publish && git push --follow-tags"
+    "release:major": "npm version major -m \"release: %s\" && npm publish && git push --follow-tags",
+    "build:wasm": "node scripts/build-wasm.mjs"
   },
   "devDependencies": {
     "@types/node": "^22.19.13",

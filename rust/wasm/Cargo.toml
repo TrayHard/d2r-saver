@@ -1,0 +1,13 @@
+[package]
+name = "d2r-saver-wasm"
+version = "1.0.0"
+edition = "2021"
+description = "WebAssembly face of d2r-saver-core for the d2r-saver npm package"
+license = "MIT"
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+d2r-saver-core = { path = "../core" }

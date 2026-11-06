@@ -89,3 +89,6 @@ Thumbs.db
 # Explicit source fixtures are reviewed data, not personal saves or live keys.
 !**/__tests__/read-test-cert.pem
 !**/__tests__/read-test-key.pem
+
+# The WebAssembly read core, embedded by scripts/build-wasm.mjs from rust/wasm.
+src/engine/wasm-module.ts
