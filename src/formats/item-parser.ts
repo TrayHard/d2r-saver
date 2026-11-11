@@ -214,6 +214,14 @@ export interface BinaryParsedItem {
    * depend on it; in-place quantity patching of materials tabs does.
    */
   quantityField?: { placement: 'post-stats' | 'pre-stats'; flagBit: number; width: 8 | 9 };
+  /**
+   * Bit offset, from the first bit of the item, where the 4-bit socket count sits when the
+   * socketed flag is set, or would sit after the flag is set (0.4.11). Set for extended items
+   * only. In-place socketing (`socketItemInPlace`) inserts the count here.
+   */
+  socketsFieldBit?: number;
+  /** Bits of the item's own content before the zero padding to a byte boundary (0.4.11). */
+  contentBits?: number;
   /** Difficulty of a compact quest item with `questdiffcheck`; `undefined` for other items. */
   questDifficulty?: number;
   /** Personalized name string (when personalized flag set). */
@@ -673,6 +681,7 @@ export function createItemParser(
         // legacy fixture path — V105 never enters here
       }
 
+      item.socketsFieldBit = reader.bitpos - startBit;
       if (socketed) item.sockets = reader.bits(4);
 
       // ── Set flags ─────────────────────────────────────────
@@ -838,6 +847,7 @@ export function createItemParser(
       item.quantityField = { placement: 'post-stats', flagBit: postQuantityFlagBit, width: 8 };
     }
 
+    item.contentBits = reader.bitpos - startBit;
     reader.align();
     item.binaryOffset!.end = reader.bitpos;
     // The item's own bytes end here; the socketed children follow and extend `fullByteRange`.

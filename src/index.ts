@@ -198,6 +198,30 @@ export type {
   EditMaterialsD2IResult,
 } from './operations/materials-d2i.js';
 
+// ─── Larzuk's socket reward (0.4.11) ────────────────────────────
+// Read and use the "Siege on Harrogath" reward of a character, plan Larzuk's socket count and
+// give an item its sockets in place. Each edit proves that it changed only what it declares.
+export {
+  readLarzukRewards,
+  consumeLarzukReward,
+  maxSocketsFor,
+  planLarzukSockets,
+  rollLarzukSockets,
+  socketItemInPlace,
+  readLarzukItemFacts,
+  D2S_QUEST_TABLE_OFFSETS,
+  SIEGE_ON_HARROGATH_OFFSET,
+} from './operations/larzuk.js';
+export type {
+  LarzukDifficulty,
+  LarzukRewardState,
+  LarzukReward,
+  ConsumeLarzukRewardResult,
+  LarzukRefusal,
+  LarzukSocketPlan,
+  LarzukItemFacts,
+} from './operations/larzuk.js';
+
 // ─── D2RSaver facade ────────────────────────────────────────────
 
 /** Options for `D2RSaver.create()`. */
