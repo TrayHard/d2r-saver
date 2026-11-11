@@ -17,6 +17,7 @@ import {
 } from '../src/operations/larzuk.js';
 import { D2RSaverError, ErrorCode } from '../src/types/errors.js';
 import { writeItem } from '../src/formats/item-writer.js';
+import { computeChecksum } from '../src/core/checksum.js';
 import type { BinaryParsedItem } from '../src/formats/item-parser.js';
 import * as root from '../src/index.js';
 
@@ -48,7 +49,22 @@ describe('readLarzukRewards / consumeLarzukReward', () => {
     ]);
   });
 
-  it('uses a reward like the game: low bits 0x021, quest-log bits kept, only the word and the checksum change', () => {
+  it('matches every quest word the real game wrote after a Larzuk use on the home stand', () => {
+    // Pre-state → word in the save after one real game session with the socket used (2026-11-12).
+    const measured: [number, number][] = [
+      [0x8022, 0x8021], [0x800a, 0x8021], [0x8002, 0x8021], [0x9022, 0x9021], [0x0002, 0x8021], [0x7ffe, 0x9ffd],
+    ];
+    for (const [pre, game] of measured) {
+      const file = fixture('WarlockTest.d2s');
+      file[483] = pre & 0xff;
+      file[484] = pre >>> 8;
+      const sum = computeChecksum(file);
+      file[12] = sum & 0xff; file[13] = (sum >>> 8) & 0xff; file[14] = (sum >>> 16) & 0xff; file[15] = sum >>> 24;
+      expect(consumeLarzukReward(file, 0).after.toString(16)).toBe(game.toString(16));
+    }
+  });
+
+  it('uses a reward like the game, only the word and the checksum change', () => {
     const before = fixture('WarlockTest.d2s');
     const { bytes, offset, before: was, after } = consumeLarzukReward(before, 0);
     expect([offset, was, after]).toEqual([483, 0x8002, 0x8021]);

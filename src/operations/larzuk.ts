@@ -5,12 +5,12 @@
  *
  * - `readLarzukRewards` / `consumeLarzukReward`: the quest word of "Siege on Harrogath" lives at
  *   byte 70 of each 96-byte difficulty table of a v105 `.d2s` (tables at 413, 509 and 605). Bit 0
- *   is "reward granted", bit 1 "reward pending". Using the reward leaves the word as the game
- *   leaves it after a real visit to Larzuk: the low 12 bits become 0x021 (granted, plus the
- *   "talked to Larzuk" custom flag the game sets on that visit; "pending" and the progress flags
- *   such as "left town" are gone), the quest-log bits 12–15 are kept. Every used reward in the
- *   real saves we checked reads 0x?021; `ACT5Q1_SetRewardGranted` alone sets bit 0 and clears
- *   bit 1. Only the two bytes of that word and the file checksum change.
+ *   is "reward granted", bit 1 "reward pending". Using the reward leaves the word as one game
+ *   session with a visit to Larzuk leaves it, as measured with the real client on the home stand
+ *   (2026-11-12, 10 uses): the socket action sets bit 0 and clears bit 1; Larzuk's speech, which
+ *   plays while bit 5 is clear, sets bit 5 and clears bit 3; every session sets bit 15 and clears
+ *   bits 13–14. Measured: 0x8022, 0x800a, 0x8002 → 0x8021; 0x9022 → 0x9021; 0x0002 → 0x8021;
+ *   0x7FFE → 0x9FFD. Only the two bytes of that word and the file checksum change.
  * - `planLarzukSockets` / `rollLarzukSockets`: how many sockets Larzuk gives. Low, normal and
  *   superior items get the maximum the base and the item level allow; magic items 1–2 at random
  *   (capped by that maximum); set, rare, unique and crafted items one socket. The maximum is the
@@ -39,10 +39,21 @@ const QUEST_SECTION_OFFSET = 403;
 const CHECKSUM_OFFSET = 12;
 const QFLAG_REWARD_GRANTED = 0x0001;
 const QFLAG_REWARD_PENDING = 0x0002;
-/** Quest-log flags (update log, primary goal, completed now, completed before) kept as they are. */
-const QUEST_LOG_BITS = 0xf000;
-/** Low bits of a used Larzuk reward in real saves: granted + the "talked to Larzuk" flag. */
-const USED_REWARD_LOW_BITS = 0x0021;
+/** Set by every game session ("completed before"). */
+const QFLAG_COMPLETED_BEFORE = 0x8000;
+/** Cleared by every game session ("primary goal done", "completed now"). */
+const QFLAG_SESSION_ONLY = 0x6000;
+/** Set by Larzuk's speech ("talked to Larzuk"). */
+const QFLAG_LARZUK_SPOKE = 0x0020;
+/** Cleared by Larzuk's speech. */
+const QFLAG_LEFT_TOWN = 0x0008;
+
+/** The quest word after one game session in which the reward is used at Larzuk. */
+function usedRewardFlags(flags: number): number {
+  let after = (flags | QFLAG_COMPLETED_BEFORE | QFLAG_REWARD_GRANTED) & ~(QFLAG_SESSION_ONLY | QFLAG_REWARD_PENDING);
+  if (!(flags & QFLAG_LARZUK_SPOKE)) after = (after & ~QFLAG_LEFT_TOWN) | QFLAG_LARZUK_SPOKE;
+  return after & 0xffff;
+}
 
 /** 0 normal, 1 nightmare, 2 hell. */
 export type LarzukDifficulty = 0 | 1 | 2;
@@ -134,7 +145,7 @@ export function consumeLarzukReward(d2s: Uint8Array, difficulty: LarzukDifficult
       `Larzuk reward of difficulty ${difficulty} is ${reward.state} (flags 0x${reward.flags.toString(16)})`,
     );
   }
-  const after = (reward.flags & QUEST_LOG_BITS) | USED_REWARD_LOW_BITS;
+  const after = usedRewardFlags(reward.flags);
   const bytes = new Uint8Array(d2s);
   bytes[reward.offset] = after & 0xff;
   bytes[reward.offset + 1] = after >>> 8;
@@ -199,7 +210,7 @@ export function planLarzukSockets(gd: GameData, item: LarzukItemFacts): LarzukSo
   if (item.ear) return { eligible: false, reason: 'ear' };
   if (item.simple) return { eligible: false, reason: 'simple-item' };
   if (item.socketed) return { eligible: false, reason: 'already-socketed' };
-  // shortcut: unidentified items are refused although the game may accept them; check on the stand.
+  // The real game refuses too: Larzuk takes an unidentified item but "Add sockets" hands it back.
   if (item.unidentified) return { eligible: false, reason: 'unidentified' };
   const max = maxSocketsFor(gd, item.base, item.ilvl);
   if (max === null) return { eligible: false, reason: 'unknown-base' };
