@@ -111,3 +111,5 @@ Colossal Jewel	cjwl	jewl		0	0					0	0	0	0	1	1	0	0	0	25	0	40	0	0	3			6	invjw1	inv
 Crafted Sunder Charm	csch	char		0	0					0	0	0	0	1		0	0	0	25	0	40	0	0	3			3	invp10	invp11	invp12				misc	0
 Bags	BAG			0	0					0	0	0	0			0	0	0	25	0	40	0	0	3			0							misc	0
 Gem Bag	GBAG	BAG		0	0					0	0	0	0			0	0	0	25	0	40	0	0	3			0							misc	0
+Bartuc Armor Carrier	bcar	misc		0	1	rrin	lrin			0	0	0	0	0	0	1	0	0	25	0	40	0	0	0			0								0
+Bartuc Portal Timer Carrier	bpam	amul		0	1	neck	neck			0	0	0	0	0	0	1	0	0	25	0	40	0	0	0			0								0

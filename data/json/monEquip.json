@@ -356,9 +356,6 @@
     "mod1": 3
   },
   {
-    "monster": "*end*  do not remove"
-  },
-  {
     "monster": "player99hc1",
     "item1": "p04",
     "loc1": "rarm",
@@ -376,7 +373,7 @@
   },
   {
     "monster": "player99hc1",
-    "item1": "p03",
+    "item1": "uap",
     "loc1": "head",
     "oninit": 1,
     "level": 0,
@@ -392,7 +389,7 @@
   },
   {
     "monster": "player99sc1",
-    "item1": "oba",
+    "item1": "scy",
     "loc1": "rarm",
     "oninit": 1,
     "level": 0,
@@ -400,7 +397,7 @@
   },
   {
     "monster": "player99sc1",
-    "item1": "p05",
+    "item1": "xea",
     "loc1": "tors",
     "oninit": 1,
     "level": 0,
@@ -412,12 +409,1287 @@
     "loc1": "head",
     "oninit": 1,
     "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1ama",
+    "item1": "ama",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1ama",
+    "item1": "uld",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc1ama",
+    "item1": "ci3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc1ama",
+    "item1": "p01",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
     "mod1": 2
   },
   {
-    "monster": "player99sc1",
-    "item1": "p01",
+    "monster": "player99sc1nec",
+    "item1": "7gw",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1nec",
+    "item1": "uea",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1nec",
+    "item1": "xh9",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc1nec",
+    "item1": "ne9",
     "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1pal",
+    "item1": "7sc",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1pal",
+    "item1": "xea",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1pal",
+    "item1": "uap",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1pal",
+    "item1": "pa3",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1bar",
+    "item1": "7wa",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1bar",
+    "item1": "utp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1bar",
+    "item1": "urn",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1bar",
+    "item1": "7wa",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1dru",
+    "item1": "crs",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1dru",
+    "item1": "utp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1dru",
+    "item1": "drf",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1dru",
+    "item1": "ush",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1ass",
+    "item1": "7lw",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1ass",
+    "item1": "xrs",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc1ass",
+    "item1": "p06",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc1ass",
+    "item1": "7lw",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1nec",
+    "item1": "7dg",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1nec",
+    "item1": "utp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1nec",
+    "item1": "ne3",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1pal",
+    "item1": "p04",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1pal",
+    "item1": "xlt",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1pal",
+    "item1": "xhm",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc1pal",
+    "item1": "uit",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1dru",
+    "item1": "crs",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1dru",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1dru",
+    "item1": "dr3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1dru",
+    "item1": "tow",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1ama",
+    "item1": "amf",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1ama",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1ama",
+    "item1": "kit",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1bar",
+    "item1": "9fc",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1bar",
+    "item1": "uea",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1bar",
+    "item1": "ba3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc1bar",
+    "item1": "9fc",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc1ass",
+    "item1": "7qr",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc1ass",
+    "item1": "ucl",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc1ass",
+    "item1": "xh9",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc1ass",
+    "item1": "7ar",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2nec",
+    "item1": "gis",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2nec",
+    "item1": "utu",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2nec",
+    "item1": "ci2",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2pal",
+    "item1": "7ws",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2pal",
+    "item1": "xlt",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2pal",
+    "item1": "xhm",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc2pal",
+    "item1": "upk",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2ama",
+    "item1": "amf",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2ama",
+    "item1": "p26",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2ama",
+    "item1": "ci3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2ama",
+    "item1": "uit",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2bar",
+    "item1": "p16",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2bar",
+    "item1": "xul",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2bar",
+    "item1": "baa",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2bar",
+    "item1": "p04",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2dru",
+    "item1": "wsp",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2dru",
+    "item1": "ucl",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2dru",
+    "item1": "dre",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2dru",
+    "item1": "upk",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc2ass",
+    "item1": "9tw",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2ass",
+    "item1": "xhn",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc2ass",
+    "item1": "uhm",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc2ass",
+    "item1": "9tw",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2sor",
+    "item1": "oba",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2sor",
+    "item1": "uui",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2sor",
+    "item1": "uap",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc2sor",
+    "item1": "uit",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2bar",
+    "item1": "7cr",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2bar",
+    "item1": "ucl",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2bar",
+    "item1": "xhm",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc2bar",
+    "item1": "7cr",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2pal",
+    "item1": "wsp",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2pal",
+    "item1": "p12",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2pal",
+    "item1": "p11",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2pal",
+    "item1": "p13",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2ama",
+    "item1": "amf",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc2ama",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2ama",
+    "item1": "ci3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc2ama",
+    "item1": "xow",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2nec",
+    "item1": "7br",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2nec",
+    "item1": "utp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2dru",
+    "item1": "crs",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2dru",
+    "item1": "xea",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc2dru",
+    "item1": "dr9",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2dru",
+    "item1": "xow",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2ass",
+    "item1": "9tw",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2ass",
+    "item1": "ucl",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc2ass",
+    "item1": "xh9",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99hc2ass",
+    "item1": "9tw",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc2sor",
+    "item1": "p10",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3nec",
+    "item1": "9gw",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3nec",
+    "item1": "p24",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3nec",
+    "item1": "p23",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3nec",
+    "item1": "ne3",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3pal",
+    "item1": "7cr",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3pal",
+    "item1": "ung",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3pal",
+    "item1": "xsk",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3pal",
+    "item1": "pae",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3ama",
+    "item1": "amf",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3ama",
+    "item1": "p26",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3ama",
+    "item1": "ci3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3ama",
+    "item1": "p27",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3bar",
+    "item1": "7gs",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3bar",
+    "item1": "ful",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3bar",
+    "item1": "bae",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3dru",
+    "item1": "crs",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3dru",
+    "item1": "ucl",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3dru",
+    "item1": "dr8",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc3dru",
+    "item1": "uow",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3ass",
+    "item1": "72a",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3ass",
+    "item1": "ult",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3ass",
+    "item1": "xhm",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc3ass",
+    "item1": "uow",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3sor",
+    "item1": "sbw",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3bar",
+    "item1": "7wa",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3bar",
+    "item1": "xng",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3bar",
+    "item1": "bae",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3bar",
+    "item1": "7wa",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3pal",
+    "item1": "7cr",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3pal",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3pal",
+    "item1": "uap",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3pal",
+    "item1": "pa4",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3ama",
+    "item1": "7la",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3ama",
+    "item1": "ult",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3ama",
+    "item1": "ci2",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3nec",
+    "item1": "7cr",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3nec",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3nec",
+    "item1": "uit",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3dru",
+    "item1": "clb",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3dru",
+    "item1": "buc",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3ass",
+    "item1": "6cs",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3ass",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3ass",
+    "item1": "uap",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3sor",
+    "item1": "ob1",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3sor",
+    "item1": "xea",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3sor",
+    "item1": "ci3",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3sor",
+    "item1": "uit",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99sc3war",
+    "item1": "p28",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3war",
+    "item1": "xla",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99sc3war",
+    "item1": "uhm",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 5
+  },
+  {
+    "monster": "player99sc3war",
+    "item1": "bsh",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "player99hc3war",
+    "item1": "kri",
+    "loc1": "rarm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3war",
+    "item1": "xtp",
+    "loc1": "tors",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3war",
+    "item1": "usk",
+    "loc1": "head",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "player99hc3war",
+    "item1": "wac",
+    "loc1": "larm",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 7
+  },
+  {
+    "monster": "*end*  do not remove"
+  },
+  {
+    "monster": "bartuc_the_bloody",
+    "item1": "bba",
+    "loc1": "rrin",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_the_bloody",
+    "item1": "bca",
+    "loc1": "lrin",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_the_bloody",
+    "item1": "bpc",
+    "loc1": "neck",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_phase_two",
+    "item1": "bba",
+    "loc1": "rrin",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_phase_two",
+    "item1": "bca",
+    "loc1": "lrin",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_phase_two",
+    "item1": "bpc",
+    "loc1": "neck",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_phase_three",
+    "item1": "bba",
+    "loc1": "rrin",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_phase_three",
+    "item1": "bca",
+    "loc1": "lrin",
+    "oninit": 1,
+    "level": 0,
+    "mod1": 2
+  },
+  {
+    "monster": "bartuc_phase_three",
+    "item1": "bpc",
+    "loc1": "neck",
     "oninit": 1,
     "level": 0,
     "mod1": 2

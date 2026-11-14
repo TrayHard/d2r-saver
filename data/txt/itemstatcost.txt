@@ -25,7 +25,7 @@ maxdamage	22		1	16											94	16		7	0	8	0											1					126	19		ModStr1f	Mod
 secondary_mindamage	23		1	16											97	15		6	0	7	0											1					124	19		ModStr1g	ModStr1g										0
 secondary_maxdamage	24		1	16											85	11		7	0	8	0											1					123	19		ModStr1f	ModStr1f										0
 damagepercent	25		1	12											45	40		8	0	8	0											1					123	19		ModitemDamPer	ModitemDamPer										0
-manarecovery	26																	8	0	9	250																56	19		ManaRepPlus	ManaRepNeg									2	0
+manarecovery	26																	8	0	9	250																56	29		ManaRepPlus	ManaRepNeg									2	0
 manarecoverybonus	27		1	16														8	0	8	0																52	19		ModStr4g	ModStr4g									2	0
 staminarecoverybonus	28		1	16														8	0	8	0																48	19		ModStr3v	ModStr3v									2	0
 lastexp	29			32																																															0
@@ -78,8 +78,8 @@ item_maxdurability_percent	75		1	7											117	10		7	20	7	20			13			maxdurabil
 item_maxhp_percent	76		1	16											32093	204		6	10	6	10			11			maxhp										58	19		ModStr2g	ModStr2g										0
 item_maxmana_percent	77		1	16											56452	204		6	10	6	10			11			maxmana										54	29		ModStr2h	ModStr2hNegative										0
 item_attackertakesdamage	78		1	16							1				112	128		7	0	7	0												attackedinmelee	6			13	19		ModStr1v	ModStr1v									2	0
-item_goldbonus	79		1	10											187	34		9	100	9	100																10	19		ModStr1w	ModStr1w									2	0
-item_magicbonus	80		1	9											577	102		8	100	8	100																8	19		ModStr1x	ModStr1x									2	0
+item_goldbonus	79		1	14											187	34		9	100	9	100																10	19		ModStr1w	ModStr1w									2	0
+item_magicbonus	80		1	14											577	102		8	100	8	100																8	19		ModStr1x	ModStr1x									2	0
 item_knockback	81		1	8							1				105	0		7	0	7	0											1	domeleedamage	7	domissiledamage	7	76	19		ModStr1y	ModStr1y									2	0
 item_timeduration	82		1	10														9	20	9	20																														0
 item_addclassskills	83		1	4	3						1				49523	1560		3	0	3	0	3															150	13		ModStr3a	ModStr3a										0
@@ -97,7 +97,7 @@ item_levelreqpct	94																	7	20	7	64			13			item_levelreq														
 lastblockframe	95																	6	20																																0
 item_fastermovevelocity	96	1	1	9											4083	156		7	20	7	20																148	19		ModStr4s	ModStr4s									2	0
 item_nonclassskill	97		1	15	9						1			1	181	327		7	20	6	0	9															81	28		ItemModifierNonClassSkill	ItemModifierNonClassSkill										0
-state	98	1		1	8						1				415	64		6	20	1		8																													0
+state	98	1		1	9						1				415	64		6	20	1		8																													0
 item_fastergethitrate	99	1	1	9											1065	72		7	20	7	20																139	19		ModStr4p	ModStr4p									2	0
 monster_playercount	100																	7	20																																0
 skill_poison_override_length	101			8														6	20																																0
@@ -349,7 +349,7 @@ passive_mastery_throw_dmg	346		1	11	16													8	0	8	0																						
 passive_mastery_throw_crit	347		1	9	16													8	0	8	0																														0
 passive_weaponblock	348		1	9	16													8	0	8	0																														0
 passive_summon_resist	349		1	9														8	0	8	0																														0
-modifierlist_skill	350			9																																															0
+modifierlist_skill	350			11																																															0
 modifierlist_level	351			8																																															0
 last_sent_hp_pct	352		1	8																																															0
 source_unit_type	353			5																																															0
@@ -471,3 +471,10 @@ item_elemskill_fire	468		1	3	3						1				76	1024		4	0	3	0	3															157	19
 item_elemskill_magic	469		1	3	3						1				76	1024		4	0	3	0	3															157	19		ModStrMagicskills	ModStrMagicskills										0
 plus_echo	470			16														10	10	8	5																157	19		PlusEchoesskills	PlusEchoesskills										0
 plus_mirror	471			16														10	10	8	5																157	19		PlusMirroredskills	PlusMirroredskills										0
+bartuc_cyclone_remaining	472		1	32																																															0
+bartuc_cyclone_max	473		1	32																																															0
+abyss_nocd	474			2																1	0																180	19		ModAbsoluteAbyssPower	ModAbsoluteAbyssPower										0
+apocalypse_dot	475	1		2																1	0																179	19		ModAbsoluteApocalypsePower	ModAbsoluteApocalypsePower										0
+miasma_chain_bonus	476			8																8	0																178	19		MiasmaChainModifier	MiasmaChainModifier										0
+demon_summon_bonus	477			8																8	0																177	19		DemonSummonModifier	DemonSummonModifier										0
+bartuc_pet_final_hp	478		1	22										4										7			maxhp																								0

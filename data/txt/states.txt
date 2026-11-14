@@ -58,7 +58,7 @@ ironmaiden	55						1	1																																			curseironmaiden					cur
 terror	56						1	1																																			curseterror					curse_hit														necromancer_taint									1		0
 attract	57						1	1																			1																curseattract					curse_hit														necromancer_attract											0
 lifetap	58						1	1																																			cursereversevampire					curse_hit														necromancer_reversevampire											0
-confuse	59						1	1																			1																curseconfuse					curse_hit														necromancer_confuse											0
+confuse	59	8					1	1																			1																curseconfuse					curse_hit														necromancer_confuse											0
 decrepify	60						1	1													1																						cursedecrepify					curse_hit		skill_decrepify												necromancer_decrepify									1		0
 lowerresist	61						1	1															1	1	1	1																	curselowerresist					curse_hit		lightresist																							0
 openwounds	62								1																										1																																	85					0
@@ -175,7 +175,7 @@ restinpeace	172																												1	1				1								1									17		redempt
 corpseexp	173																												1	1	1			1								1									18		corpseexplosion									necromancer_corpseexp_1											0
 whirlwind	174																																										whirlwind																														0
 fullsetgeneric	175																																						1				aura_fanatic																														0
-monsterset	176	3			1						1																												1									fire_cast_2																1	742								0
+monsterset	176	3			1						1																												1									fire_cast_2																1	951								0
 delerium	177	3			1					1	1																																					teleport	teleport															1	212								0
 antidote	178																		1																																																						0
 thawing	179																1																																																								0
@@ -191,17 +191,275 @@ impale	188																																																																						
 desecrated	189																												1	1																																											0
 markbear	190	4																																					1				bloodlust_state																														0
 markwolf	191	5										1																											1				impregnated																														0
-obelisk	192																																										valkyrie																														0
-uber	193																												1	1																											100	73	255	255	255												0
-cowkingrset	194	3			1					1	1		1	1																											1										14											druid_morph	druid_morph	1	743								0
-diablotr	195	3			1					1	1																												1									fire_cast_2																1	243								0
-vengeance	196																																										multigleam																														0
-dummystate	197																																																																								0
-playerpalstate	198				1						1																																																					2	3								0
-playersorstate	199				1						1																																																					2	1								0
-playerdrustate	200				1						1																																																					2	5								0
-playerassstate	201				1						1																																																					2	6								0
-playerbarstate	202				1						1																																																					2	4								0
-playernecstate	203				1						1																																																					2	2								0
-playeramastate	204				1						1																																																					2	0								0
-rednew	205																																										charge																														0
+sigillethargy	192																																															curse_hit									90	103				Warlock_Skill_Seal_Lethargy_Hit											0
+sigilrancor	193	8																																														curse_hit									90	106				Warlock_Skill_Seal_Rancor_Hit											0
+sigildeath	194																																															curse_hit									90	107				Warlock_Skill_Seal_Death_Hit											0
+bloodoath	195			1																																																																					0
+demonic_mastery	196			1																																																																					0
+levitate_mastery	197																																																																								0
+hexbane	198	6																																														hex_enchant							mele																		0
+hexbanedebuff	199	7				1	1																																				hexbanedebuff					curse_hit														Warlock_Skill_Hex_Bane_Hit											0
+hexsiphon	200	6										1																																				hex_enchant							mele																		0
+hexsiphondebuff	201	7				1	1																																				hexsyphondebuff					curse_hit														Warlock_Skill_Hex_Siphon_Hit											0
+hexpurge	202	6										1																																				hex_enchant							mele																		0
+mindbarrier	203	1																																									bladeshield																														0
+shadow_mastery	204			1																																																																					0
+sigil	205			1																																																																					0
+psychicward	206	1																																									psychicward																														0
+bind_demon	207																												1	1				1									warlockdemonground	warlockdemontorso							19						70	130															0
+consume	208	9																																									warlockconsume																														0
+advancedstash	209																																																																								0
+healthlink	210																																										healthlink																														0
+engorge	211																																										engorgestate																														0
+death_mark	212																																										death_mark																			Warlock_Skill_Death_Mark_01											0
+healthlinkcaster	213			1																																																																					0
+warlockdemonground	214					1																																					warlockdemonground														70	130															0
+warlockdemontorso	215					1																																					warlockdemontorso														70	130															0
+skill_channeling	216			1																																																																					0
+hexpurgedebuff	217	7				1	1																																				hexpurgedebuff					curse_hit														Warlock_Skill_Hex_Purge_Hit											0
+chroniclebacklight	218																											1															chronicle_backlight																														0
+chroniclefootprints	219																											1																																													0
+chronicleportal	220																											1																						customization_index																							0
+eldritchblastperiodic	221								1																																		eldritchblastperiodic																									107					0
+lightningenchant	222											1									1																											lightningenchant		skill_enchant					weap	cred																	0
+coldenchant	223											1									1																											coldenchant		skill_enchant					weap	cred																	0
+talicfirepierce	224					1																	1																				talicfirepierce																														0
+madawclightpierce	225					1																		1																			madawclightpierce																														0
+korliccoldpierce	226					1																			1																		korliccoldpierce																														0
+bind_demon_underling	227																												1	1				1																	19						70	130															0
+herald	228																																										herald																														0
+apocalypse	229																																																																								0
+missilelimit	230																																																																								0
+primeevil_threat	231																																																																								0
+bartuc_bonearmor_generic_r3	232																																						1				bartuc_bonearmor_generic_r3					bonearmor_cast																									0
+bartuc_cyclonearmor_generic_r3	233																																						1				bartuc_cyclonearmor_generic_r3																														0
+UnusedState5	234																																																																								0
+UnusedState6	235																																																																								0
+UnusedState7	236																																																																								0
+UnusedState8	237																																																																								0
+UnusedState9	238																																																																								0
+UnusedState10	239																																																																								0
+UnusedState11	240																																																																								0
+UnusedState12	241																																																																								0
+UnusedState13	242																																																																								0
+UnusedState14	243																																																																								0
+UnusedState15	244																																																																								0
+UnusedState16	245																																																																								0
+UnusedState17	246																																																																								0
+UnusedState18	247																																																																								0
+UnusedState19	248																																																																								0
+UnusedState20	249																																																																								0
+UnusedState21	250																																																																								0
+UnusedState22	251																																																																								0
+UnusedState23	252																																																																								0
+UnusedState24	253																																																																								0
+UnusedState25	254																																																																								0
+UnusedState26	255																																																																								0
+UnusedState27	256																																																																								0
+UnusedState28	257																																																																								0
+UnusedState29	258																																																																								0
+UnusedState30	259																																																																								0
+UnusedState31	260																																																																								0
+UnusedState32	261																																																																								0
+UnusedState33	262																																																																								0
+UnusedState34	263																																																																								0
+UnusedState35	264																																																																								0
+UnusedState36	265																																																																								0
+UnusedState37	266																																																																								0
+UnusedState38	267																																																																								0
+UnusedState39	268																																																																								0
+UnusedState40	269																																																																								0
+UnusedState41	270																																																																								0
+UnusedState42	271																																																																								0
+UnusedState43	272																																																																								0
+UnusedState44	273																																																																								0
+UnusedState45	274																																																																								0
+UnusedState46	275																																																																								0
+UnusedState47	276																																																																								0
+UnusedState48	277																																																																								0
+UnusedState49	278																																																																								0
+UnusedState50	279																																																																								0
+UnusedState51	280																																																																								0
+UnusedState52	281																																																																								0
+UnusedState53	282																																																																								0
+UnusedState54	283																																																																								0
+UnusedState55	284																																																																								0
+UnusedState56	285																																																																								0
+UnusedState57	286																																																																								0
+UnusedState58	287																																																																								0
+UnusedState59	288																																																																								0
+UnusedState60	289																																																																								0
+UnusedState61	290																																																																								0
+UnusedState62	291																																																																								0
+UnusedState63	292																																																																								0
+UnusedState64	293																																																																								0
+UnusedState65	294																																																																								0
+UnusedState66	295																																																																								0
+UnusedState67	296																																																																								0
+UnusedState68	297																																																																								0
+UnusedState69	298																																																																								0
+UnusedState70	299																																																																								0
+UnusedState71	300																																																																								0
+UnusedState72	301																																																																								0
+UnusedState73	302																																																																								0
+UnusedState74	303																																																																								0
+UnusedState75	304																																																																								0
+UnusedState76	305																																																																								0
+UnusedState77	306																																																																								0
+UnusedState78	307																																																																								0
+UnusedState79	308																																																																								0
+UnusedState80	309																																																																								0
+UnusedState81	310																																																																								0
+UnusedState82	311																																																																								0
+UnusedState83	312																																																																								0
+UnusedState84	313																																																																								0
+UnusedState85	314																																																																								0
+UnusedState86	315																																																																								0
+UnusedState87	316																																																																								0
+UnusedState88	317																																																																								0
+UnusedState89	318																																																																								0
+UnusedState90	319																																																																								0
+UnusedState91	320																																																																								0
+UnusedState92	321																																																																								0
+UnusedState93	322																																																																								0
+UnusedState94	323																																																																								0
+UnusedState95	324																																																																								0
+UnusedState96	325																																																																								0
+UnusedState97	326																																																																								0
+UnusedState98	327																																																																								0
+UnusedState99	328																																																																								0
+UnusedState100	329																																																																								0
+UnusedState101	330																																																																								0
+UnusedState102	331																																																																								0
+UnusedState103	332																																																																								0
+UnusedState104	333																																																																								0
+UnusedState105	334																																																																								0
+UnusedState106	335																																																																								0
+UnusedState107	336																																																																								0
+UnusedState108	337																																																																								0
+UnusedState109	338																																																																								0
+UnusedState110	339																																																																								0
+UnusedState111	340																																																																								0
+UnusedState112	341																																																																								0
+UnusedState113	342																																																																								0
+UnusedState114	343																																																																								0
+UnusedState115	344																																																																								0
+UnusedState116	345																																																																								0
+UnusedState117	346																																																																								0
+UnusedState118	347																																																																								0
+UnusedState119	348																																																																								0
+UnusedState120	349																																																																								0
+UnusedState121	350																																																																								0
+UnusedState122	351																																																																								0
+UnusedState123	352																																																																								0
+UnusedState124	353																																																																								0
+UnusedState125	354																																																																								0
+UnusedState126	355																																																																								0
+UnusedState127	356																																																																								0
+UnusedState128	357																																																																								0
+UnusedState129	358																																																																								0
+UnusedState130	359																																																																								0
+UnusedState131	360																																																																								0
+UnusedState132	361																																																																								0
+UnusedState133	362																																																																								0
+UnusedState134	363																																																																								0
+UnusedState135	364																																																																								0
+UnusedState136	365																																																																								0
+UnusedState137	366																																																																								0
+UnusedState138	367																																																																								0
+UnusedState139	368																																																																								0
+UnusedState140	369																																																																								0
+UnusedState141	370																																																																								0
+UnusedState142	371																																																																								0
+UnusedState143	372																																																																								0
+UnusedState144	373																																																																								0
+UnusedState145	374																																																																								0
+UnusedState146	375																																																																								0
+UnusedState147	376																																																																								0
+UnusedState148	377																																																																								0
+UnusedState149	378																																																																								0
+UnusedState150	379																																																																								0
+UnusedState151	380																																																																								0
+UnusedState152	381																																																																								0
+UnusedState153	382																																																																								0
+UnusedState154	383																																																																								0
+UnusedState155	384																																																																								0
+UnusedState156	385																																																																								0
+UnusedState157	386																																																																								0
+UnusedState158	387																																																																								0
+UnusedState159	388																																																																								0
+UnusedState160	389																																																																								0
+UnusedState161	390																																																																								0
+UnusedState162	391																																																																								0
+UnusedState163	392																																																																								0
+UnusedState164	393																																																																								0
+UnusedState165	394																																																																								0
+UnusedState166	395																																																																								0
+UnusedState167	396																																																																								0
+UnusedState168	397																																																																								0
+UnusedState169	398																																																																								0
+UnusedState170	399																																																																								0
+UnusedState171	400																																																																								0
+UnusedState172	401																																																																								0
+UnusedState173	402																																																																								0
+UnusedState174	403																																																																								0
+UnusedState175	404																																																																								0
+UnusedState176	405																																																																								0
+UnusedState177	406																																																																								0
+UnusedState178	407																																																																								0
+UnusedState179	408																																																																								0
+UnusedState180	409																																																																								0
+UnusedState181	410																																																																								0
+UnusedState182	411																																																																								0
+UnusedState183	412																																																																								0
+UnusedState184	413																																																																								0
+UnusedState185	414																																																																								0
+UnusedState186	415																																																																								0
+UnusedState187	416																																																																								0
+UnusedState188	417																																																																								0
+UnusedState189	418																																																																								0
+UnusedState190	419																																																																								0
+UnusedState191	420																																																																								0
+UnusedState192	421																																																																								0
+UnusedState193	422																																																																								0
+UnusedState194	423																																																																								0
+UnusedState195	424																																																																								0
+UnusedState196	425																																																																								0
+UnusedState197	426																																																																								0
+UnusedState198	427																																																																								0
+UnusedState199	428																																																																								0
+UnusedState200	429																																																																								0
+obelisk	430																																										valkyrie																														0
+uber	431																												1	1																											100	73	255	255	255												0
+cowkingrset	432	3			1					1	1		1	1																											1										14											druid_morph	druid_morph	1	952								0
+diablotr	433	3			1					1	1		1	1																											1							fire_cast_2			14											druid_morph	druid_morph	1	243								0
+vengeance	434																																										multigleam																														0
+dummystate	435																																																																								0
+playerpalstate1	436				1						1																																																					2	3								0
+playersorstate1	437				1						1																																																					2	1								0
+playerdrustate1	438				1						1																																																					2	5								0
+playerassstate1	439				1						1																																																					2	6								0
+playerbarstate1	440				1						1																																																					2	4								0
+playernecstate1	441				1						1																																																					2	2								0
+playeramastate1	442				1						1																																																					2	0								0
+rednew	443																																										charge																														0
+playerpalstate1won	444				1						1																																aura_fanatic																					2	3								0
+playersorstate1won	445				1						1																																aura_fanatic																					2	1								0
+playerdrustate1won	446				1						1																																aura_fanatic																					2	5								0
+playerassstate1won	447				1						1																																aura_fanatic																					2	6								0
+playerbarstate1won	448				1						1																																aura_fanatic																					2	4								0
+playernecstate1won	449				1						1																																aura_fanatic																					2	2								0
+playeramastate1won	450				1						1																																aura_fanatic																					2	0								0
+callofthewild	451																																										gleamtest3																														0
+focusminions	452																																										mephisto																														0
+holymagic	453					1																																					gleamtest4	gleamtest4																		paladin_aura_holyfire											0
+blizzless_empower_elixir	454																											1																																													0
+blizzless_experience_elixir	455																											1																																													0
+blizzless_life_mana_elixir	456																											1																																													0
+playerwarstate1	457				1						1																	1																																				2	7								0
+playerwarstate1won	458				1						1																																aura_fanatic																					2	7								0
+horazonstate	459				1						1																	1	1	1																																		2	7								0
+blizzless_fortune_elixir	460																											1																																													0
+bartuc_blood_aura	461					1																																					bartuc_blood_aura																														0
+bartuc_pet_frailty	462					1																																					bartuc_blood_aura																														0
+bartuc_portal_pulse	463			1																																																																					0

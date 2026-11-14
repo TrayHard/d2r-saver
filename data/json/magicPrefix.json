@@ -11153,7 +11153,7 @@
     "frequency": 2
   },
   "mp672": {
-    "name": "Fiery",
+    "name": "Ember",
     "mod1code": "fireskill",
     "itype1": "shie",
     "itype2": "ashd",
@@ -11169,7 +11169,7 @@
     "frequency": 1
   },
   "mp673": {
-    "name": "Snowy",
+    "name": "Snowflake",
     "mod1code": "coldskill",
     "itype1": "shie",
     "itype2": "ashd",

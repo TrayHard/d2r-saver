@@ -75,3 +75,6 @@ of Inferno	100	1		33		25				2	306	fire-min		16	16	fire-max		32	32			21	30		armo	
 	100	1	1	42		34				2	1012	att		81	100	dmg%		41	50	red-dmg%		10	10		armo	weap											0	0
 	100	1	1	50		42				2	1012	att		101	121	dmg%		51	65	red-dmg%		10	10	dgld	armo	weap											0	0
 	100	1	1	1		1				1	1013													cred	armo	weap											0	0
+rin	0	1	0	1	0	0				1	6000	aura	187	30	30										bcar												0	0
+rin	0	1	0	1	0	0				1	6001	aura	190	30	30	apoc-dot		1	1						bcar												0	0
+amu	0	1	0	1	0	0				1	6002	aura	432	1	1										bpam												0	0

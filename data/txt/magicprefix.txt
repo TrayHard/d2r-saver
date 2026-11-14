@@ -671,8 +671,8 @@ Godly	100	1	1	50		43				1	101	ac%		101	200									dgld	armo												0	0
 Cruel	100	1	1	56		48				1	105	dmg%		201	300									blac	weap							staf	wand	orb			0	0
 Smoldering	100	1	1	21		15				4	125	fireskill		1	1										shie	ashd	tors										0	0
 Smoking	100	1	1	41		30				2	125	fireskill		2	2										shie	ashd	tors										0	0
-Fiery	100	1		61		45				1	125	fireskill		3	3										shie	ashd	tors										0	0
-Snowy	100	1	1	21		15				4	125	coldskill		1	1										shie	ashd	tors										0	0
+Ember	100	1		61		45				1	125	fireskill		3	3										shie	ashd	tors										0	0
+Snowflake	100	1	1	21		15				4	125	coldskill		1	1										shie	ashd	tors										0	0
 Shivering	100	1	1	41		30				2	125	coldskill		2	2										shie	ashd	tors										0	0
 Glacial	100	1		61		45				1	125	coldskill		3	3										shie	ashd	tors										0	0
 Static	100	1	1	21		15				4	125	lightningskill		1	1										shie	ashd	tors										0	0
