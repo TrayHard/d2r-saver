@@ -2578,5 +2578,19 @@
   "normal": "amulet/the_rising_sun",
   "uber": "amulet/the_rising_sun",
   "ultra": "amulet/the_rising_sun"
-} }
+} },
+  { "the_grandfather_player": { "normal": "sword/the_patriarch", "uber": "sword/the_patriarch", "ultra": "sword/the_patriarch" } },
+  { "bloodforged_helm": { "normal": "helmet/bloodforged_helm", "uber": "helmet/bloodforged_helm", "ultra": "helmet/bloodforged_helm" } },
+  { "bloodforged_armor": { "normal": "armor/bloodforged_armor", "uber": "armor/bloodforged_armor", "ultra": "armor/bloodforged_armor" } },
+  { "leorics_crown_player": { "normal": "helmet/leorics_crown", "uber": "helmet/leorics_crown", "ultra": "helmet/leorics_crown" } },
+  { "unique_warlock_helm_player": { "normal": "helmet/unique_warlock_helm", "uber": "helmet/unique_warlock_helm", "ultra": "helmet/unique_warlock_helm" } },
+  { "monarch_player": { "normal": "shield/kite_shield", "uber": "shield/kite_shield", "ultra": "shield/kite_shield" } },
+  { "skullcollector_player": { "normal": "staff/skullcollector", "uber": "staff/skullcollector", "ultra": "staff/skullcollector" } },
+  { "cont_bloodscroll": { "normal": "quest/cont_bloodscroll", "uber": "quest/cont_bloodscroll", "ultra": "quest/cont_bloodscroll" } },
+  { "cont_bloodstone": { "normal": "quest/cont_bloodstone", "uber": "quest/cont_bloodstone", "ultra": "quest/cont_bloodstone" } },
+  { "cont_demonpaw": { "normal": "quest/cont_demonpaw", "uber": "quest/cont_demonpaw", "ultra": "quest/cont_demonpaw" } },
+  { "cont_elixirwealth": { "normal": "quest/cont_elixirwealth", "uber": "quest/cont_elixirwealth", "ultra": "quest/cont_elixirwealth" } },
+  { "cont_elixirwisdom": { "normal": "quest/cont_elixirwisdom", "uber": "quest/cont_elixirwisdom", "ultra": "quest/cont_elixirwisdom" } },
+  { "cont_elixirlifemana": { "normal": "quest/cont_elixirlifemana", "uber": "quest/cont_elixirlifemana", "ultra": "quest/cont_elixirlifemana" } },
+  { "cont_elixirfortune": { "normal": "quest/cont_elixirfortune", "uber": "quest/cont_elixirfortune", "ultra": "quest/cont_elixirfortune" } }
 ]

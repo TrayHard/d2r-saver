@@ -5661,7 +5661,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": "quest/bark_scroll"
+    "hd": "quest/tattered_scroll"
   },
   "p15": {
     "name": "Amulet Diablo 2",
@@ -5723,7 +5723,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "potion/blizzless_fortune_elixir"
   },
   "p18": {
     "name": "Elixir of Wisdom",
@@ -5756,7 +5756,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "potion/blizzless_wisdom_elixir"
   },
   "p19": {
     "name": "Elixir of Life and Mana",
@@ -5791,7 +5791,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "potion/blizzless_life_mana_elixir"
   },
   "p20": {
     "name": "Bloodstone",
@@ -5822,7 +5822,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "gem/bloodstone"
   },
   "p21": {
     "name": "Demon Paw",
@@ -5853,7 +5853,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 0,
-    "hd": []
+    "hd": "quest/ceremonial_claws"
   },
   "p22": {
     "name": "Elixir of Fortune",
@@ -5886,7 +5886,7 @@
     "invtrans": 0,
     "skipname": 0,
     "useable": 1,
-    "hd": []
+    "hd": "potion/blizzless_luck_elixir"
   },
   "bba": {
     "name": "Bartuc Bone Armor Carrier",

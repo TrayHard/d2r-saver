@@ -22,6 +22,13 @@ describe('Bartuc patch data', () => {
     containers.forEach((index, n) => expect(uniques[`unique${735 + n}`]).toMatchObject({ index, code: 'bg1', prop1: 'Add_one' }));
   });
 
+  it('names the HD art of the new items from the mod maps', () => {
+    expect(uniques.unique696.hd).toEqual(['armor/bloodforged_armor', 'armor/bloodforged_armor', 'armor/bloodforged_armor']);
+    expect(uniques.unique736.hd).toEqual(['quest/cont_bloodstone', 'quest/cont_bloodstone', 'quest/cont_bloodstone']);
+    expect(raw.misc.p14).toMatchObject({ hd: 'quest/tattered_scroll', invwidth: 1, invheight: 1 });
+    expect(raw.misc.p22.hd).toBe('potion/blizzless_luck_elixir');
+  });
+
   it('reads an item carrying the new stats and the item after it', () => {
     const vessel: BinaryParsedItem = {
       itemId: 1, base: 'uul', quality: 7, ilvl: 95, unidentified: false, ethereal: false, socketed: false, sockets: 0,

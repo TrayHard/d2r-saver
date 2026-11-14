@@ -18229,7 +18229,11 @@
     "max8": 1,
     "enabled": 1,
     "rarity": 1,
-    "hd": []
+    "hd": [
+      "helmet/bloodforged_helm",
+      "helmet/bloodforged_helm",
+      "helmet/bloodforged_helm"
+    ]
   },
   "unique696": {
     "index": "BloodforgedArmor",
@@ -18266,7 +18270,11 @@
     "max8": 1,
     "enabled": 1,
     "rarity": 1,
-    "hd": []
+    "hd": [
+      "armor/bloodforged_armor",
+      "armor/bloodforged_armor",
+      "armor/bloodforged_armor"
+    ]
   },
   "unique697": {
     "index": "The Rising Sun Cr",
@@ -19371,7 +19379,11 @@
     "costadd": 5000,
     "enabled": 1,
     "rarity": 1,
-    "hd": []
+    "hd": [
+      "shield/kite_shield",
+      "shield/kite_shield",
+      "shield/kite_shield"
+    ]
   },
   "unique734": {
     "index": "Skullcollector Player",
@@ -19403,7 +19415,11 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_bloodscroll",
+      "quest/cont_bloodscroll",
+      "quest/cont_bloodscroll"
+    ]
   },
   "unique736": {
     "index": "cont_bloodstone",
@@ -19417,7 +19433,11 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_bloodstone",
+      "quest/cont_bloodstone",
+      "quest/cont_bloodstone"
+    ]
   },
   "unique737": {
     "index": "cont_demonpaw",
@@ -19431,7 +19451,11 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_demonpaw",
+      "quest/cont_demonpaw",
+      "quest/cont_demonpaw"
+    ]
   },
   "unique738": {
     "index": "cont_elixirwealth",
@@ -19445,7 +19469,11 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_elixirwealth",
+      "quest/cont_elixirwealth",
+      "quest/cont_elixirwealth"
+    ]
   },
   "unique739": {
     "index": "cont_elixirwisdom",
@@ -19459,7 +19487,11 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_elixirwisdom",
+      "quest/cont_elixirwisdom",
+      "quest/cont_elixirwisdom"
+    ]
   },
   "unique740": {
     "index": "cont_elixirlifemana",
@@ -19473,7 +19505,11 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_elixirlifemana",
+      "quest/cont_elixirlifemana",
+      "quest/cont_elixirlifemana"
+    ]
   },
   "unique741": {
     "index": "cont_elixirfortune",
@@ -19487,6 +19523,10 @@
     "max1": 0,
     "enabled": 1,
     "rarity": 999,
-    "hd": []
+    "hd": [
+      "quest/cont_elixirfortune",
+      "quest/cont_elixirfortune",
+      "quest/cont_elixirfortune"
+    ]
   }
 }
