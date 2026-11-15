@@ -80,8 +80,6 @@ const QUALITY_NORMAL = 2;
 const QUALITY_UNIQUE = 7;
 const UNIQUE_ID_NONE = 0xfff;
 const UNIQUE_ID_BITS = 12;
-/** Codes the encoder writes in the unique form by default. */
-const UNIQUE_FORM_CODES: ReadonlySet<string> = new Set(['std', 'sth']);
 /** `loc` values the game leaves in a materials record: stored, belt (a potion), Blizzless crafting part. */
 const MATERIAL_LOCS: ReadonlySet<number> = new Set([0, 2, 4]);
 /** Flags that change the record layout and are never set in a materials record. */
@@ -191,7 +189,7 @@ export interface EncodeMaterialRecordInput {
   guid?: number;
   /** Complex records only, required there: 0–127. */
   ilvl?: number;
-  /** Write the unique form; defaults to true for the codes the game stores that way (`std`). */
+  /** Write the unique form; defaults to misc.txt `unique=1` (`std`, `sth`, `p14`, `p20`, `p21`). */
   uniqueForm?: boolean;
   /** `loc` field, 0 (default), 2 or 4. */
   loc?: number;
@@ -492,7 +490,8 @@ export function encodeMaterialRecord(gd: GameData, input: EncodeMaterialRecordIn
     w.writeUInt8(0, 3); // socketed item count
     w.writeUInt32(input.guid! >>> 0, 32);
     w.writeUInt8(input.ilvl!, 7);
-    const uniqueForm = input.uniqueForm ?? UNIQUE_FORM_CODES.has(code);
+    // misc.txt `unique=1` (std, sth, the Bartuc p14/p20/p21): the game writes such a stack as a unique without a row.
+    const uniqueForm = input.uniqueForm ?? gd.items[code].unique === 1;
     w.writeUInt8(uniqueForm ? QUALITY_UNIQUE : QUALITY_NORMAL, 4);
     w.writeBit(0); // icon index flag
     w.writeBit(0); // automod flag
@@ -519,8 +518,8 @@ function encodesBackExactly(buffer: Uint8Array, gd: GameData, record: MaterialRe
 
 /**
  * `true` when `encodeMaterialRecord` reproduces, byte for byte, every record of `family` in the
- * report and there is at least one such record: the proof that a new record of that family is
- * laid out like the ones already in the tab.
+ * report. A sector without a record of that family passes: a player never has to put a material
+ * into the game before the site can create its record (owner, 2026-11-02 and 2026-11-15).
  */
 export function materialEncodingVerified(
   buffer: Uint8Array,
@@ -529,7 +528,7 @@ export function materialEncodingVerified(
   family: MaterialFamily,
 ): boolean {
   const same = report.records.filter(r => r.family === family);
-  return same.length > 0 && same.every(r => encodesBackExactly(buffer, gd, r));
+  return same.every(r => encodesBackExactly(buffer, gd, r));
 }
 
 // ─── Edit ───────────────────────────────────────────────────────
@@ -546,8 +545,8 @@ export function materialEncodingVerified(
  * 5. per patch: the record exists (`MATERIAL_NOT_FOUND`), holds exactly `from`
  *    (`MATERIAL_STALE`), and `0 ≤ to ≤ maxQuantity` (`MATERIAL_RANGE`);
  * 6. per append: the code is absent (`MATERIAL_ALREADY_PRESENT`), `1 ≤ quantity ≤ maxQuantity`
- *    (`MATERIAL_RANGE`), and the encoder reproduces every record of the same family in the
- *    sector, of which there is at least one (`LAYOUT_UNVERIFIED`).
+ *    (`MATERIAL_RANGE`), and the encoder reproduces every record of the same family already in the
+ *    sector (`LAYOUT_UNVERIFIED`).
  *
  * A patch rewrites only the 8-bit post-stats quantity; position, flag and length stay. A
  * record set to 0 stays in the list. Appends go to the end of the list (= end of the sector) in

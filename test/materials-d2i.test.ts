@@ -526,15 +526,15 @@ describe('editMaterialsD2I appends', () => {
     expectCode(() => editMaterialsD2I(complete, gd, { sectorOffset: SECTOR, patches: [], appends: [{ code: 'std', family: 'complex', quantity: 1 }] }), ErrorCode.INVALID_ARGUMENT);
   });
 
-  it('LAYOUT_UNVERIFIED: no record of the family in the sector, or one that the encoder does not reproduce', () => {
+  it('LAYOUT_UNVERIFIED only for a same-family record the encoder does not reproduce; a missing family appends', () => {
     const onlySimple = sectorWith([recordBytes('r01'), recordBytes('glb'), recordBytes('rvl')]);
-    expectCode(() => editMaterialsD2I(onlySimple, gd, {
+    expect(editMaterialsD2I(onlySimple, gd, {
       sectorOffset: 0, patches: [], appends: [{ code: 'pk1', family: 'complex', quantity: 1, guid: 1, ilvl: 1 }],
-    }), ErrorCode.LAYOUT_UNVERIFIED);
+    }).after.records.at(-1)!.code).toBe('pk1');
     const onlyComplex = sectorWith([recordBytes('pk1'), recordBytes('tes')]);
-    expectCode(() => editMaterialsD2I(onlyComplex, gd, {
+    expect(editMaterialsD2I(onlyComplex, gd, {
       sectorOffset: 0, patches: [], appends: [{ code: 'gpv', family: 'simple', quantity: 1 }],
-    }), ErrorCode.LAYOUT_UNVERIFIED);
+    }).after.records.at(-1)!.code).toBe('gpv');
 
     // glb with the ethereal flag: still a well-formed quantity record (patchable), but the encoder
     // refuses that flag, so simple records cannot be proven and no simple append is allowed.
