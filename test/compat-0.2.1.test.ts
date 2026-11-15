@@ -22,7 +22,7 @@ const FIXTURES = resolve(import.meta.dirname!, 'fixtures');
 const SNAPSHOTS = resolve(import.meta.dirname!, '__snapshots__', 'compat-0.2.1');
 
 /** Fields that did not exist in 0.2.1. Everything else must match byte for byte. */
-const ITEM_FIELDS_ADDED_IN_0_3 = new Set(['byteRange', 'fullByteRange', 'socketedByteRanges', 'quantityField']);
+const ITEM_FIELDS_ADDED_IN_0_3 = new Set(['byteRange', 'fullByteRange', 'socketedByteRanges', 'quantityField', 'chargesLeft']);
 const D2S_RESULT_FIELDS_ADDED_IN_0_3 = new Set(['lists', 'coverage', 'demons']);
 const D2I_RESULT_FIELDS_ADDED_IN_0_3 = new Set(['sectors', 'tiled', 'reachedEof']);
 const D2I_PAGE_FIELDS_ADDED_IN_0_3 = new Set(['list', 'rawType']);

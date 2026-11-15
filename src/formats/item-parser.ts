@@ -176,6 +176,12 @@ export interface BinaryParsedItem {
    */
   socketedItems: (number | string)[];
   stats: Record<string, number>;
+  /**
+   * Charges still left on each charged skill (0.4.13), keyed like its `stats` entry
+   * (`item_charged_skill#<skill>#<level>`). The `stats` value under the same key is the maximum.
+   * Absent when the item has no charged skill.
+   */
+  chargesLeft?: Record<string, number>;
   unique?: string;
   name?: string;
   /** Raw magic affix codes (mp###/ms###) read straight from the binary. Kept on the item
@@ -332,7 +338,13 @@ function extractValuesFromStats(
  * Add a stat value to the stats accumulator.
  * Handles special cases: skill-on-event encoding, addclass/single/aura skill params, enhanced damage max.
  */
-function addStat(stats: Record<string, number>, stat: string, param: number, value: number): void {
+function addStat(
+  stats: Record<string, number>,
+  stat: string,
+  param: number,
+  value: number,
+  chargesLeft?: Record<string, number>,
+): void {
   let param2: number;
   switch (stat) {
     case 'item_skillonattack':
@@ -346,12 +358,17 @@ function addStat(stats: Record<string, number>, stat: string, param: number, val
       param = param >> 6;
       stat = `${stat}#${param}#${param2}`;
       break;
-    case 'item_charged_skill':
+    case 'item_charged_skill': {
+      // The engine packs the charges as (max << 8) | left (D2Common ITEMS_CalculateAdditionalCostsForChargedSkills).
+      // The stat keeps the maximum, as before; the charges still left go to `chargesLeft` under the same key.
+      const left = value & 0xff;
       value = value >> 8;
       param2 = param & 63;
       param = param >> 6;
       stat = `${stat}#${param}#${param2}`;
+      if (chargesLeft) chargesLeft[stat] = (chargesLeft[stat] || 0) + left;
       break;
+    }
     case 'item_addclassskills':
     case 'item_nonclassskill':
     case 'state':
@@ -664,6 +681,7 @@ export function createItemParser(
 
       // ── Stats ─────────────────────────────────────────────
       const stats: Record<string, number> = {};
+      const chargesLeft: Record<string, number> = {};
 
       function parseStats(): void {
         // eslint-disable-next-line no-constant-condition
@@ -676,7 +694,7 @@ export function createItemParser(
           if (!info) throw Error(`unknown item stat code ${id}`);
           const param = info.saveparambits ? reader.bits(info.saveparambits) : 0;
           const value = reader.bits(info.savebits ?? 0) - (info.saveadd || 0);
-          addStat(stats, stat, param, value);
+          addStat(stats, stat, param, value, chargesLeft);
 
           let follow = followStats[stat] || 0;
           while (follow--) {
@@ -715,6 +733,7 @@ export function createItemParser(
       }
 
       item.stats = stats;
+      if (Object.keys(chargesLeft).length) item.chargesLeft = chargesLeft;
 
       // ── Resolve mod sources ───────────────────────────────
       const getStats = (src: Record<string, unknown>) =>

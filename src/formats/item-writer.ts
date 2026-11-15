@@ -254,10 +254,10 @@ export function writeItem(
     if (item.superior) modsToStats(gd, baseStats, item.superior, item as unknown as Record<string, unknown>);
     if (item.staff) modsToStats(gd, baseStats, item.staff, item as unknown as Record<string, unknown>);
 
-    writeItemStats(writer, baseStats, gd);
-    writeItemStats(writer, rwStats, gd);
+    writeItemStats(writer, baseStats, gd, item.chargesLeft);
+    writeItemStats(writer, rwStats, gd, item.chargesLeft);
   } else {
-    writeItemStats(writer, item.stats || {}, gd);
+    writeItemStats(writer, item.stats || {}, gd, item.chargesLeft);
     // Empty set-bonus stat sections for each active setflag bit — terminator only.
     if (qualityRaw === 5 && item.setflags) {
       for (let bit = 0; bit < 5; bit++) {
@@ -355,6 +355,7 @@ function writeItemStats(
   writer: BitWriter,
   stats: Record<string, number>,
   gd: GameData,
+  chargesLeft?: Record<string, number>,
 ): void {
   const processed = new Set<string>();
 
@@ -368,7 +369,7 @@ function writeItemStats(
   for (const stat of sortedKeys) {
     if (processed.has(stat)) continue;
     if (stat === 'item_numsockets') continue; // written in dedicated field
-    writeStat(writer, cleanStats, stat, processed, gd);
+    writeStat(writer, cleanStats, stat, processed, gd, chargesLeft);
   }
 
   // End-of-stats marker
@@ -390,6 +391,7 @@ function writeStat(
   stat: string,
   processed: Set<string>,
   gd: GameData,
+  chargesLeft?: Record<string, number>,
 ): void {
   const [statName, p1, p2] = stat.split('#');
   const itemStat = gd.itemStatCost[statName];
@@ -409,7 +411,7 @@ function writeStat(
     const stat2 = i === 0 ? stat : [statName2, p1, p2].filter(Boolean).join('#');
     if (i > 0) processed.add(stat2);
 
-    writeStatValue(writer, stats, stat2, statName, p1, p2, itemStat2, i > 0);
+    writeStatValue(writer, stats, stat2, statName, p1, p2, itemStat2, i > 0, chargesLeft);
   }
 }
 
@@ -425,13 +427,14 @@ function writeStatValue(
   p2: string | undefined,
   itemStat: { savebits?: number; saveadd?: number; saveparambits?: number },
   isFollowStat: boolean,
+  chargesLeft?: Record<string, number>,
 ): void {
   let value = Number(stats[stat] || 0);
   let param = 0;
 
   if (itemStat.saveparambits) {
     const statParam = !isFollowStat
-      ? getStatParamAndValue(statName, p1, p2, value, stats, stat)
+      ? getStatParamAndValue(statName, p1, p2, value, stats, stat, chargesLeft)
       : { param: Number(p1 || 0), value };
 
     param = statParam.param;
@@ -455,6 +458,7 @@ function getStatParamAndValue(
   value: number,
   stats: Record<string, number>,
   statKey: string,
+  chargesLeft?: Record<string, number>,
 ): { param: number; value: number } {
   switch (statName) {
     case 'item_skillonattack':
@@ -471,9 +475,10 @@ function getStatParamAndValue(
     case 'item_charged_skill': {
       const param1 = Number(p1 || 0);
       const param2 = Number(p2 || 0);
-      const charges = Number(stats[statKey] || 0);
+      // (max << 8) | left, as the parser reads it; an item without `chargesLeft` is written full.
       const maxCharges = Number(stats[statKey] || 0);
-      return { param: (param1 << 6) | (param2 & 0x3f), value: (charges << 8) | (maxCharges & 0xff) };
+      const charges = Math.min(Number(chargesLeft?.[statKey] ?? maxCharges), maxCharges);
+      return { param: (param1 << 6) | (param2 & 0x3f), value: (maxCharges << 8) | (charges & 0xff) };
     }
     case 'item_addskill_tab': {
       const tab = Number(p1 || 0);
