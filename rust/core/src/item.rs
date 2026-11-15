@@ -253,6 +253,8 @@ pub(crate) struct FullItem {
     pub sockets: u32,
     /// `item.stats` before the blunt bonus.
     pub stats: Stats,
+    /// `item.chargesLeft`: the charges still left on each charged skill, keyed like its stat.
+    pub charges_left: Stats,
     pub socketed_items: Vec<Ref>,
     /// `binaryOffset`: bits of the reader's buffer.
     pub bits: (usize, usize),
@@ -499,6 +501,7 @@ impl<'a> Parser<'a> {
             quantity_pre: false,
             sockets: 0,
             stats: Stats::new(),
+            charges_left: Stats::new(),
             socketed_items: Vec::new(),
             bits: (start_bit, 0),
             own: (start_byte, 0),
@@ -576,6 +579,7 @@ impl<'a> Parser<'a> {
         let mut quantity_pre = false;
         let mut sockets = 0;
         let mut stats = Stats::new();
+        let mut charges_left = Stats::new();
         let mut ext = None;
 
         if simple {
@@ -731,6 +735,7 @@ impl<'a> Parser<'a> {
                     &mut item.add_one,
                     collect.then_some(&mut stats),
                     own.then_some(&mut raw),
+                    full.then_some(&mut charges_left),
                 )?;
                 if own {
                     fingerprint.list(&mut raw);
@@ -859,6 +864,7 @@ impl<'a> Parser<'a> {
             w.quantity_pre = quantity_pre;
             w.sockets = sockets;
             w.stats = stats;
+            w.charges_left = charges_left;
             w.socketed_items = socketed_items;
             w.bits.1 = end_bit;
             w.own.1 = own_end;
@@ -993,13 +999,15 @@ fn defense_of(ac: i64, ethereal: bool, base_min: i64, base_max: i64) -> (i64, bo
 
 /// One stat list up to the 511 terminator. `Add_one` always sums into `add_one`; `stats`, when
 /// given, gets every stat the way `addStat` stores it; `raw`, when given, gets the stored id, param
-/// and value of every stat but `Add_one`, a charged skill without its current charges (`value >> 8`).
+/// and value of every stat but `Add_one`, a charged skill without its current charges (`value >> 8`);
+/// `left`, when given, gets the charges left of every charged skill (`chargesLeft`).
 fn parse_stats(
     r: &mut BitReader,
     gd: &GameData,
     add_one: &mut i64,
     mut stats: Option<&mut Stats>,
     mut raw: Option<&mut Vec<[u32; 3]>>,
+    mut left: Option<&mut Stats>,
 ) -> Result<()> {
     loop {
         let mut id = r.bits(9)?;
@@ -1031,6 +1039,9 @@ fn parse_stats(
             }
             if let Some(stats) = stats.as_deref_mut() {
                 add_stat(stats, id as u16, info.kind, param, value);
+            }
+            if let (StatKind::Charged, Some(left)) = (info.kind, left.as_deref_mut()) {
+                add_charges_left(left, id as u16, param, value);
             }
             Ok(())
         };
@@ -1065,6 +1076,21 @@ pub(crate) fn add_stat(stats: &mut Stats, id: u16, kind: StatKind, param: i64, v
         // Math.max(stats[stat] || 0, value)
         None if kind == StatKind::Highest => stats.push((key, value.max(0))),
         None => stats.push((key, value)),
+    }
+}
+
+/// `chargesLeft`: a charged skill stores `(max << 8) | left` (D2Common
+/// `ITEMS_CalculateAdditionalCostsForChargedSkills`); its stat keeps the maximum, this the low byte.
+pub(crate) fn add_charges_left(left: &mut Stats, id: u16, param: i64, value: i64) {
+    let key = StatKey {
+        id,
+        params: 2,
+        a: (param as i32 >> 6) as i64,
+        b: param & 63,
+    };
+    match left.iter_mut().find(|s| s.0 == key) {
+        Some(s) => s.1 += value & 0xff,
+        None => left.push((key, value & 0xff)),
     }
 }
 

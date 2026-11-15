@@ -140,6 +140,12 @@ export interface BinaryParsedItem {
    */
   socketedItems: (number | string)[];
   stats: Record<string, number>;
+  /**
+   * Charges still left on each charged skill (0.4.13), keyed like its `stats` entry
+   * (`item_charged_skill#<skill>#<level>`). The `stats` value under the same key is the maximum.
+   * Absent when the item has no charged skill.
+   */
+  chargesLeft?: Record<string, number>;
   unique?: string;
   name?: string;
   /** Raw magic affix codes (mp###/ms###) read straight from the binary. Kept on the item

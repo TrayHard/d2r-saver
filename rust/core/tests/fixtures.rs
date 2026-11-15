@@ -652,3 +652,46 @@ fn count_keys_name_their_items() {
         "an unknown unique falls back to the base"
     );
 }
+
+/// A charged skill stores `(max << 8) | left` (D2Common `ITEMS_CalculateAdditionalCostsForChargedSkills`):
+/// `stats` keeps the maximum and `chargesLeft` the charges left, as the 0.4.13 TypeScript reader returns them.
+#[test]
+fn charged_skills_read_the_charges_left() {
+    const KEY: &str = "item_charged_skill#226#5";
+    let ring = |data: &[u8]| -> Value {
+        let doc: Value = serde_json::from_str(&doc::read_d2i(data, gd(), false)).unwrap();
+        let items = doc["items"].as_array().unwrap();
+        items
+            .iter()
+            .find(|i| i["unique"] == "unique300" && i["stats"][KEY].is_number())
+            .unwrap()
+            .clone()
+    };
+    let charges = |item: &Value| {
+        (
+            item["stats"][KEY].as_i64(),
+            item["chargesLeft"].as_object().unwrap().clone(),
+        )
+    };
+    let mut data = fixture("SharedStashComplete.d2i");
+    let full = ring(&data);
+    let (max, left) = charges(&full);
+    assert_eq!((max, left.len(), left[KEY].as_i64()), (Some(27), 1, Some(27)));
+
+    // Spend 16 charges in the bytes: the low 8 bits of the value after stat 204 and its 16-bit param.
+    let bit = |d: &[u8], i: usize| (d[i >> 3] >> (i & 7)) as u32 & 1;
+    let read = |d: &[u8], at: usize, n: usize| (0..n).fold(0, |v, i| v | bit(d, at + i) << i);
+    let start = full["byteRange"]["start"].as_u64().unwrap() as usize;
+    let end = full["byteRange"]["end"].as_u64().unwrap() as usize;
+    let param = (226 << 6) | 5;
+    let at = (start * 8..end * 8 - 41)
+        .find(|&i| read(&data, i, 9) == 204 && read(&data, i + 9, 16) == param)
+        .unwrap();
+    assert_eq!(read(&data, at + 25, 16), (27 << 8) | 27);
+    for i in 0..8 {
+        let b = at + 25 + i;
+        data[b >> 3] = (data[b >> 3] & !(1 << (b & 7))) | ((11 >> i) & 1) << (b & 7);
+    }
+    let (max, left) = charges(&ring(&data));
+    assert_eq!((max, left.len(), left[KEY].as_i64()), (Some(27), 1, Some(11)));
+}

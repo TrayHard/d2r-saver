@@ -520,6 +520,14 @@ fn write_item(j: &mut Json, item: &FullItem, gd: &GameData, solve: bool) {
             if ext.setflags != 0 {
                 j.field("setflags", ext.setflags);
             }
+            if !item.charges_left.is_empty() {
+                j.key("chargesLeft");
+                j.open();
+                for &(key, value) in &item.charges_left {
+                    j.field(&stat_text(key, gd), value);
+                }
+                j.close();
+            }
         }
     }
     if split {
