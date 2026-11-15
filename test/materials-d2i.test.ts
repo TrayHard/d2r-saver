@@ -547,6 +547,18 @@ describe('editMaterialsD2I appends', () => {
     // Complex appends are still proven by pk1.
     expect(editMaterialsD2I(s, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'pk2', family: 'complex', quantity: 1, guid: 9, ilvl: 1 }] }).after.records).toHaveLength(4);
   });
+
+  it('an unreadable record blocks no append beside it, of either family (preserveUnchangedInvalidRecords)', () => {
+    const bad = recordBytes('tes');
+    setBits(bad, 35, 1, 1); // loc 1: not a materials location, so the record is unreadable
+    const s = sectorWith([recordBytes('r01'), bad, recordBytes('pk1')]);
+    expect(readMaterialsD2I(s, gd, { sectorOffset: 0 }).records[1].layoutOk).toBe(false);
+    const { newBuffer, after, diff } = editMaterialsD2I(s, gd, { sectorOffset: 0, patches: [], appends: [
+      { code: 'pk2', family: 'complex', quantity: 2, guid: 9, ilvl: 1 }, { code: 'gpv', family: 'simple', quantity: 3 }] },
+    { preserveUnchangedInvalidRecords: true });
+    expect(after.records.slice(-2).map(r => [r.code, r.quantity])).toEqual([['pk2', 2], ['gpv', 3]]);
+    expect(verifyExactDiff(s, newBuffer, diff).ok).toBe(true);
+  });
 });
 
 // ─── Memory ─────────────────────────────────────────────────────

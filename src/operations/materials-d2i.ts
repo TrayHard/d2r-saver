@@ -518,7 +518,7 @@ function encodesBackExactly(buffer: Uint8Array, gd: GameData, record: MaterialRe
 
 /**
  * `true` when `encodeMaterialRecord` reproduces, byte for byte, every record of `family` in the
- * report. A sector without a record of that family passes: a player never has to put a material
+ * report that reads as a well-formed record. A sector without such a record passes: a player never has to put a material
  * into the game before the site can create its record (owner, 2026-11-02 and 2026-11-15).
  */
 export function materialEncodingVerified(
@@ -527,7 +527,8 @@ export function materialEncodingVerified(
   report: MaterialsSectorReport,
   family: MaterialFamily,
 ): boolean {
-  const same = report.records.filter(r => r.family === family);
+  // An unreadable record proves nothing either way and stays untouched; it must not block a new record beside it.
+  const same = report.records.filter(r => r.family === family && r.layoutOk);
   return same.every(r => encodesBackExactly(buffer, gd, r));
 }
 
