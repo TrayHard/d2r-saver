@@ -222,6 +222,26 @@ export type {
   LarzukItemFacts,
 } from './operations/larzuk.js';
 
+// ─── Gold in place (0.4.17) ─────────────────────────────────────
+// Read and set character gold (inventory, personal stash) and shared-tab gold within the game's
+// caps. Each edit proves that only the gold bits and the derived header fields changed.
+export {
+  readCharacterGold,
+  setCharacterGold,
+  characterGoldMax,
+  readSharedTabGold,
+  setSharedTabGold,
+  GOLD_PER_CHARACTER_LEVEL,
+  CHARACTER_STASH_GOLD_MAX,
+  SHARED_TAB_GOLD_MAX,
+} from './operations/gold.js';
+export type {
+  CharacterGold,
+  SetCharacterGoldResult,
+  SharedTabGold,
+  SetSharedTabGoldResult,
+} from './operations/gold.js';
+
 // ─── D2RSaver facade ────────────────────────────────────────────
 
 /** Options for `D2RSaver.create()`. */
