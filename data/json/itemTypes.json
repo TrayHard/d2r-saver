@@ -1525,5 +1525,37 @@
     "maxsock40": 0,
     "varinvgfx": 0,
     "treasureclass": 0
+  },
+  "bcar": {
+    "equiv1": "misc",
+    "bodyloc1": "rrin",
+    "bodyloc2": "lrin",
+    "body": 1,
+    "throwable": 0,
+    "magic": 0,
+    "rare": 0,
+    "normal": 1,
+    "beltable": 0,
+    "maxsock1": 0,
+    "maxsock25": 0,
+    "maxsock40": 0,
+    "varinvgfx": 0,
+    "treasureclass": 0
+  },
+  "bpam": {
+    "equiv1": "amul",
+    "bodyloc1": "neck",
+    "bodyloc2": "neck",
+    "body": 1,
+    "throwable": 0,
+    "magic": 0,
+    "rare": 0,
+    "normal": 1,
+    "beltable": 0,
+    "maxsock1": 0,
+    "maxsock25": 0,
+    "maxsock40": 0,
+    "varinvgfx": 0,
+    "treasureclass": 0
   }
 }

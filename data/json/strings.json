@@ -1129,11 +1129,11 @@
   ],
   [
     "ModStr1w",
-    "%d%% Extra Gold from Monsters"
+    "%+d%% Extra Gold from Monsters"
   ],
   [
     "ModStr1x",
-    "%d%% Better Chance of Getting Magic Items"
+    "%+d%% Better Chance of Getting Magic Items"
   ],
   [
     "ModStr3u",
@@ -1510,6 +1510,110 @@
   [
     "ModStr6l",
     "%+d%% Attack Speed"
+  ],
+  [
+    "UseTerrorTokenAct1",
+    "Right Click to terrorize Act 1"
+  ],
+  [
+    "UseTerrorTokenAct2",
+    "Right Click to terrorize Act 2"
+  ],
+  [
+    "UseTerrorTokenAct3",
+    "Right Click to terrorize Act 3"
+  ],
+  [
+    "UseTerrorTokenAct4",
+    "Right Click to terrorize Act 4"
+  ],
+  [
+    "UseTerrorTokenAct5",
+    "Right Click to terrorize Act 5"
+  ],
+  [
+    "xa1",
+    "Western Worldstone Shard"
+  ],
+  [
+    "xa2",
+    "Eastern Worldstone Shard"
+  ],
+  [
+    "xa3",
+    "Southern Worldstone Shard"
+  ],
+  [
+    "xa4",
+    "Deep Worldstone Shard"
+  ],
+  [
+    "xa5",
+    "Northern Worldstone Shard"
+  ],
+  [
+    "WarOnly",
+    "(Warlock Only)"
+  ],
+  [
+    "ModStrMagMastery",
+    "%+d%% to Magic Skill Damage"
+  ],
+  [
+    "ModStrMagPierce",
+    "-%d%% to Enemy Magic Resistance"
+  ],
+  [
+    "MaxMagDmgPerLvl",
+    "%+d to Maximum Magic Damage"
+  ],
+  [
+    "ModStrDamPierce",
+    "-%d%% to Enemy Physical Damage Resistance"
+  ],
+  [
+    "StrSklTabItem24",
+    "+%d to Demon Skills"
+  ],
+  [
+    "StrSklTabItem22",
+    "+%d to Eldritch Skills"
+  ],
+  [
+    "StrSklTabItem23",
+    "+%d to Chaos Skills"
+  ],
+  [
+    "ModStrge9",
+    "+%d to Warlock Skills"
+  ],
+  [
+    "ChronicleModifierRange",
+    "(%s-%s)"
+  ],
+  [
+    "ItemStats1hRange",
+    "Defense: (%d-%d)"
+  ],
+  [
+    "ChronicleRandomClassSkillLevel",
+    "%+d to a Random Class' Skill Levels"
+  ],
+  [
+    "ChronicleItemModifierClassSkillRandom",
+    "%+d to a random %s Skill %s"
+  ],
+  [
+    "ChroniclePropertyGroupListBullet",
+    "•"
+  ],
+  [
+    "ChroniclePropertyGroupListHeader",
+    "%s of the following:"
+  ],
+  [
+    "ChronicleModifierRangeNoParen",
+    "%s-%s"
   ],
   [
     "Low Quality",
@@ -5526,6 +5630,110 @@
   [
     "Berserk",
     "Berserker"
+  ],
+  [
+    "Virulent",
+    "Virulent"
+  ],
+  [
+    "of Acidity",
+    "of Acidity"
+  ],
+  [
+    "Incendiary",
+    "Incendiary"
+  ],
+  [
+    "of Kindling",
+    "of Kindling"
+  ],
+  [
+    "Gelid",
+    "Gelid"
+  ],
+  [
+    "of Numbing",
+    "of Numbing"
+  ],
+  [
+    "Magnetic",
+    "Magnetic"
+  ],
+  [
+    "of Conductivity",
+    "of Conductivity"
+  ],
+  [
+    "Mystical",
+    "Mystical"
+  ],
+  [
+    "of Thaumaturgy",
+    "of Thaumaturgy"
+  ],
+  [
+    "Breaching",
+    "Breaching"
+  ],
+  [
+    "of Force",
+    "of Force"
+  ],
+  [
+    "Sullied",
+    "Sullied"
+  ],
+  [
+    "Fiendish",
+    "Fiendish"
+  ],
+  [
+    "Erratic",
+    "Erratic"
+  ],
+  [
+    "Torrid",
+    "Torrid"
+  ],
+  [
+    "TaintedAffix",
+    "Tainted"
+  ],
+  [
+    "Forbidden",
+    "Forbidden"
+  ],
+  [
+    "Dreadful",
+    "Dreadful"
+  ],
+  [
+    "Malevolent",
+    "Malevolent"
+  ],
+  [
+    "of Miasma Bolt",
+    "of Miasma Bolt"
+  ],
+  [
+    "of Lethargy",
+    "of Lethargy"
+  ],
+  [
+    "of Rancor",
+    "of Rancor"
+  ],
+  [
+    "of Apocalypse",
+    "of Apocalypse"
+  ],
+  [
+    "Devil's",
+    "Devil's"
+  ],
+  [
+    "Arch-Devil's",
+    "Arch-Devil's"
   ],
   [
     "qf1",
@@ -12144,46 +12352,6 @@
     "Gems"
   ],
   [
-    "cr1",
-    "Blacksmith Ingot"
-  ],
-  [
-    "cr2",
-    "Horadric Sphere"
-  ],
-  [
-    "cr3",
-    "Resplendent Spark"
-  ],
-  [
-    "xa1",
-    "Western Worldstone Shard"
-  ],
-  [
-    "xa2",
-    "Eastern Worldstone Shard"
-  ],
-  [
-    "xa3",
-    "Southern Worldstone Shard"
-  ],
-  [
-    "xa4",
-    "Deep Worldstone Shard"
-  ],
-  [
-    "xa5",
-    "Northern Worldstone Shard"
-  ],
-  [
-    "jwd",
-    "Disenchanted Jewel"
-  ],
-  [
-    "sth",
-    "Heroic Offering"
-  ],
-  [
     "r16",
     "Io Rune"
   ],
@@ -13129,11 +13297,11 @@
   ],
   [
     "Runeword171",
-    "Hustle"
+    "Hysteria"
   ],
   [
     "Runeword172",
-    "Hustle"
+    "Mania"
   ],
   [
     "Runeword173",
@@ -13158,6 +13326,18 @@
   [
     "Runeword178",
     "Cure"
+  ],
+  [
+    "Runeword180",
+    "Coven"
+  ],
+  [
+    "Runeword181",
+    "Vigilance"
+  ],
+  [
+    "Runeword182",
+    "Ritual"
   ],
   [
     "Runeword179",
@@ -20421,7 +20601,7 @@
   ],
   [
     "Skillld242",
-    "summon a vine that eats corpses\nand replenishes your mana"
+    "summon a vine that eats corpses\nand replenishes your mana and life"
   ],
   [
     "Skillan242",
@@ -21586,6 +21766,886 @@
   [
     "SkillItemMetamorphosisWolf",
     "%s\n%s\nMark of the Wolf:\nWerewolf strikes grant Mark for %s"
+  ],
+  [
+    "MiasmaBoltName",
+    "Miasma Bolt"
+  ],
+  [
+    "MiasmaBoltShortDesc",
+    "Fires a bolt of darkness that releases a cloud of entropy"
+  ],
+  [
+    "MiasmaBoltLongDesc",
+    "Fires a bolt of darkness that releases a cloud of entropy"
+  ],
+  [
+    "MiasmaBoltAN",
+    "Miasma Bolt"
+  ],
+  [
+    "LethargySigilName",
+    "Sigil: Lethargy"
+  ],
+  [
+    "LethargySigilShortDesc",
+    "Lay a sigil on the ground that slows and weakens enemies"
+  ],
+  [
+    "LethargySigilLongDesc",
+    "Lay a sigil on the ground that slows and weakens enemies"
+  ],
+  [
+    "LethargySigilAN",
+    "Sigil: Lethargy"
+  ],
+  [
+    "RingOfFireName",
+    "Ring of Fire"
+  ],
+  [
+    "RingOfFireShortDesc",
+    "Releases a volley of expanding hellfire in all directions that pushes \n enemies away"
+  ],
+  [
+    "RingOfFireLongDesc",
+    "Releases a volley of expanding hellfire in all directions that pushes \n enemies away"
+  ],
+  [
+    "RingOfFireAN",
+    "Ring of Fire"
+  ],
+  [
+    "RancorSigilName",
+    "Sigil: Rancor"
+  ],
+  [
+    "RancorSigilShortDesc",
+    "Lay a sigil on the ground that enrages those who enter\n and has a chance for enemies to attack one another"
+  ],
+  [
+    "RancorSigilLongDesc",
+    "Lay a sigil on the ground that enrages those who enter\n and has a chance for enemies to attack one another"
+  ],
+  [
+    "RancorSigilAN",
+    "Sigil: Rancor"
+  ],
+  [
+    "EnhancedEntropyName",
+    "Enhanced Entropy"
+  ],
+  [
+    "EnhancedEntropyShortDesc",
+    "Passive - Improve your mastery over the entropic forces \n of shadow magic"
+  ],
+  [
+    "EnhancedEntropyLongDesc",
+    "Passive - Improve your mastery over the entropic forces \n of shadow magic"
+  ],
+  [
+    "EnhancedEntropyAN",
+    "Enhanced Entropy"
+  ],
+  [
+    "FlameWaveName",
+    "Flame Wave"
+  ],
+  [
+    "FlameWaveShortDesc",
+    "Unleashes a rolling wall of fire that burns the ground in\n its wake"
+  ],
+  [
+    "FlameWaveLongDesc",
+    "Unleashes a rolling wall of fire that burns the ground in\n its wake"
+  ],
+  [
+    "FlameWaveAN",
+    "Flame Wave"
+  ],
+  [
+    "MiasmaChainName",
+    "Miasma Chain"
+  ],
+  [
+    "MiasmaChainShortDesc",
+    "Summon shadowy chains that emit a suffocating miasma \n between you and the target"
+  ],
+  [
+    "MiasmaChainLongDesc",
+    "Summon shadowy chains that emit a suffocating miasma \n between you and the target"
+  ],
+  [
+    "MiasmaChainAN",
+    "Miasma Chain"
+  ],
+  [
+    "DeathSigilName",
+    "Sigil: Death"
+  ],
+  [
+    "DeathSigilShortDesc",
+    "Lay a sigil on the ground that hastens the death\n of injured enemies in a violent explosion"
+  ],
+  [
+    "DeathSigilLongDesc",
+    "Lay a sigil on the ground that hastens the death\n of injured enemies in a violent explosion"
+  ],
+  [
+    "DeathSigilAN",
+    "Sigil: Death"
+  ],
+  [
+    "ApocalypseName",
+    "Apocalypse"
+  ],
+  [
+    "ApocalypseShortDesc",
+    "Create a pentagram that engulfs all enemies in hellfire\nReduces enemy fire resistance for apocalypse’s damage"
+  ],
+  [
+    "ApocalypseLongDesc",
+    "Create a pentagram that engulfs all enemies in hellfire\nReduces enemy fire resistance for apocalypse’s damage"
+  ],
+  [
+    "ApocalypseAN",
+    "Apocalypse"
+  ],
+  [
+    "AbyssName",
+    "Abyss"
+  ],
+  [
+    "AbyssShortDesc",
+    "Create a tear in the fabric of reality which pulls enemies\n close before violently collapsing"
+  ],
+  [
+    "AbyssLongDesc",
+    "Create a tear in the fabric of reality which pulls enemies\n close before violently collapsing"
+  ],
+  [
+    "AbyssAN",
+    "Abyss"
+  ],
+  [
+    "LevitateName",
+    "Levitation Mastery"
+  ],
+  [
+    "LevitateShortDesc",
+    "Passive - Improve your ability to levitate your equipped\n weapon with your mind"
+  ],
+  [
+    "LevitateLongDesc",
+    "Passive - Improve your ability to levitate your equipped\n weapon with your mind"
+  ],
+  [
+    "LevitateAN",
+    "Levitation Mastery"
+  ],
+  [
+    "PsychicWardName",
+    "Psychic Ward"
+  ],
+  [
+    "PsychicWardShortDesc",
+    "Creates a mental shield that absorbs damage from \n attacks and can stun melee attackers"
+  ],
+  [
+    "PsychicWardLongDesc",
+    "Creates a mental shield that absorbs damage from \n attacks and can stun melee attackers"
+  ],
+  [
+    "PsychicWardAN",
+    "Psychic Ward"
+  ],
+  [
+    "BaneHexName",
+    "Hex: Bane"
+  ],
+  [
+    "BaneHexShortDesc",
+    "Hexes your weapon to impair enemies and add magic damage"
+  ],
+  [
+    "BaneHexLongDesc",
+    "Hexes your weapon to impair enemies and add magic damage"
+  ],
+  [
+    "BaneHexAN",
+    "Hex: Bane"
+  ],
+  [
+    "SiphonHexName",
+    "Hex: Siphon"
+  ],
+  [
+    "SiphonHexShortDesc",
+    "Hexes your weapon to extract the lifeforce of slain enemies"
+  ],
+  [
+    "SiphonHexLongDesc",
+    "Hexes your weapon to extract the lifeforce of slain enemies"
+  ],
+  [
+    "SiphonHexAN",
+    "Hex: Siphon"
+  ],
+  [
+    "EldritchBlastName",
+    "Eldritch Blast"
+  ],
+  [
+    "EldritchBlastShortDesc",
+    "Blast hexed enemies with draining magical damage \n and refresh the duration of their active hex"
+  ],
+  [
+    "EldritchBlastLongDesc",
+    "Blast hexed enemies with draining magical damage \n and refresh the duration of their active hex"
+  ],
+  [
+    "EldritchBlastAN",
+    "Eldritch Blast"
+  ],
+  [
+    "EchoingStrikeName",
+    "Echoing Strike"
+  ],
+  [
+    "EchoingStrikeShortDesc",
+    "Create echoes of your melee weapon that pierce through enemies"
+  ],
+  [
+    "EchoingStrikeLongDesc",
+    "Create echoes of your melee weapon that pierce through enemies"
+  ],
+  [
+    "EchoingStrikeAN",
+    "Echoing Strike"
+  ],
+  [
+    "PurgeHexName",
+    "Hex: Purge"
+  ],
+  [
+    "PurgeHexShortDesc",
+    "Hexes your weapon to warp enemies creating a chance\n they will erupt when hit"
+  ],
+  [
+    "PurgeHexLongDesc",
+    "Hexes your weapon to warp enemies creating a chance\n they will erupt when hit"
+  ],
+  [
+    "PurgeHexAN",
+    "Hex: Purge"
+  ],
+  [
+    "BladeWarpName",
+    "Blade Warp"
+  ],
+  [
+    "BladeWarpShortDesc",
+    "Hurl an astral weapon that teleports you to its impact"
+  ],
+  [
+    "BladeWarpLongDesc",
+    "Hurl an astral weapon that teleports you to its impact"
+  ],
+  [
+    "BladeWarpAN",
+    "Blade Warp"
+  ],
+  [
+    "CleaveName",
+    "Cleave"
+  ],
+  [
+    "CleaveShortDesc",
+    "Attack all enemies in an expanding arc"
+  ],
+  [
+    "CleaveLongDesc",
+    "Attack all enemies in an expanding arc"
+  ],
+  [
+    "CleaveAN",
+    "Cleave"
+  ],
+  [
+    "MirroredBladesName",
+    "Mirrored Blades"
+  ],
+  [
+    "MirroredBladesShortDesc",
+    "Attack with mirror duplicates of your weapon"
+  ],
+  [
+    "MirroredBladesLongDesc",
+    "Attack with mirror duplicates of your weapon"
+  ],
+  [
+    "MirroredBladesAN",
+    "Mirrored Blades"
+  ],
+  [
+    "SummonGoatmanName",
+    "Summon Goatman"
+  ],
+  [
+    "SummonGoatmanShortDesc",
+    "Summons a Goatman to fight by your side"
+  ],
+  [
+    "SummonGoatmanLongDesc",
+    "Summons a Goatman to fight by your side"
+  ],
+  [
+    "SummonGoatmanAN",
+    "Summon Goatman"
+  ],
+  [
+    "DemonicMasteryName",
+    "Demonic Mastery"
+  ],
+  [
+    "DemonicMasteryShortDesc",
+    "Passive - Enhances your summoned and bound demons"
+  ],
+  [
+    "DemonicMasteryLongDesc",
+    "Passive - Enhances your summoned and bound demons"
+  ],
+  [
+    "DemonicMasteryAN",
+    "Demonic Mastery"
+  ],
+  [
+    "DeathMarkName",
+    "Death Mark"
+  ],
+  [
+    "DeathMarkShortDesc",
+    "Forces your demon to teleport to and attack an enemy"
+  ],
+  [
+    "DeathMarkLongDesc",
+    "Forces your demon to teleport to and attack an enemy"
+  ],
+  [
+    "DeathMarkAN",
+    "Death Mark"
+  ],
+  [
+    "SummonTaintedName",
+    "Summon Tainted"
+  ],
+  [
+    "SummonTaintedShortDesc",
+    "Summons a Tainted to fight by your side"
+  ],
+  [
+    "SummonTaintedLongDesc",
+    "Summons a Tainted to fight by your side"
+  ],
+  [
+    "SummonTaintedAN",
+    "Summon Tainted"
+  ],
+  [
+    "SummonDefilerName",
+    "Summon Defiler"
+  ],
+  [
+    "SummonDefilerShortDesc",
+    "Summons a Defiler that binds enemy souls together \n to take shared damage"
+  ],
+  [
+    "SummonDefilerLongDesc",
+    "Summons a defiler that binds enemy souls together \n to take shared damage"
+  ],
+  [
+    "SummonDefilerAN",
+    "Summon Defiler"
+  ],
+  [
+    "BloodOathName",
+    "Blood Oath"
+  ],
+  [
+    "BloodOathLongDesc",
+    "Passive - Bind the lifeforce of your demon \n to protect from enemy attacks"
+  ],
+  [
+    "BloodOathAN",
+    "Blood Oath"
+  ],
+  [
+    "EngorgeName",
+    "Engorge"
+  ],
+  [
+    "EngorgeShortDesc",
+    "Heal and empower your demon by feeding it a corpse"
+  ],
+  [
+    "EngorgeLongDesc",
+    "Heal and empower your demon by feeding it a corpse"
+  ],
+  [
+    "EngorgeAN",
+    "Engorge"
+  ],
+  [
+    "BloodBoilName",
+    "Blood Boil"
+  ],
+  [
+    "BloodBoilShortDesc",
+    "Erupt your demon's blood to damage nearby enemies"
+  ],
+  [
+    "BloodBoilLongDesc",
+    "Erupt your demon's blood to damage nearby enemies"
+  ],
+  [
+    "BloodBoilAN",
+    "Blood Boil"
+  ],
+  [
+    "ConsumeName",
+    "Consume"
+  ],
+  [
+    "ConsumeShortDesc",
+    "Sacrifice your demon in exchange for power"
+  ],
+  [
+    "ConsumeLongDesc",
+    "Sacrifice your demon in exchange for power"
+  ],
+  [
+    "ConsumeAN",
+    "Consume"
+  ],
+  [
+    "BindDemonName",
+    "Bind Demon"
+  ],
+  [
+    "BindDemonDesc",
+    "Force an injured demon to do your bidding"
+  ],
+  [
+    "BindDemonLongDesc",
+    "Force an injured demon to do your bidding"
+  ],
+  [
+    "BindDemonAN",
+    "Bind Demon"
+  ],
+  [
+    "StrSkillDemonAllResist",
+    "Resist All for your demon: %+d%%"
+  ],
+  [
+    "StrSkillShardDamage",
+    "[PH]Shard Damage: %d-%d"
+  ],
+  [
+    "StrSkillCrushing",
+    "+%d%% Chance of Crushing Blow"
+  ],
+  [
+    "StrSkillMagicDamageAveragePerSecond",
+    "Average Magic Damage: %d-%d per second"
+  ],
+  [
+    "StrSkillAbsorbMissile",
+    "[PH]Missiles Absorbed: %d"
+  ],
+  [
+    "StrSkillPullChance",
+    "[PH]+%d%% Chance to Pull"
+  ],
+  [
+    "StrSkillPull",
+    "[PH] Pull Radius: %d Yards"
+  ],
+  [
+    "StrSkillFasterHitRecovery",
+    "[PH]+%d Faster Hit Recovery"
+  ],
+  [
+    "StrSkillBaseFive",
+    "[PH]Grants an Additional Skill every 5 Base Levels"
+  ],
+  [
+    "StrSkillBonusSkillStun",
+    "Stun Length: %d"
+  ],
+  [
+    "StrSkillLifeAfterKill",
+    "Life After Each Kill: %+d"
+  ],
+  [
+    "StrSkillBindSouls",
+    "Max Bound Souls: %d"
+  ],
+  [
+    "StrSkillSlayEnemies",
+    "Slays enemies with less than %d%% health"
+  ],
+  [
+    "StrSkillDemonDamage",
+    "Damage: %d-%d"
+  ],
+  [
+    "StrSkillLifeCostDemon",
+    "Demon's Life Cost: %d%%"
+  ],
+  [
+    "StrSkillLifeCost",
+    "[PH]Minimum Life Cost: %+d Life"
+  ],
+  [
+    "StrSkillPhysicalReduction",
+    "Physical Damage to your demon Reduced by %d%%"
+  ],
+  [
+    "StrSkillMitigationFromMonster",
+    "[PH]Mitigate Damage based on the monster you Subsume"
+  ],
+  [
+    "StrSkillExplode",
+    "[PH]Chance to Explode: %d%%"
+  ],
+  [
+    "StrSkillDuplicates",
+    "[PH]Duplicates: %d"
+  ],
+  [
+    "StrSkillChanceToSucceed",
+    "Chance to Bind: %d%%"
+  ],
+  [
+    "StrSkillRequiredHealth",
+    "[PH]Health required to attempt: %d%%"
+  ],
+  [
+    "StrSkillAffixBaseFive",
+    "[PH]Grants an Additional Affix every 5 Base Levels"
+  ],
+  [
+    "StrSkillBonusAffixes",
+    "[PH]Bonus Affixes: %d"
+  ],
+  [
+    "StrSkillAffixes",
+    "[PH]Bind Demon mimics Unique Monsters and gains a random Affix"
+  ],
+  [
+    "StrSkillDemonicMasteryDemonDamage",
+    "Damage: %+d%%"
+  ],
+  [
+    "StrSkillDemonicMasteryDemonLife",
+    "Life of your demon: %+d%%"
+  ],
+  [
+    "StrSkillMagicResist",
+    "Magic Resist: %+d%%"
+  ],
+  [
+    "StrSkillManaAfterKill",
+    "Mana After Each Kill: %+d"
+  ],
+  [
+    "StrSkillCritChance",
+    "Critical Strike Chance: %+d%%"
+  ],
+  [
+    "StrSkillPhysicalReductionDemon",
+    "Physical Damage to your demon Reduced by %d%%"
+  ],
+  [
+    "StrSkillHealPercentDemon",
+    "Heal Demon's Life: %+d%%"
+  ],
+  [
+    "StrSkillConsumeBonus",
+    "Summon or Bind a demon to learn its secrets"
+  ],
+  [
+    "StrSkillUniqueAffixStrong",
+    "Bound demons gain Extra Strong"
+  ],
+  [
+    "StrSkillRequirements",
+    "Weapon Requirements %+d%%"
+  ],
+  [
+    "StrSkillEnemyAttackRating",
+    "%+d%% to Enemy Attack Rating"
+  ],
+  [
+    "StrSkillEnemyDefense",
+    "%+d%% to Enemy Defense"
+  ],
+  [
+    "StrSkillEffectLengthSingular",
+    "[PH] Effect Length: %d second"
+  ],
+  [
+    "StrSkillEffectLength",
+    "[PH]Effect Length: %d seconds"
+  ],
+  [
+    "StrSkillEffectWidth",
+    "Width: %d yards"
+  ],
+  [
+    "StrSkillEffectWidthSingular",
+    "Width: %d yard"
+  ],
+  [
+    "StrSkillMissileAbsorbChance",
+    "[PH]Chance for Missile to Absorb: %+d%%"
+  ],
+  [
+    "SkillCategoryWa1",
+    "Demon"
+  ],
+  [
+    "SkillCategoryWa2",
+    "Eldritch"
+  ],
+  [
+    "SkillCategoryWa3",
+    "Chaos"
+  ],
+  [
+    "StrSkillKnockbackChance",
+    "[PH]Chance to Knockback: %+d%%"
+  ],
+  [
+    "StrSkillConfuseChance",
+    "Chance to Enrage: %+d%%"
+  ],
+  [
+    "StrSkillExplodeChance",
+    "Chance to Erupt: %+d%%"
+  ],
+  [
+    "StrSkillDamageToDemon",
+    "%+d%% Damage Taken Goes To your demon"
+  ],
+  [
+    "StrSkillEffectRadius",
+    "[PH]Radius: %+d%%"
+  ],
+  [
+    "StrSkillEffectRadiusSingular",
+    "[PH]Radius: %+d%%"
+  ],
+  [
+    "StrSkillEffectChanceToStun",
+    "[PH]Chance to Stun Attackers: %+d%%"
+  ],
+  [
+    "HexPurgeMagicExplosionDamage",
+    "Magic Explosion Damage: %d-%d"
+  ],
+  [
+    "SigilDeathExplosionDamage",
+    "Fire Explosion Damage: %d-%d%% of slain enemy's health"
+  ],
+  [
+    "MindBarrierRangedThornsDamage",
+    "[PH]%d%% damage returned to ranged attackers"
+  ],
+  [
+    "ShadowMasteryMiasmaDurationIncrease",
+    "+%d Seconds to Miasma Duration"
+  ],
+  [
+    "ShadowMasteryMiasmaRangeIncrease",
+    "Miasma Radius: %d Yards"
+  ],
+  [
+    "ShadowMasteryMiasmaDamageIncrease",
+    "[PH]+%d%% Miasma Damage"
+  ],
+  [
+    "ShadowMasteryAbyssRangeIncrease",
+    "Bonus Abyss Radius: +%d Yards"
+  ],
+  [
+    "ShadowMasteryAbyssDamageIncrease",
+    "[PH]+%d%% Abyss damage over time"
+  ],
+  [
+    "AMDImm",
+    "%s: %+d%% Average Magic Damage per Second per Level"
+  ],
+  [
+    "SynHealthRegenPerLvl",
+    "%s: +%d Replenish life per level"
+  ],
+  [
+    "SynEnemyHexDuration",
+    "%s: Hex Duration +%d seconds per level"
+  ],
+  [
+    "HexEnemyDuration",
+    "Hex Duration: %d seconds"
+  ],
+  [
+    "SynHexSiphonLifeManaSteal",
+    "%s: +%d Life and Mana After Kill per level"
+  ],
+  [
+    "SynHexPurgeChanceToErupt",
+    "%s: %+d%% Chance to Erupt per level"
+  ],
+  [
+    "SynFlurryChanceToBlock",
+    "[PH]%s: %+d%% Block per level"
+  ],
+  [
+    "MirroredBladesDamagePercent",
+    "Mirrored Blade Damage: %d%%"
+  ],
+  [
+    "SynGoatmanCrushingBlowPerLevel",
+    "%s: %+d%% Chance of Crushing Blow per level"
+  ],
+  [
+    "StrSkillDemonicMasteryDemonAC",
+    "Defense: %+d"
+  ],
+  [
+    "SynResistAllPerLevel",
+    "[PH]%s: %+d%% Resist all per level"
+  ],
+  [
+    "SynDefenseFlatPerLevel",
+    "%s: %+d Defense per level"
+  ],
+  [
+    "SynMoveSpeedPerLevel",
+    "[PH]%s: %+d%% Walk/Run Speed per level"
+  ],
+  [
+    "SynCriticalStrikePerLevel",
+    "[PH]%s: %+d%% Chance to Critical Strike per level"
+  ],
+  [
+    "StrSkillUniqueAffixFast",
+    "Bound demons gain Extra Fast"
+  ],
+  [
+    "StrSkillUniqueAffixSpectral",
+    "Bound demons gain Spectral Hit"
+  ],
+  [
+    "StrSkillUniqueAffixAura",
+    "Bound demons gain Aura Enchanted"
+  ],
+  [
+    "SynChanceToBindPerLevel",
+    "%s: +%d%% Chance to Bind Demon per level"
+  ],
+  [
+    "StrSkillBonusSkillFrenzy",
+    "[PH]Frenzy Damage Bonus: %+d%%"
+  ],
+  [
+    "StrSkillBonusSkillBerserk",
+    "[PH]Berserk Magic Damage: %+d%%"
+  ],
+  [
+    "StrSkillHealthLinkDamageSharePercent",
+    "Damage Shared Between Bound Targets: %d%%"
+  ],
+  [
+    "StrSkillDamageIncreaseFlat",
+    "Damage Increased by %d"
+  ],
+  [
+    "StrSkillMagicDamageIncreaseFlat",
+    "Magic Damage Increased by %d"
+  ],
+  [
+    "StrSkillConsumePetBonus",
+    "Bonus from %s:"
+  ],
+  [
+    "StrSkillMiasmaCloudRadius",
+    "Miasma Radius: %d"
+  ],
+  [
+    "StrSkillMiasmaChainsSplashRadius",
+    "[PH]Miasma Chains Splash Radius: %d"
+  ],
+  [
+    "StrSkillMirroredBladesDuplicates",
+    "Mirrored Weapons Created: %d"
+  ],
+  [
+    "SynEchoingStrikeDuplicates",
+    "%s: Additional echoes created every sixth level: %d"
+  ],
+  [
+    "SynCleaveArcRadius",
+    "%s: Cleave Arc increased every fifth level: %d Degrees"
+  ],
+  [
+    "StrSkillEchoingStrikeTotalDuplicates",
+    "%d Echoes"
+  ],
+  [
+    "StrSkillCleaveArcRadius",
+    "Cleave Arc: %d Degrees"
+  ],
+  [
+    "StrSkillHexPurgeExplosionCount",
+    "Hex Removed after %d Explosions"
+  ],
+  [
+    "StrSkillDamagePercentage",
+    "Damage: +%d%%"
+  ],
+  [
+    "StrSkillBladeWarpTotalDuplicates",
+    "%d Astral Weapons"
+  ],
+  [
+    "SynBladeWarpDuplicates",
+    "%s: Additional astral weapons created every fifth level: %d"
+  ],
+  [
+    "StrSkillRingOfFireDamagePerFrameBonus",
+    "+%d%% Fire Damage per yard"
+  ],
+  [
+    "StrSkillEchoingStrikeTotalDuplicateSingular",
+    "%d Echo"
+  ],
+  [
+    "StrSkillBladeWarpTotalDuplicatesSingular",
+    "%d Astral Weapon"
+  ],
+  [
+    "StrSkillHexPurgeExplosionCountSingular",
+    "Hex Removed after %d Explosion"
+  ],
+  [
+    "StrSkillDemonMaxCount",
+    "Max Demons: %d"
+  ],
+  [
+    "StrSkillChainMaxCount",
+    "Max Chains: %d"
   ],
   [
     "merca201",
@@ -24300,6 +25360,26 @@
     "%s Corpse"
   ],
   [
+    "DefenderSpirit",
+    "Defender Spirit"
+  ],
+  [
+    "GuardianSpirit",
+    "Guardian Spirit"
+  ],
+  [
+    "ProtectorSpirit",
+    "Protector Spirit"
+  ],
+  [
+    "WarGoatman",
+    "Goatman"
+  ],
+  [
+    "WarDefiler",
+    "Defiler"
+  ],
+  [
     "asheara",
     "Asheara"
   ],
@@ -24853,7 +25933,7 @@
   ],
   [
     "Skillld385",
-    "summons a Clone of Diablo, Lord of Terror"
+    "summons a Butcher"
   ],
   [
     "Skillan385",
@@ -24878,6 +25958,18 @@
   [
     "BrokenItem",
     "Failure"
+  ],
+  [
+    "cr1",
+    "Blacksmith Ingot"
+  ],
+  [
+    "cr2",
+    "Horadric Sphere"
+  ],
+  [
+    "cr3",
+    "Resplendent Spark"
   ],
   [
     "Seraph's Hymn Cr",
@@ -24946,6 +26038,10 @@
   [
     "skillld126New",
     "powerful blow that increases the damage done\nto enemies and crush them"
+  ],
+  [
+    "jwd",
+    "Disenchanted Jewel"
   ],
   [
     "cont_jwd",
@@ -25173,59 +26269,59 @@
   ],
   [
     "player99sc3sor",
-    ""
+    "Season 3\nSmallYx (Smolly)"
   ],
   [
     "player99hc3sor",
-    ""
+    "Season 3\nLightingChains (Survival)"
   ],
   [
     "player99sc3bar",
-    ""
+    "Season 3\nBobrik (Spon)"
   ],
   [
     "player99hc3bar",
-    ""
+    "Season 3\nBalalaykin (Andrey70rus)"
   ],
   [
     "player99sc3pal",
-    ""
+    "Season 3\nSPBSALUT (SPB SALUT)"
   ],
   [
     "player99hc3pal",
-    ""
+    "Season 3\nSW_Why (2002nt7)"
   ],
   [
     "player99sc3nec",
-    ""
+    "Season 3\nseregadixon (ignorepain)"
   ],
   [
     "player99hc3nec",
-    ""
+    "Season 3\nHekroThai (Kir4aThai)"
   ],
   [
     "player99sc3ama",
-    ""
+    "Season 3\nIngileifx (ingileif)"
   ],
   [
     "player99hc3ama",
-    ""
+    "Season 3\nPoXeP-Ama (PoXeP)"
   ],
   [
     "player99sc3dru",
-    ""
+    "Season 3\nRoysha-Dudu (Roysha)"
   ],
   [
     "player99hc3dru",
-    ""
+    "Season 3\nEnclaveeBST (Enclavexl70)"
   ],
   [
     "player99sc3ass",
-    ""
+    "Season 3\nЛапушка (Chaos_Mage)"
   ],
   [
     "player99hc3ass",
-    ""
+    "Season 3\nSW_WhyChaseTop (2002nt7)"
   ],
   [
     "player99sc4sor",
@@ -25448,6 +26544,10 @@
     "Talisman of the Bone Lord"
   ],
   [
+    "sth",
+    "Heroic Offering"
+  ],
+  [
     "cont_sth",
     "Heroic Offering"
   ],
@@ -25597,11 +26697,11 @@
   ],
   [
     "PlusEchoesskills",
-    "%+d Echoes"
+    "Echoing Strike Modifier: %+d Echoes"
   ],
   [
     "PlusMirroredskills",
-    "%+d Mirrored Weapons Created"
+    "Mirrored Blades Modifier: %+d Mirrored Weapons Created"
   ],
   [
     "BindDemonLife",
@@ -25613,7 +26713,7 @@
   ],
   [
     "ReadBloodScroll",
-    "Warlord of Blood...Claws...Blood of Stone...Portal...Later"
+    "Warlord of Blood...Claws...Blood of Stone...Portal...Now"
   ],
   [
     "skillnameOrderToMercenary",
@@ -25652,16 +26752,124 @@
     "The Rising Sun"
   ],
   [
+    "DemonicSanctuary",
+    "Demonic Sanctuary"
+  ],
+  [
+    "ToDemonicSanctuary",
+    "To Demonic Sanctuary"
+  ],
+  [
+    "EnteringDemonicSanctuary",
+    "Entering Demonic Sanctuary"
+  ],
+  [
+    "DemonicSanctuaryGate",
+    "Demonic Rift"
+  ],
+  [
+    "DemonicSanctuaryMinion",
+    "Sanctuary Demon"
+  ],
+  [
+    "warlockdemonform",
+    "Horned one"
+  ],
+  [
+    "reddancer",
+    "Red Dancer"
+  ],
+  [
+    "hellmaw",
+    "Corrupted Warlock"
+  ],
+  [
+    "DemonicSanctuaryBartuc",
+    "Warlord of Blood"
+  ],
+  [
     "BlizzlessFortuneElixirName",
     "Elixir of Fortune"
+  ],
+  [
+    "BlizzlessFortuneElixirDesc",
+    "+5000% Better Chance of Getting Magic Items"
   ],
   [
     "BlizzlessWisdomElixirName",
     "Elixir of Wisdom"
   ],
   [
+    "BlizzlessWisdomElixirDesc",
+    "+100% Experience Gained"
+  ],
+  [
     "BlizzlessLifeManaElixirName",
     "Elixir of Life and Mana"
+  ],
+  [
+    "BlizzlessLifeManaElixirDesc",
+    "+100% Maximum Life\n+100% Maximum Mana"
+  ],
+  [
+    "BloodforgedHelm",
+    "Bartuc's Crimson Visage"
+  ],
+  [
+    "BloodforgedArmor",
+    "Bartuc's Crimson Vessel"
+  ],
+  [
+    "Horazon",
+    "Horazon's Ghost"
+  ],
+  [
+    "DemonicSanctuaryLevel1",
+    "Demonic Sanctuary Level 1"
+  ],
+  [
+    "ToDemonicSanctuaryLevel1",
+    "To The Demonic Sanctuary Level 1"
+  ],
+  [
+    "EnteringDemonicSanctuaryLevel1",
+    "Entering The Demonic Sanctuary Level 1"
+  ],
+  [
+    "DemonicSanctuaryLevel2",
+    "Demonic Sanctuary Level 2"
+  ],
+  [
+    "ToDemonicSanctuaryLevel2",
+    "To The Demonic Sanctuary Level 2"
+  ],
+  [
+    "EnteringDemonicSanctuaryLevel2",
+    "Entering The Demonic Sanctuary Level 2"
+  ],
+  [
+    "DemonicSanctuaryLevel3",
+    "Demonic Sanctuary Level 3"
+  ],
+  [
+    "ToDemonicSanctuaryLevel3",
+    "To The Demonic Sanctuary Level 3"
+  ],
+  [
+    "EnteringDemonicSanctuaryLevel3",
+    "Entering The Demonic Sanctuary Level 3"
+  ],
+  [
+    "DemonicSanctuaryLevel4",
+    "Bibliotheca Daemonica"
+  ],
+  [
+    "ToDemonicSanctuaryLevel4",
+    "To Bibliotheca Daemonica"
+  ],
+  [
+    "EnteringDemonicSanctuaryLevel4",
+    "Entering Bibliotheca Daemonica"
   ],
   [
     "p20",
@@ -25669,11 +26877,159 @@
   ],
   [
     "p21",
-    "Demon Paw"
+    "Demon Hand"
   ],
   [
     "BlizzlessWealthElixirName",
     "Elixir of Wealth"
+  ],
+  [
+    "BlizzlessWealthElixirDesc",
+    "+5000% Extra Gold from Monsters"
+  ],
+  [
+    "player99sc3war",
+    "Season 3\nWarcock (TestNoX)"
+  ],
+  [
+    "player99hc3war",
+    "Season 3\nDexterLock (dexter)"
+  ],
+  [
+    "butcher_taunt",
+    "Fresh meat!"
+  ],
+  [
+    "leoric_taunt",
+    "You dare to bring the warmth of life into my tomb?!"
+  ],
+  [
+    "horazon_taunt",
+    "Blood Remembers..."
+  ],
+  [
+    "bloodmaiden",
+    "Blood Maiden"
+  ],
+  [
+    "FeralLeapName",
+    "Feral Leap"
+  ],
+  [
+    "FeralLeapDescription",
+    "Leap to a location at twice the normal speed without knocking back enemies. Only usable in Werewolf or Werebear form."
+  ],
+  [
+    "FeralLeapAlt",
+    "Feral Leap"
+  ],
+  [
+    "BestiaryStatsBaseContext",
+    "Base values: displayed level, 1 player.\nArea level, Terror Zones and modifiers may change them."
+  ],
+  [
+    "BestiaryStatsPhysicalAttacks",
+    "A1/A2: base attacks, including accounted extra damage.\nDoes not describe all skill damage."
+  ],
+  [
+    "BestiaryTrainingDummy1",
+    "Punching Souls"
+  ],
+  [
+    "BestiaryTrainingDummy2",
+    "Elemental Punching Souls"
+  ],
+  [
+    "BestiaryTrainingDummy3",
+    "Armoured Punching Souls"
+  ],
+  [
+    "BestiaryTrainingDummy4",
+    "Legendary Punching Souls"
+  ],
+  [
+    "xarvekthebloodletter",
+    "Xarvek the Bloodletter"
+  ],
+  [
+    "dorgulironmaw",
+    "Dorgul Ironmaw"
+  ],
+  [
+    "varkyrathecrimson",
+    "Varkyra the Crimson"
+  ],
+  [
+    "urkhasthedevourer",
+    "Urkhas the Devourer"
+  ],
+  [
+    "ModAbsoluteAbyssPower",
+    "Abyss Modifier: No Cooldown"
+  ],
+  [
+    "ModAbsoluteApocalypsePower",
+    "Apocalypse Modifier: deals damage over 4 seconds"
+  ],
+  [
+    "MiasmaChainModifier",
+    "Miasma Chain Modifier: %+d to Max Chains"
+  ],
+  [
+    "cont_bloodscroll",
+    "Tattered Scroll"
+  ],
+  [
+    "cont_bloodstone",
+    "Bloodstone"
+  ],
+  [
+    "cont_demonpaw",
+    "Demon Hand"
+  ],
+  [
+    "cont_elixirwealth",
+    "Elixir of Wealth"
+  ],
+  [
+    "cont_elixirwisdom",
+    "Elixir of Wisdom"
+  ],
+  [
+    "cont_elixirlifemana",
+    "Elixir of Life and Mana"
+  ],
+  [
+    "cont_elixirfortune",
+    "Elixir of Fortune"
+  ],
+  [
+    "ReadBloodScrollWithContainerHint",
+    "Warlord of Blood...Claws...Blood of Stone...Portal...Now\n\ncreate container with this item inside\nTransmute alone in the Horadric Cube to"
+  ],
+  [
+    "BlizzlessWealthElixirDescWithContainerHint",
+    "+5000% Extra Gold from Monsters\n\ncreate container with this item inside\nTransmute alone in the Horadric Cube to"
+  ],
+  [
+    "BlizzlessWisdomElixirDescWithContainerHint",
+    "+100% Experience Gained\n\ncreate container with this item inside\nTransmute alone in the Horadric Cube to"
+  ],
+  [
+    "BlizzlessLifeManaElixirDescWithContainerHint",
+    "+100% Maximum Life\n+100% Maximum Mana\n\ncreate container with this item inside\nTransmute alone in the Horadric Cube to"
+  ],
+  [
+    "BlizzlessFortuneElixirDescWithContainerHint",
+    "+5000% Better Chance of Getting Magic Items\n\ncreate container with this item inside\nTransmute alone in the Horadric Cube to"
+  ],
+  [
+    "DemonSummonModifier",
+    "Demonic Mastery Modifier: %+d to Max Demons"
+  ],
+  [
+    "bartuc_taunt",
+    "You come here, seeking me? You will find only your own death!"
   ],
   [
     "WarrivAct1IntroPalGossip1",

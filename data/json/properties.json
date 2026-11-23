@@ -1201,5 +1201,21 @@
   "plusmirror": {
     "stat1": "plus_mirror",
     "func1": 1
+  },
+  "abyss-nocd": {
+    "stat1": "abyss_nocd",
+    "func1": 1
+  },
+  "apoc-dot": {
+    "stat1": "apocalypse_dot",
+    "func1": 1
+  },
+  "miasma-chain": {
+    "stat1": "miasma_chain_bonus",
+    "func1": 1
+  },
+  "demon-max": {
+    "stat1": "demon_summon_bonus",
+    "func1": 1
   }
 }

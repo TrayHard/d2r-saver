@@ -256,7 +256,7 @@
     "descstrneg": "ManaRepNeg",
     "id": 26,
     "descpriority": 56,
-    "descfunc": 19,
+    "descfunc": 29,
     "savebits": 9,
     "saveadd": 250
   },
@@ -3751,5 +3751,52 @@
     "descfunc": 19,
     "savebits": 8,
     "saveadd": 5
+  },
+  "bartuc_cyclone_remaining": {
+    "id": 472
+  },
+  "bartuc_cyclone_max": {
+    "id": 473
+  },
+  "abyss_nocd": {
+    "descstrpos": "ModAbsoluteAbyssPower",
+    "descstrneg": "ModAbsoluteAbyssPower",
+    "id": 474,
+    "descpriority": 180,
+    "descfunc": 19,
+    "savebits": 1,
+    "saveadd": 0
+  },
+  "apocalypse_dot": {
+    "descstrpos": "ModAbsoluteApocalypsePower",
+    "descstrneg": "ModAbsoluteApocalypsePower",
+    "id": 475,
+    "descpriority": 179,
+    "descfunc": 19,
+    "savebits": 1,
+    "saveadd": 0
+  },
+  "miasma_chain_bonus": {
+    "descstrpos": "MiasmaChainModifier",
+    "descstrneg": "MiasmaChainModifier",
+    "id": 476,
+    "descpriority": 178,
+    "descfunc": 19,
+    "savebits": 8,
+    "saveadd": 0
+  },
+  "demon_summon_bonus": {
+    "descstrpos": "DemonSummonModifier",
+    "descstrneg": "DemonSummonModifier",
+    "id": 477,
+    "descpriority": 177,
+    "descfunc": 19,
+    "savebits": 8,
+    "saveadd": 0
+  },
+  "bartuc_pet_final_hp": {
+    "opstat1": "maxhp",
+    "id": 478,
+    "op": 7
   }
 }

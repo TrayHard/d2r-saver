@@ -1272,6 +1272,6 @@
   },
   "warnings": [
     "Main item list truncated: item 6/26: unknown item stat code 508",
-    "Hireling item list truncated: item 3/3: unknown item stat code 474"
+    "Hireling item list truncated: item 3/3: buffer overrun: reading 16 bit(s) at bit 14792 (byte 1849) past the end of a 1849-byte buffer"
   ]
 }

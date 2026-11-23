@@ -109,27 +109,31 @@ describe('materials edit, review: nothing outside the authoritative counter ever
 });
 
 describe('materials edit, review: absent records and thin sectors', () => {
-  it('an empty materials sector: nothing to patch and nothing to prove an append on', () => {
+  it('an empty materials sector: nothing to patch, but any material appends (owner, 2026-11-15)', () => {
     const empty = sectorOf(seller, []);
     const report = readMaterialsD2I(empty, gd, { sectorOffset: 0 });
     expect([report.complete, report.records.length, report.declared]).toEqual([true, 0, 0]);
     expect(refusal(() => editMaterialsD2I(empty, gd, { sectorOffset: 0, patches: [{ code: 'r01', from: 0, to: 1 }], appends: [] })))
       .toBe(ErrorCode.MATERIAL_NOT_FOUND);
-    expect(refusal(() => editMaterialsD2I(empty, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'gpv', family: 'simple', quantity: 1 }] })))
-      .toBe(ErrorCode.LAYOUT_UNVERIFIED);
-    expect(refusal(() => editMaterialsD2I(empty, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'pk2', family: 'complex', quantity: 1, guid: 7, ilvl: 1 }] })))
-      .toBe(ErrorCode.LAYOUT_UNVERIFIED);
+    const { newBuffer, diff } = editMaterialsD2I(empty, gd, { sectorOffset: 0, patches: [], appends: [
+      { code: 'gpv', family: 'simple', quantity: 1 },
+      { code: 'pk2', family: 'complex', quantity: 4, guid: 7, ilvl: 1 },
+      { code: 'p21', family: 'complex', quantity: 2, guid: 8, ilvl: 1 },
+    ] });
+    expect(verifyExactDiff(empty, newBuffer, diff).ok).toBe(true);
+    const after = readMaterialsD2I(newBuffer, gd, { sectorOffset: 0 });
+    expect(after.records.map(r => [r.code, r.quantity, r.layoutOk, r.uniqueForm])).toEqual([
+      ['gpv', 1, true, false], ['pk2', 4, true, false], ['p21', 2, true, true]]);
   });
 
-  it('a single-family sector refuses an append of the other family', () => {
+  it('a single-family sector appends the other family too', () => {
     const report = readMaterialsD2I(seller, gd, { sectorOffset: 0 });
     const simpleOnly = sectorOf(seller, report.records.filter(r => r.family === 'simple'));
     const complexOnly = sectorOf(seller, report.records.filter(r => r.family === 'complex'));
-    expect(refusal(() => editMaterialsD2I(simpleOnly, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'pk2', family: 'complex', quantity: 1, guid: 7, ilvl: 1 }] })))
-      .toBe(ErrorCode.LAYOUT_UNVERIFIED);
-    expect(refusal(() => editMaterialsD2I(complexOnly, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'gpy', family: 'simple', quantity: 1 }] })))
-      .toBe(ErrorCode.LAYOUT_UNVERIFIED);
-    // Each family still appends where it is proven.
+    expect(editMaterialsD2I(simpleOnly, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'pk2', family: 'complex', quantity: 1, guid: 7, ilvl: 1 }] })
+      .after.records.at(-1)!.code).toBe('pk2');
+    expect(editMaterialsD2I(complexOnly, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'gpy', family: 'simple', quantity: 1 }] })
+      .after.records.at(-1)!.code).toBe('gpy');
     expect(editMaterialsD2I(simpleOnly, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'gpy', family: 'simple', quantity: 1 }] }).after.records.length)
       .toBe(report.records.filter(r => r.family === 'simple').length + 1);
   });

@@ -13,12 +13,48 @@ quillrat7																															thorns			15	20																										
 quillrat8																															thorns			15	20																										thorns			30	40																										0
 druidhawk	stupidity			-1	-1																										stupidity			-1	-1																										stupidity			-1	-1																										0
 spiritofbarbsprop	aura		296	20	20																										aura		296	20	20																										aura		296	20	20																										0
-uber																																																													state		193	1	1																										0
-obelisk	state		192	1	1																										state		192	1	1																										state		192	1	1																										0
-playerpal	state		198	1	1																										state		198	1	1																										state		198	1	1																										0
-playersor	state		199	1	1																										state		199	1	1																										state		199	1	1																										0
-playerdru	state		200	1	1																										state		200	1	1																										state		200	1	1																										0
-playerass	state		201	1	1																										state		201	1	1																										state		201	1	1																										0
-playerbar	state		202	1	1																										state		202	1	1																										state		202	1	1																										0
-playernec	state		203	1	1																										state		203	1	1																										state		203	1	1																										0
-playerama	state		204	1	1																										state		204	1	1																										state		204	1	1																										0
+uber																																																													state		431	1	1																										0
+obelisk	state		430	1	1																										state		430	1	1																										state		430	1	1																										0
+playerpal1	state		436	1	1																										state		436	1	1																										state		436	1	1																										0
+playersor1	state		437	1	1																										state		437	1	1																										state		437	1	1																										0
+playerdru1	state		438	1	1																										state		438	1	1																										state		438	1	1																										0
+playerass1	state		439	1	1																										state		439	1	1																										state		439	1	1																										0
+playerbar1	state		440	1	1																										state		440	1	1																										state		440	1	1																										0
+playernec1	state		441	1	1																										state		441	1	1																										state		441	1	1																										0
+playerama1	state		442	1	1																										state		442	1	1																										state		442	1	1																										0
+playerpal1won	state		444	1	1																										state		444	1	1																										state		444	1	1																										0
+playersor1won	state		445	1	1																										state		445	1	1																										state		445	1	1																										0
+playerdru1won	state		446	1	1																										state		446	1	1																										state		446	1	1																										0
+playerass1won	state		447	1	1																										state		447	1	1																										state		447	1	1																										0
+playerbar1won	state		448	1	1																										state		448	1	1																										state		448	1	1																										0
+playernec1won	state		449	1	1																										state		449	1	1																										state		449	1	1																										0
+playerama1won	state		450	1	1																										state		450	1	1																										state		450	1	1																										0
+playerpal1dead	state		436	1	1	fade			1	1																					state		436	1	1	fade			1	1																					state		436	1	1	fade			1	1																					0
+playersor1dead	state		437	1	1	fade			1	1																					state		437	1	1	fade			1	1																					state		437	1	1	fade			1	1																					0
+playerdru1dead	state		438	1	1	fade			1	1																					state		438	1	1	fade			1	1																					state		438	1	1	fade			1	1																					0
+playerass1dead	state		439	1	1	fade			1	1																					state		439	1	1	fade			1	1																					state		439	1	1	fade			1	1																					0
+playerbar1dead	state		440	1	1	fade			1	1																					state		440	1	1	fade			1	1																					state		440	1	1	fade			1	1																					0
+playernec1dead	state		441	1	1	fade			1	1																					state		441	1	1	fade			1	1																					state		441	1	1	fade			1	1																					0
+playerama1dead	state		442	1	1	fade			1	1																					state		442	1	1	fade			1	1																					state		442	1	1	fade			1	1																					0
+playerpal1wondead	state		444	1	1	fade			1	1																					state		444	1	1	fade			1	1																					state		444	1	1	fade			1	1																					0
+playersor1wondead	state		445	1	1	fade			1	1																					state		445	1	1	fade			1	1																					state		445	1	1	fade			1	1																					0
+playerdru1wondead	state		446	1	1	fade			1	1																					state		446	1	1	fade			1	1																					state		446	1	1	fade			1	1																					0
+playerass1wondead	state		447	1	1	fade			1	1																					state		447	1	1	fade			1	1																					state		447	1	1	fade			1	1																					0
+playerbar1wondead	state		448	1	1	fade			1	1																					state		448	1	1	fade			1	1																					state		448	1	1	fade			1	1																					0
+playernec1wondead	state		449	1	1	fade			1	1																					state		449	1	1	fade			1	1																					state		449	1	1	fade			1	1																					0
+playerama1wondead	state		450	1	1	fade			1	1																					state		450	1	1	fade			1	1																					state		450	1	1	fade			1	1																					0
+kingleoric																																																													aura		296	10	10	hit-skill		659	20	1	slow			50	50	hit-skill		660	25	1	hit-skill		663	100	1						0
+butcher																																																													swing2			50	50	move2			50	50	hit-skill		659	10	1	hit-skill		661	25	1	crush			50	50						0
+colossalancient																																																													hit-skill		659	50	1																										0
+curseimmune																																																													curse-imm			100	100																										0
+monholymagic	aura		428	19	19																										aura		428	19	19																										aura		428	19	19																										0
+warlockdemonform																																																													thorns	100		200	200																										0
+bartuc_the_bloody																															extra-fire			60	60																										extra-fire			120	120																										0
+playerwar1won	state		458	1	1																										state		458	1	1																										state		458	1	1																										0
+playerwar1dead	state		457	1	1	fade			1	1																					state		457	1	1	fade			1	1																					state		457	1	1	fade			1	1																					0
+playerwar1wondead	state		458	1	1	fade			1	1																					state		458	1	1	fade			1	1																					state		458	1	1	fade			1	1																					0
+playerwar1	state		457	1	1																										state		457	1	1																										state		457	1	1																										0
+horazon	fade			1	1	plusecho			2	2	balance1	100		-15	-15																fade			1	1	plusecho			2	2	balance1	100		-15	-15																fade			1	1	plusecho			2	2	balance1	100		-15	-15																0
+bartuc_phase_one_death	death-skill	100	430	100	1																										extra-fire			60	60	death-skill	100	430	100	1																					death-skill	100	430	100	1	curse-imm			100	100	ac			5	5	aura	100	682	1	1											0
+bartuc_phase_two_death	death-skill	100	431	100	1																										extra-fire			60	60	death-skill	100	431	100	1																					death-skill	100	431	100	1	curse-imm			100	100	ac			5	5	aura	100	682	1	1											0
+bartuc_phase_three_spec																															extra-fire			60	60																										curse-imm			100	100	ac			3	3	aura	100	682	1	1																0

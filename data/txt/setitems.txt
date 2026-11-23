@@ -12,7 +12,7 @@ Iratha's Collar	9	Iratha's Finery		amu	Amulet	7	21	15	lgry	lgry						5	2500	2	re
 Iratha's Cuff	10	Iratha's Finery		tgl	Light Gauntlets	7	21	15	lgry	lgry						5	2500	2	res-cold		30	30	half-freeze		1	1																													swing2		20	20																																						0
 Iratha's Coil	11	Iratha's Finery		crn	Crown	7	21	15	lgry	lgry						5	2500	2	res-fire		30	30	res-ltng		30	30																													ac/lvl	16																																								0
 Iratha's Cord	12	Iratha's Finery		tbl	Heavy Belt	7	21	15	lgry	lgry						5	2500	2	swing2		10	10	vit		20	20																													dex		10	10																																						0
-Isenhart's Lightbrand	13	Isenhart's Armory		bsd	Broad Sword	7	11	8	lgld	lgld						5	2500	2	dmg-min		10	10	swing2		20	20																													att/lvl	10															dmg/lvl	12																								0
+Isenhart's Lightbrand	13	Isenhart's Armory		bsd	Broad Sword	7	11	8	lgld	lgld						5	2500	2	dmg-min		10	10	swing2		40	40																													att/lvl	10															dmg/lvl	12																								0
 Isenhart's Parry	14	Isenhart's Armory		gts	Gothic Shield	7	11	8	lgld	lgld						5	2500	2	balance1		40	40	block1		50	50																													res-all		35	35																																						0
 Isenhart's Case	15	Isenhart's Armory		brs	Breast Plate	7	11	8	lgld	lgld						5	2500	2	ac		40	40	red-mag		2	2																													ac/lvl	16																																								0
 Isenhart's Horns	16	Isenhart's Armory		fhl	Full Helm	7	11	8	lgld	lgld						5	2500	2	dex		6	6	red-dmg		2	2																													res-all		8	8																																						0
@@ -58,7 +58,7 @@ Arctic Furs	55	Arctic Gear		qui	Quilted Armor	7	3	2	lgld	lgld						5	2500	2	ac%	
 Arctic Binding	56	Arctic Gear		vbl	Light Belt	7	3	2	lgld	lgld						5	2500	2	res-cold		40	40	mana		50	50																													mag%		40	40					pierce		20	20																														0
 Arctic Mitts	57	Arctic Gear		tgl	Light Gauntlets	7	3	2	lgld	lgld						5	2500	2	hp		20	20	swing1		20	20																													att		250	250					dex		10	10																														0
 Arcanna's Sign	58	Arcanna's Tricks		amu	Amulet	1	20	15	blac	blac						5	2500	2	mana		50	50	hp		30	30	res-cold		30	30																									res-fire		30	30					hp%		10	10																														0
-Arcanna's Deathwand	59	Arcanna's Tricks		wst	War Staff	7	20	15	blac	blac						5	2500	2	sor		1	1	dmg-cold	150	63	127																													mana		100	100					cast1		20	20																														0
+Arcanna's Deathwand	59	Arcanna's Tricks		wst	War Staff	7	20	15	blac	blac						5	2500	2	sor		1	1	dmg-cold	150	63	127																													mana		100	100					cast1		20	20					dmg%		250	250																						0
 Arcanna's Head	60	Arcanna's Tricks		skp	Skull Cap	7	20	15	blac	blac						5	2500	2	regen		4	4	res-ltng		30	30																													res-pois		30	30					red-dmg		10	10																														0
 Arcanna's Flesh	61	Arcanna's Tricks		ltp	Light Plate	7	20	15	blac	blac						5	2500	2	hp		30	30	res-all		10	10																													oskill	37	3	3					cast1		10	10																														0
 Expansion																																																																																																0

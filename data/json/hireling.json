@@ -3398,8 +3398,8 @@
       "mode1": 7,
       "mode2": 7,
       "mode3": 14,
-      "chance1": 60,
-      "chance2": 40,
+      "chance1": 40,
+      "chance2": 60,
       "chance3": 0,
       "chanceperlvl1": 0,
       "chanceperlvl2": 0,
@@ -4062,8 +4062,8 @@
       "mode1": 7,
       "mode2": 7,
       "mode3": 14,
-      "chance1": 60,
-      "chance2": 40,
+      "chance1": 40,
+      "chance2": 60,
       "chance3": 0,
       "chanceperlvl1": 0,
       "chanceperlvl2": 0,
@@ -4609,8 +4609,8 @@
       "mode1": 7,
       "mode2": 7,
       "mode3": 14,
-      "chance1": 60,
-      "chance2": 40,
+      "chance1": 40,
+      "chance2": 60,
       "chance3": 0,
       "chanceperlvl1": 0,
       "chanceperlvl2": 0,
@@ -7136,7 +7136,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 7,
       "act": 5,
-      "class": 744
+      "class": 953
     },
     {
       "namefirst": "MercX101",
@@ -7179,7 +7179,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 7,
       "act": 5,
-      "class": 744
+      "class": 953
     },
     {
       "namefirst": "MercX101",
@@ -7222,7 +7222,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 8,
       "act": 5,
-      "class": 744
+      "class": 953
     }
   ],
   "40": [
@@ -7267,7 +7267,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 7,
       "act": 5,
-      "class": 744
+      "class": 953
     },
     {
       "namefirst": "MercX101",
@@ -7310,7 +7310,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 7,
       "act": 5,
-      "class": 744
+      "class": 953
     },
     {
       "namefirst": "MercX101",
@@ -7353,7 +7353,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 8,
       "act": 5,
-      "class": 744
+      "class": 953
     }
   ],
   "41": [
@@ -7398,7 +7398,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 7,
       "act": 5,
-      "class": 744
+      "class": 953
     },
     {
       "namefirst": "MercX101",
@@ -7441,7 +7441,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 7,
       "act": 5,
-      "class": 744
+      "class": 953
     },
     {
       "namefirst": "MercX101",
@@ -7484,7 +7484,7 @@
       "levelperlvl2": 7,
       "levelperlvl3": 8,
       "act": 5,
-      "class": 744
+      "class": 953
     }
   ]
 }

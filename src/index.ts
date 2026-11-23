@@ -201,6 +201,50 @@ export type {
   EditMaterialsD2IResult,
 } from './operations/materials-d2i.js';
 
+// ─── Larzuk's socket reward (0.4.11) ────────────────────────────
+// Read and use the "Siege on Harrogath" reward of a character, plan Larzuk's socket count and
+// give an item its sockets in place. Each edit proves that it changed only what it declares.
+export {
+  readLarzukRewards,
+  consumeLarzukReward,
+  maxSocketsFor,
+  planLarzukSockets,
+  rollLarzukSockets,
+  socketItemInPlace,
+  readLarzukItemFacts,
+  D2S_QUEST_TABLE_OFFSETS,
+  SIEGE_ON_HARROGATH_OFFSET,
+} from './operations/larzuk.js';
+export type {
+  LarzukDifficulty,
+  LarzukRewardState,
+  LarzukReward,
+  ConsumeLarzukRewardResult,
+  LarzukRefusal,
+  LarzukSocketPlan,
+  LarzukItemFacts,
+} from './operations/larzuk.js';
+
+// ─── Gold in place (0.4.17) ─────────────────────────────────────
+// Read and set character gold (inventory, personal stash) and shared-tab gold within the game's
+// caps. Each edit proves that only the gold bits and the derived header fields changed.
+export {
+  readCharacterGold,
+  setCharacterGold,
+  characterGoldMax,
+  readSharedTabGold,
+  setSharedTabGold,
+  GOLD_PER_CHARACTER_LEVEL,
+  CHARACTER_STASH_GOLD_MAX,
+  SHARED_TAB_GOLD_MAX,
+} from './operations/gold.js';
+export type {
+  CharacterGold,
+  SetCharacterGoldResult,
+  SharedTabGold,
+  SetSharedTabGoldResult,
+} from './operations/gold.js';
+
 // ─── D2RSaver facade ────────────────────────────────────────────
 
 /** Options for `D2RSaver.create()`. */

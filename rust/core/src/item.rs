@@ -251,6 +251,10 @@ pub(crate) struct FullItem {
     /// The quantity key was first set before the stats (its place among the keys).
     pub quantity_pre: bool,
     pub sockets: u32,
+    /// `socketsFieldBit`: where the socket count sits or would sit, from the first bit of the item.
+    pub sockets_field_bit: usize,
+    /// `contentBits`: the item's own bits before the padding to a byte boundary.
+    pub content_bits: usize,
     /// `item.stats` before the blunt bonus.
     pub stats: Stats,
     /// `item.chargesLeft`: the charges still left on each charged skill, keyed like its stat.
@@ -500,6 +504,8 @@ impl<'a> Parser<'a> {
             quantity_field: None,
             quantity_pre: false,
             sockets: 0,
+            sockets_field_bit: 0,
+            content_bits: 0,
             stats: Stats::new(),
             charges_left: Stats::new(),
             socketed_items: Vec::new(),
@@ -578,6 +584,7 @@ impl<'a> Parser<'a> {
         let mut quantity_field = None;
         let mut quantity_pre = false;
         let mut sockets = 0;
+        let mut sockets_field_bit = 0;
         let mut stats = Stats::new();
         let mut charges_left = Stats::new();
         let mut ext = None;
@@ -718,6 +725,7 @@ impl<'a> Parser<'a> {
                 });
                 quantity_pre = true;
             }
+            sockets_field_bit = r.pos - start_bit;
             sockets = if socketed { r.bits(4)? } else { 0 };
             let set_flags = if quality == 5 { r.bits(5)? } else { 0 };
             if quality == 5 {
@@ -811,6 +819,7 @@ impl<'a> Parser<'a> {
                 flag_bit: post_flag_bit,
             });
         }
+        let content_bits = r.pos - start_bit;
         r.align();
         let end_bit = r.pos;
         let own_end = self.abs();
@@ -863,6 +872,8 @@ impl<'a> Parser<'a> {
             w.quantity_field = quantity_field;
             w.quantity_pre = quantity_pre;
             w.sockets = sockets;
+            w.sockets_field_bit = sockets_field_bit;
+            w.content_bits = content_bits;
             w.stats = stats;
             w.charges_left = charges_left;
             w.socketed_items = socketed_items;

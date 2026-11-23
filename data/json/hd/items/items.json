@@ -719,6 +719,13 @@
   { "p11": { "asset": "helmet/bone_helm" } },
   { "p12": { "asset": "armor/light_plate" } },
   { "p13": { "asset": "shield/bone_shield" } },
-  { "p14": { "asset": "quest/bark_scroll" } },
-  { "p15": { "asset": "amulet/amulet" } }
+  { "p14": { "asset": "quest/tattered_scroll" } },
+  { "p15": { "asset": "amulet/amulet" } },
+  { "p16": { "asset": "sword/the_patriarch" } },
+  { "p17": { "asset": "potion/blizzless_fortune_elixir" } },
+  { "p18": { "asset": "potion/blizzless_wisdom_elixir" } },
+  { "p19": { "asset": "potion/blizzless_life_mana_elixir" } },
+  { "p20": { "asset": "gem/bloodstone" } },
+  { "p21": { "asset": "quest/ceremonial_claws" } },
+  { "p22": { "asset": "potion/blizzless_luck_elixir" } }
 ]

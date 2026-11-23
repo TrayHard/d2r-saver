@@ -45,7 +45,7 @@ describe('D2SReadResult.lists', () => {
     // The sections after the broken item are found by their headers: no corpse, the hireling list
     // (written with D2R widths too, so it breaks on its third item), then the golem header.
     expect(lists.corpses).toEqual([]);
-    expect(lists.merc).toMatchObject({ headerOffset: 1642, declared: 3, parsed: 2, error: 'item 3/3: unknown item stat code 474' });
+    expect(lists.merc).toMatchObject({ headerOffset: 1642, declared: 3, parsed: 2, error: 'item 3/3: buffer overrun: reading 16 bit(s) at bit 14792 (byte 1849) past the end of a 1849-byte buffer' });
     expect(lists.golem).toEqual({ headerOffset: 1840, present: false });
   });
 

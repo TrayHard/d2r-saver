@@ -294,5 +294,9 @@ war-tab-rand	1	10	item_addskill_tab		21	10	item_addskill_tab		22	10	item_addskil
 extra-mag	1	1	passive_mag_mastery																											+#% to Magic Skill Damage		Min %	Max %		0
 mana-regen	1	1	manarecovery																											-#% to Enemy Lightning Resistance		Min %	Max %		0
 curse-imm	1	1	curse_resistance																											Immune to Curse		100	100		0
-plusecho	1	1	plus_echo																											Additional Echo		Min #	Max #		0
-plusmirror	1	1	plus_mirror																											Additional Mirror		Min #	Max #		0
+plusecho	1	1	plus_echo																											Echoing Strike Modifier: +# Echoes		Min #	Max #		0
+plusmirror	1	1	plus_mirror																											Mirrored Blades Modifier: +# Mirrored Weapons Created		Min #	Max #		0
+abyss-nocd	1	1	abyss_nocd																											Abyss Modifier: No Cooldown		1	1		0
+apoc-dot	1	1	apocalypse_dot																											Apocalypse Modifier: deals damage over 4 seconds		1	1		0
+miasma-chain	1	1	miasma_chain_bonus																											Miasma Chain Modifier: +# to Max Chains		Min #	Max #		0
+demon-max	1	1	demon_summon_bonus																											Demonic Mastery Modifier: +# to Max Demons		Min #	Max #		0

@@ -182,7 +182,8 @@
     "state": "lifetap"
   },
   "59": {
-    "state": "confuse"
+    "state": "confuse",
+    "group": 8
   },
   "60": {
     "state": "decrepify"
@@ -608,56 +609,859 @@
     "group": 5
   },
   "192": {
-    "state": "obelisk"
+    "state": "sigillethargy"
   },
   "193": {
-    "state": "uber"
+    "state": "sigilrancor",
+    "group": 8
   },
   "194": {
+    "state": "sigildeath"
+  },
+  "195": {
+    "state": "bloodoath"
+  },
+  "196": {
+    "state": "demonic_mastery"
+  },
+  "197": {
+    "state": "levitate_mastery"
+  },
+  "198": {
+    "state": "hexbane",
+    "group": 6
+  },
+  "199": {
+    "state": "hexbanedebuff",
+    "group": 7
+  },
+  "200": {
+    "state": "hexsiphon",
+    "group": 6
+  },
+  "201": {
+    "state": "hexsiphondebuff",
+    "group": 7
+  },
+  "202": {
+    "state": "hexpurge",
+    "group": 6
+  },
+  "203": {
+    "state": "mindbarrier",
+    "group": 1
+  },
+  "204": {
+    "state": "shadow_mastery"
+  },
+  "205": {
+    "state": "sigil"
+  },
+  "206": {
+    "state": "psychicward",
+    "group": 1
+  },
+  "207": {
+    "state": "bind_demon"
+  },
+  "208": {
+    "state": "consume",
+    "group": 9
+  },
+  "209": {
+    "state": "advancedstash"
+  },
+  "210": {
+    "state": "healthlink"
+  },
+  "211": {
+    "state": "engorge"
+  },
+  "212": {
+    "state": "death_mark"
+  },
+  "213": {
+    "state": "healthlinkcaster"
+  },
+  "214": {
+    "state": "warlockdemonground"
+  },
+  "215": {
+    "state": "warlockdemontorso"
+  },
+  "216": {
+    "state": "skill_channeling"
+  },
+  "217": {
+    "state": "hexpurgedebuff",
+    "group": 7
+  },
+  "218": {
+    "state": "chroniclebacklight",
+    "sunderfull": 1
+  },
+  "219": {
+    "state": "chroniclefootprints",
+    "sunderfull": 1
+  },
+  "220": {
+    "state": "chronicleportal",
+    "sunderfull": 1
+  },
+  "221": {
+    "state": "eldritchblastperiodic"
+  },
+  "222": {
+    "state": "lightningenchant"
+  },
+  "223": {
+    "state": "coldenchant"
+  },
+  "224": {
+    "state": "talicfirepierce"
+  },
+  "225": {
+    "state": "madawclightpierce"
+  },
+  "226": {
+    "state": "korliccoldpierce"
+  },
+  "227": {
+    "state": "bind_demon_underling"
+  },
+  "228": {
+    "state": "herald"
+  },
+  "229": {
+    "state": "apocalypse"
+  },
+  "230": {
+    "state": "missilelimit"
+  },
+  "231": {
+    "state": "primeevil_threat"
+  },
+  "232": {
+    "state": "bartuc_bonearmor_generic_r3"
+  },
+  "233": {
+    "state": "bartuc_cyclonearmor_generic_r3"
+  },
+  "234": {
+    "state": "UnusedState5"
+  },
+  "235": {
+    "state": "UnusedState6"
+  },
+  "236": {
+    "state": "UnusedState7"
+  },
+  "237": {
+    "state": "UnusedState8"
+  },
+  "238": {
+    "state": "UnusedState9"
+  },
+  "239": {
+    "state": "UnusedState10"
+  },
+  "240": {
+    "state": "UnusedState11"
+  },
+  "241": {
+    "state": "UnusedState12"
+  },
+  "242": {
+    "state": "UnusedState13"
+  },
+  "243": {
+    "state": "UnusedState14"
+  },
+  "244": {
+    "state": "UnusedState15"
+  },
+  "245": {
+    "state": "UnusedState16"
+  },
+  "246": {
+    "state": "UnusedState17"
+  },
+  "247": {
+    "state": "UnusedState18"
+  },
+  "248": {
+    "state": "UnusedState19"
+  },
+  "249": {
+    "state": "UnusedState20"
+  },
+  "250": {
+    "state": "UnusedState21"
+  },
+  "251": {
+    "state": "UnusedState22"
+  },
+  "252": {
+    "state": "UnusedState23"
+  },
+  "253": {
+    "state": "UnusedState24"
+  },
+  "254": {
+    "state": "UnusedState25"
+  },
+  "255": {
+    "state": "UnusedState26"
+  },
+  "256": {
+    "state": "UnusedState27"
+  },
+  "257": {
+    "state": "UnusedState28"
+  },
+  "258": {
+    "state": "UnusedState29"
+  },
+  "259": {
+    "state": "UnusedState30"
+  },
+  "260": {
+    "state": "UnusedState31"
+  },
+  "261": {
+    "state": "UnusedState32"
+  },
+  "262": {
+    "state": "UnusedState33"
+  },
+  "263": {
+    "state": "UnusedState34"
+  },
+  "264": {
+    "state": "UnusedState35"
+  },
+  "265": {
+    "state": "UnusedState36"
+  },
+  "266": {
+    "state": "UnusedState37"
+  },
+  "267": {
+    "state": "UnusedState38"
+  },
+  "268": {
+    "state": "UnusedState39"
+  },
+  "269": {
+    "state": "UnusedState40"
+  },
+  "270": {
+    "state": "UnusedState41"
+  },
+  "271": {
+    "state": "UnusedState42"
+  },
+  "272": {
+    "state": "UnusedState43"
+  },
+  "273": {
+    "state": "UnusedState44"
+  },
+  "274": {
+    "state": "UnusedState45"
+  },
+  "275": {
+    "state": "UnusedState46"
+  },
+  "276": {
+    "state": "UnusedState47"
+  },
+  "277": {
+    "state": "UnusedState48"
+  },
+  "278": {
+    "state": "UnusedState49"
+  },
+  "279": {
+    "state": "UnusedState50"
+  },
+  "280": {
+    "state": "UnusedState51"
+  },
+  "281": {
+    "state": "UnusedState52"
+  },
+  "282": {
+    "state": "UnusedState53"
+  },
+  "283": {
+    "state": "UnusedState54"
+  },
+  "284": {
+    "state": "UnusedState55"
+  },
+  "285": {
+    "state": "UnusedState56"
+  },
+  "286": {
+    "state": "UnusedState57"
+  },
+  "287": {
+    "state": "UnusedState58"
+  },
+  "288": {
+    "state": "UnusedState59"
+  },
+  "289": {
+    "state": "UnusedState60"
+  },
+  "290": {
+    "state": "UnusedState61"
+  },
+  "291": {
+    "state": "UnusedState62"
+  },
+  "292": {
+    "state": "UnusedState63"
+  },
+  "293": {
+    "state": "UnusedState64"
+  },
+  "294": {
+    "state": "UnusedState65"
+  },
+  "295": {
+    "state": "UnusedState66"
+  },
+  "296": {
+    "state": "UnusedState67"
+  },
+  "297": {
+    "state": "UnusedState68"
+  },
+  "298": {
+    "state": "UnusedState69"
+  },
+  "299": {
+    "state": "UnusedState70"
+  },
+  "300": {
+    "state": "UnusedState71"
+  },
+  "301": {
+    "state": "UnusedState72"
+  },
+  "302": {
+    "state": "UnusedState73"
+  },
+  "303": {
+    "state": "UnusedState74"
+  },
+  "304": {
+    "state": "UnusedState75"
+  },
+  "305": {
+    "state": "UnusedState76"
+  },
+  "306": {
+    "state": "UnusedState77"
+  },
+  "307": {
+    "state": "UnusedState78"
+  },
+  "308": {
+    "state": "UnusedState79"
+  },
+  "309": {
+    "state": "UnusedState80"
+  },
+  "310": {
+    "state": "UnusedState81"
+  },
+  "311": {
+    "state": "UnusedState82"
+  },
+  "312": {
+    "state": "UnusedState83"
+  },
+  "313": {
+    "state": "UnusedState84"
+  },
+  "314": {
+    "state": "UnusedState85"
+  },
+  "315": {
+    "state": "UnusedState86"
+  },
+  "316": {
+    "state": "UnusedState87"
+  },
+  "317": {
+    "state": "UnusedState88"
+  },
+  "318": {
+    "state": "UnusedState89"
+  },
+  "319": {
+    "state": "UnusedState90"
+  },
+  "320": {
+    "state": "UnusedState91"
+  },
+  "321": {
+    "state": "UnusedState92"
+  },
+  "322": {
+    "state": "UnusedState93"
+  },
+  "323": {
+    "state": "UnusedState94"
+  },
+  "324": {
+    "state": "UnusedState95"
+  },
+  "325": {
+    "state": "UnusedState96"
+  },
+  "326": {
+    "state": "UnusedState97"
+  },
+  "327": {
+    "state": "UnusedState98"
+  },
+  "328": {
+    "state": "UnusedState99"
+  },
+  "329": {
+    "state": "UnusedState100"
+  },
+  "330": {
+    "state": "UnusedState101"
+  },
+  "331": {
+    "state": "UnusedState102"
+  },
+  "332": {
+    "state": "UnusedState103"
+  },
+  "333": {
+    "state": "UnusedState104"
+  },
+  "334": {
+    "state": "UnusedState105"
+  },
+  "335": {
+    "state": "UnusedState106"
+  },
+  "336": {
+    "state": "UnusedState107"
+  },
+  "337": {
+    "state": "UnusedState108"
+  },
+  "338": {
+    "state": "UnusedState109"
+  },
+  "339": {
+    "state": "UnusedState110"
+  },
+  "340": {
+    "state": "UnusedState111"
+  },
+  "341": {
+    "state": "UnusedState112"
+  },
+  "342": {
+    "state": "UnusedState113"
+  },
+  "343": {
+    "state": "UnusedState114"
+  },
+  "344": {
+    "state": "UnusedState115"
+  },
+  "345": {
+    "state": "UnusedState116"
+  },
+  "346": {
+    "state": "UnusedState117"
+  },
+  "347": {
+    "state": "UnusedState118"
+  },
+  "348": {
+    "state": "UnusedState119"
+  },
+  "349": {
+    "state": "UnusedState120"
+  },
+  "350": {
+    "state": "UnusedState121"
+  },
+  "351": {
+    "state": "UnusedState122"
+  },
+  "352": {
+    "state": "UnusedState123"
+  },
+  "353": {
+    "state": "UnusedState124"
+  },
+  "354": {
+    "state": "UnusedState125"
+  },
+  "355": {
+    "state": "UnusedState126"
+  },
+  "356": {
+    "state": "UnusedState127"
+  },
+  "357": {
+    "state": "UnusedState128"
+  },
+  "358": {
+    "state": "UnusedState129"
+  },
+  "359": {
+    "state": "UnusedState130"
+  },
+  "360": {
+    "state": "UnusedState131"
+  },
+  "361": {
+    "state": "UnusedState132"
+  },
+  "362": {
+    "state": "UnusedState133"
+  },
+  "363": {
+    "state": "UnusedState134"
+  },
+  "364": {
+    "state": "UnusedState135"
+  },
+  "365": {
+    "state": "UnusedState136"
+  },
+  "366": {
+    "state": "UnusedState137"
+  },
+  "367": {
+    "state": "UnusedState138"
+  },
+  "368": {
+    "state": "UnusedState139"
+  },
+  "369": {
+    "state": "UnusedState140"
+  },
+  "370": {
+    "state": "UnusedState141"
+  },
+  "371": {
+    "state": "UnusedState142"
+  },
+  "372": {
+    "state": "UnusedState143"
+  },
+  "373": {
+    "state": "UnusedState144"
+  },
+  "374": {
+    "state": "UnusedState145"
+  },
+  "375": {
+    "state": "UnusedState146"
+  },
+  "376": {
+    "state": "UnusedState147"
+  },
+  "377": {
+    "state": "UnusedState148"
+  },
+  "378": {
+    "state": "UnusedState149"
+  },
+  "379": {
+    "state": "UnusedState150"
+  },
+  "380": {
+    "state": "UnusedState151"
+  },
+  "381": {
+    "state": "UnusedState152"
+  },
+  "382": {
+    "state": "UnusedState153"
+  },
+  "383": {
+    "state": "UnusedState154"
+  },
+  "384": {
+    "state": "UnusedState155"
+  },
+  "385": {
+    "state": "UnusedState156"
+  },
+  "386": {
+    "state": "UnusedState157"
+  },
+  "387": {
+    "state": "UnusedState158"
+  },
+  "388": {
+    "state": "UnusedState159"
+  },
+  "389": {
+    "state": "UnusedState160"
+  },
+  "390": {
+    "state": "UnusedState161"
+  },
+  "391": {
+    "state": "UnusedState162"
+  },
+  "392": {
+    "state": "UnusedState163"
+  },
+  "393": {
+    "state": "UnusedState164"
+  },
+  "394": {
+    "state": "UnusedState165"
+  },
+  "395": {
+    "state": "UnusedState166"
+  },
+  "396": {
+    "state": "UnusedState167"
+  },
+  "397": {
+    "state": "UnusedState168"
+  },
+  "398": {
+    "state": "UnusedState169"
+  },
+  "399": {
+    "state": "UnusedState170"
+  },
+  "400": {
+    "state": "UnusedState171"
+  },
+  "401": {
+    "state": "UnusedState172"
+  },
+  "402": {
+    "state": "UnusedState173"
+  },
+  "403": {
+    "state": "UnusedState174"
+  },
+  "404": {
+    "state": "UnusedState175"
+  },
+  "405": {
+    "state": "UnusedState176"
+  },
+  "406": {
+    "state": "UnusedState177"
+  },
+  "407": {
+    "state": "UnusedState178"
+  },
+  "408": {
+    "state": "UnusedState179"
+  },
+  "409": {
+    "state": "UnusedState180"
+  },
+  "410": {
+    "state": "UnusedState181"
+  },
+  "411": {
+    "state": "UnusedState182"
+  },
+  "412": {
+    "state": "UnusedState183"
+  },
+  "413": {
+    "state": "UnusedState184"
+  },
+  "414": {
+    "state": "UnusedState185"
+  },
+  "415": {
+    "state": "UnusedState186"
+  },
+  "416": {
+    "state": "UnusedState187"
+  },
+  "417": {
+    "state": "UnusedState188"
+  },
+  "418": {
+    "state": "UnusedState189"
+  },
+  "419": {
+    "state": "UnusedState190"
+  },
+  "420": {
+    "state": "UnusedState191"
+  },
+  "421": {
+    "state": "UnusedState192"
+  },
+  "422": {
+    "state": "UnusedState193"
+  },
+  "423": {
+    "state": "UnusedState194"
+  },
+  "424": {
+    "state": "UnusedState195"
+  },
+  "425": {
+    "state": "UnusedState196"
+  },
+  "426": {
+    "state": "UnusedState197"
+  },
+  "427": {
+    "state": "UnusedState198"
+  },
+  "428": {
+    "state": "UnusedState199"
+  },
+  "429": {
+    "state": "UnusedState200"
+  },
+  "430": {
+    "state": "obelisk"
+  },
+  "431": {
+    "state": "uber"
+  },
+  "432": {
     "state": "cowkingrset",
     "group": 3,
     "aura": 1
   },
-  "195": {
+  "433": {
     "state": "diablotr",
     "group": 3,
     "aura": 1
   },
-  "196": {
+  "434": {
     "state": "vengeance"
   },
-  "197": {
+  "435": {
     "state": "dummystate"
   },
-  "198": {
-    "state": "playerpalstate",
+  "436": {
+    "state": "playerpalstate1",
     "aura": 1
   },
-  "199": {
-    "state": "playersorstate",
+  "437": {
+    "state": "playersorstate1",
     "aura": 1
   },
-  "200": {
-    "state": "playerdrustate",
+  "438": {
+    "state": "playerdrustate1",
     "aura": 1
   },
-  "201": {
-    "state": "playerassstate",
+  "439": {
+    "state": "playerassstate1",
     "aura": 1
   },
-  "202": {
-    "state": "playerbarstate",
+  "440": {
+    "state": "playerbarstate1",
     "aura": 1
   },
-  "203": {
-    "state": "playernecstate",
+  "441": {
+    "state": "playernecstate1",
     "aura": 1
   },
-  "204": {
-    "state": "playeramastate",
+  "442": {
+    "state": "playeramastate1",
     "aura": 1
   },
-  "205": {
+  "443": {
     "state": "rednew"
+  },
+  "444": {
+    "state": "playerpalstate1won",
+    "aura": 1
+  },
+  "445": {
+    "state": "playersorstate1won",
+    "aura": 1
+  },
+  "446": {
+    "state": "playerdrustate1won",
+    "aura": 1
+  },
+  "447": {
+    "state": "playerassstate1won",
+    "aura": 1
+  },
+  "448": {
+    "state": "playerbarstate1won",
+    "aura": 1
+  },
+  "449": {
+    "state": "playernecstate1won",
+    "aura": 1
+  },
+  "450": {
+    "state": "playeramastate1won",
+    "aura": 1
+  },
+  "451": {
+    "state": "callofthewild"
+  },
+  "452": {
+    "state": "focusminions"
+  },
+  "453": {
+    "state": "holymagic"
+  },
+  "454": {
+    "state": "blizzless_empower_elixir",
+    "sunderfull": 1
+  },
+  "455": {
+    "state": "blizzless_experience_elixir",
+    "sunderfull": 1
+  },
+  "456": {
+    "state": "blizzless_life_mana_elixir",
+    "sunderfull": 1
+  },
+  "457": {
+    "state": "playerwarstate1",
+    "aura": 1,
+    "sunderfull": 1
+  },
+  "458": {
+    "state": "playerwarstate1won",
+    "aura": 1
+  },
+  "459": {
+    "state": "horazonstate",
+    "aura": 1,
+    "sunderfull": 1
+  },
+  "460": {
+    "state": "blizzless_fortune_elixir",
+    "sunderfull": 1
+  },
+  "461": {
+    "state": "bartuc_blood_aura"
+  },
+  "462": {
+    "state": "bartuc_pet_frailty"
+  },
+  "463": {
+    "state": "bartuc_portal_pulse"
   }
 }

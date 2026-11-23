@@ -517,6 +517,7 @@ fn write_item(j: &mut Json, item: &FullItem, gd: &GameData, solve: bool) {
             if item.quantity_pre {
                 quantity(j, item);
             }
+            j.field("socketsFieldBit", item.sockets_field_bit);
             if ext.setflags != 0 {
                 j.field("setflags", ext.setflags);
             }
@@ -537,6 +538,7 @@ fn write_item(j: &mut Json, item: &FullItem, gd: &GameData, solve: bool) {
     if !item.quantity_pre && item.quantity.is_some() {
         quantity(j, item);
     }
+    j.field("contentBits", item.content_bits);
     j.range("byteRange", item.own);
     j.key("socketedByteRanges");
     j.open_array();

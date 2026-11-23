@@ -526,15 +526,15 @@ describe('editMaterialsD2I appends', () => {
     expectCode(() => editMaterialsD2I(complete, gd, { sectorOffset: SECTOR, patches: [], appends: [{ code: 'std', family: 'complex', quantity: 1 }] }), ErrorCode.INVALID_ARGUMENT);
   });
 
-  it('LAYOUT_UNVERIFIED: no record of the family in the sector, or one that the encoder does not reproduce', () => {
+  it('LAYOUT_UNVERIFIED only for a same-family record the encoder does not reproduce; a missing family appends', () => {
     const onlySimple = sectorWith([recordBytes('r01'), recordBytes('glb'), recordBytes('rvl')]);
-    expectCode(() => editMaterialsD2I(onlySimple, gd, {
+    expect(editMaterialsD2I(onlySimple, gd, {
       sectorOffset: 0, patches: [], appends: [{ code: 'pk1', family: 'complex', quantity: 1, guid: 1, ilvl: 1 }],
-    }), ErrorCode.LAYOUT_UNVERIFIED);
+    }).after.records.at(-1)!.code).toBe('pk1');
     const onlyComplex = sectorWith([recordBytes('pk1'), recordBytes('tes')]);
-    expectCode(() => editMaterialsD2I(onlyComplex, gd, {
+    expect(editMaterialsD2I(onlyComplex, gd, {
       sectorOffset: 0, patches: [], appends: [{ code: 'gpv', family: 'simple', quantity: 1 }],
-    }), ErrorCode.LAYOUT_UNVERIFIED);
+    }).after.records.at(-1)!.code).toBe('gpv');
 
     // glb with the ethereal flag: still a well-formed quantity record (patchable), but the encoder
     // refuses that flag, so simple records cannot be proven and no simple append is allowed.
@@ -546,6 +546,18 @@ describe('editMaterialsD2I appends', () => {
     expect(editMaterialsD2I(s, gd, { sectorOffset: 0, patches: [{ code: 'r01', from: 1, to: 2 }], appends: [] }).after.records[0].quantity).toBe(2);
     // Complex appends are still proven by pk1.
     expect(editMaterialsD2I(s, gd, { sectorOffset: 0, patches: [], appends: [{ code: 'pk2', family: 'complex', quantity: 1, guid: 9, ilvl: 1 }] }).after.records).toHaveLength(4);
+  });
+
+  it('an unreadable record blocks no append beside it, of either family (preserveUnchangedInvalidRecords)', () => {
+    const bad = recordBytes('tes');
+    setBits(bad, 35, 1, 1); // loc 1: not a materials location, so the record is unreadable
+    const s = sectorWith([recordBytes('r01'), bad, recordBytes('pk1')]);
+    expect(readMaterialsD2I(s, gd, { sectorOffset: 0 }).records[1].layoutOk).toBe(false);
+    const { newBuffer, after, diff } = editMaterialsD2I(s, gd, { sectorOffset: 0, patches: [], appends: [
+      { code: 'pk2', family: 'complex', quantity: 2, guid: 9, ilvl: 1 }, { code: 'gpv', family: 'simple', quantity: 3 }] },
+    { preserveUnchangedInvalidRecords: true });
+    expect(after.records.slice(-2).map(r => [r.code, r.quantity])).toEqual([['pk2', 2], ['gpv', 3]]);
+    expect(verifyExactDiff(s, newBuffer, diff).ok).toBe(true);
   });
 });
 
