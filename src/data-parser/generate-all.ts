@@ -19,6 +19,7 @@ import { armorsToJson } from './parsers/armor.js';
 import { weaponsToJson } from './parsers/weapons.js';
 import { miscToJson } from './parsers/misc.js';
 import { itemStatCostToJson } from './parsers/item-stat-cost.js';
+import { olderStatTablesToJson } from './parsers/older-stat-tables.js';
 import { itemTypeToJson } from './parsers/item-types.js';
 import { uniqueItemsToJson } from './parsers/unique-items.js';
 import { setItemsToJson } from './parsers/set-items.js';
@@ -72,6 +73,7 @@ export async function generateAll(): Promise<void> {
   await weaponsToJson();
   await miscToJson();
   await itemStatCostToJson();
+  await olderStatTablesToJson();
   await itemTypeToJson();
   await uniqueItemsToJson();
   await setItemsToJson();

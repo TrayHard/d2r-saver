@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0
+
+- The stat tables of older games are data, not code: `data/txt/older/` holds the save columns of
+  their `itemstatcost.txt`, `npm run build:data` puts them into `data/data.json` as
+  `olderStatTables`, and `readSave` takes them from there. The numbers are those of 1.1.0. A caller
+  that keeps a `data.json` of its own takes the new one to keep reading season 2 and D2R saves.
+- `parseStatTable` makes a stat table from the text of an `itemstatcost.txt`, and `readSave` takes
+  such tables in `statTables`, so a save of another mod reads without a new version of the library.
+- A stat table the read core refuses is reported (DATA_NOT_LOADED) instead of skipped.
+- `test/fixtures/BlizzlessBartuc.d2s`: a v105 character of the current mod, saved by the game client.
+  The README says which game each fixture comes from.
+
 ## 1.1.0
 
 - The trade site line 0.4.11-0.4.17 is merged: tables of the Blizzless mod of 14.11.2026 (Bartuc

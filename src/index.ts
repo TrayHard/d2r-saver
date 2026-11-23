@@ -30,7 +30,7 @@ import {
   type InsertD2IResult,
   type InsertD2STarget,
 } from './operations/insert-item.js';
-import { readSave, type ReadSaveResult } from './operations/read-save.js';
+import { readSave, type ReadSaveOptions, type ReadSaveResult } from './operations/read-save.js';
 import {
   serializeItem,
   deserializeItem,
@@ -94,8 +94,9 @@ export type {
 } from './formats/item-parser.js';
 export type { ExtractResult } from './operations/extract-item.js';
 export type { InsertResult, InsertD2IResult, InsertD2STarget } from './operations/insert-item.js';
-export type { ReadSaveResult, ReadSaveD2SResult, ReadSaveD2IResult, ReadSaveLegacyD2IResult, ReadSaveSource } from './operations/read-save.js';
-export type { StatTableName } from './game-data/stat-tables.js';
+export type { ReadSaveResult, ReadSaveD2SResult, ReadSaveD2IResult, ReadSaveLegacyD2IResult, ReadSaveSource, ReadSaveOptions, StatTableName } from './operations/read-save.js';
+export { parseStatTable } from './game-data/stat-tables.js';
+export type { StatTable, StatTableEntry } from './game-data/types.js';
 export type { DeserializedItem } from './items/item-serializer.js';
 export type { TradeItemDTO, ItemQuality } from './items/item-dto.js';
 export type { PlacementItem } from './inventory/placement.js';
@@ -334,8 +335,9 @@ export class D2RSaver {
   /**
    * Read a save of any version (99, 105) and season: the format and the stat table are detected
    * (1.1.0). `statTable` names the table; `null` means no table reads the file to its end.
+   * `options.statTables` adds the tables of other mods (1.2.0).
    */
-  readSave(buffer: Uint8Array, options?: ReadOptions): ReadSaveResult {
+  readSave(buffer: Uint8Array, options?: ReadSaveOptions): ReadSaveResult {
     return readSave(buffer, this.gd, options);
   }
 

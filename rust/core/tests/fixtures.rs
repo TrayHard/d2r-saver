@@ -4,7 +4,7 @@
 //! fixtures to the same bits read by the full parser.
 
 use d2r_saver_core::*;
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::sync::OnceLock;
 
 fn repo_file(path: &str) -> String {
@@ -16,23 +16,10 @@ fn gd() -> &'static GameData {
     GD.get_or_init(|| GameData::from_json(&repo_file("data/data.json"), &repo_file("data/strings.json")).unwrap())
 }
 
-/// The current data with the stat table a fixture was written with (`src/game-data/stat-tables.ts`, one
-/// `stat: [id,savebits,saveadd,saveparambits,csvbits],` a line under the name of its table).
+/// The current data with the stat table a fixture was written with (`olderStatTables` of data.json).
 fn gd_with(table: &str) -> GameData {
     let mut data: Value = serde_json::from_str(&repo_file("data/data.json")).unwrap();
-    let tables = repo_file("src/game-data/stat-tables.ts");
-    let stats = tables
-        .lines()
-        .skip_while(|line| !(line.contains(table) && line.trim_end().ends_with(": {")))
-        .skip(1)
-        .map_while(|line| line.trim().strip_suffix(',')?.split_once(": "))
-        .map(|(stat, row)| {
-            let row: [i64; 5] = serde_json::from_str(row).unwrap();
-            let entry =
-                json!({"id": row[0], "savebits": row[1], "saveadd": row[2], "saveparambits": row[3], "csvbits": row[4]});
-            (stat.to_string(), entry)
-        });
-    data["itemStatCost"] = Value::Object(stats.collect());
+    data["itemStatCost"] = data["olderStatTables"][table].take();
     GameData::from_json(&data.to_string(), &repo_file("data/strings.json")).unwrap()
 }
 

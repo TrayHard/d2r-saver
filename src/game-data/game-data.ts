@@ -15,6 +15,7 @@ import type {
   WeaponEntry,
   MiscEntry,
   ItemStatCostEntry,
+  StatTable,
   ItemTypeEntry,
   UniqueItemEntry,
   SetItemEntry,
@@ -58,6 +59,8 @@ export class GameData {
   weapons!: Record<string, WeaponEntry>;
   misc!: Record<string, MiscEntry>;
   itemStatCost!: Record<string, ItemStatCostEntry>;
+  /** Stat tables of older games by name, the fallbacks of `readSave`. */
+  olderStatTables?: Record<string, StatTable>;
   itemTypes!: Record<string, ItemTypeEntry>;
   uniqueItems!: Record<string, UniqueItemEntry>;
   setItems!: Record<string, SetItemEntry>;

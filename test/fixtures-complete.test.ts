@@ -3,7 +3,9 @@
  * stash fixtures come from D2R without the mod and BlizzlessTest.d2s from Blizzless season 2, so
  * the current Blizzless table in data/data.json stops them at "unknown stat" codes: their stat ids
  * and widths differ (item_singleskill is 3 bits in D2R and 5 in Blizzless, the season 2 custom
- * stats sat at 361-369). src/game-data/stat-tables.ts holds those older tables.
+ * stats sat at 361-369). `olderStatTables` of data.json holds those older tables.
+ * BlizzlessBartuc.d2s is the v105 character of the current mod: the game client saved it offline on
+ * 2026-11-23 (TestSorc.d2s with the two Bartuc uniques, whose stats are 474-477).
  */
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -19,6 +21,7 @@ const saverFor = (table: StatTable | null) => (table ? (savers[table] ??= D2RSav
 
 /** Fixture → stat table it was written with; `null` is the current table. */
 const FIXTURES: Record<string, StatTable | null> = {
+  'BlizzlessBartuc.d2s': null,
   'BlizzlessTest.d2s': 'blizzless-s2',
   'WarlockTest.d2s': 'd2r',
   'WarlockShards.d2s': 'd2r',
@@ -56,6 +59,18 @@ describe('fixtures', () => {
     const read = current.readSave(bytes);
     expect(read.statTable).toBeNull();
     expect(read.data).toEqual(current.readD2S(bytes));
+  });
+
+  it('the character of the current mod holds the saved stats 474-477', () => {
+    const read = current.readSave(fixture('BlizzlessBartuc.d2s'));
+    if (read.type !== 'd2s') throw new Error(read.type);
+    const items = Object.values(read.data.items);
+    expect(items).toHaveLength(28);
+    const stats = (base: string) => (items.find((item) => item.base === base)! as { stats: object }).stats;
+    expect(stats('uh9')).toEqual({ damageresist: 8, item_fastercastrate: 10, item_allskills: 2, miasma_chain_bonus: 10, demon_summon_bonus: 1 });
+    expect(stats('uul')).toMatchObject({ abyss_nocd: 1, apocalypse_dot: 1, demon_summon_bonus: 1 });
+    const { miasma_chain_bonus, demon_summon_bonus, abyss_nocd, apocalypse_dot } = rawData().itemStatCost;
+    expect([miasma_chain_bonus, demon_summon_bonus, abyss_nocd, apocalypse_dot].map((stat) => stat.id).sort()).toEqual([474, 475, 476, 477]);
   });
 
   for (const [name, table] of Object.entries(FIXTURES)) {

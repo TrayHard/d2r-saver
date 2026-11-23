@@ -59,6 +59,11 @@ const result = saver.readSave(buffer);
 // result.type === 'd2s' | 'd2i' | 'd2i-v99', result.version === 99 | 105
 // result.statTable === 'current' | 'blizzless-s2' | 'd2r', or null when no table reads it to its end
 
+// A save of another mod: give its itemstatcost.txt, the result names it (1.2.0)
+// import { parseStatTable } from 'd2r-saver'
+const statTables = { 'my-mod': parseStatTable(readFileSync('itemstatcost.txt', 'utf8')) };
+const modded = saver.readSave(buffer, { statTables });
+
 // Or explicitly
 const d2s = saver.readD2S(buffer);  // character file
 const d2i = saver.readD2I(buffer);  // shared stash
@@ -75,8 +80,19 @@ An item stores its stats as bare bits. Their ids and widths come from the `items
 game that wrote the save, so a file reads only with the table of its own game: with another one the
 reader drifts by a few bits and stops at an "unknown item stat code" close to the 511 terminator.
 `data/data.json` is the current Blizzless mod (14.11.2026) and also reads seasons 3 and 4;
-`readSave` falls back to the tables of season 2 and of D2R without the mod. Reading with a
-fallback table is for reading only: the in-place operations and the writers use the current one.
+`readSave` tries it first, then the `statTables` of the call, then the `olderStatTables` of
+`data/data.json`: season 2 and D2R without the mod. Reading with another table is for reading only:
+the in-place operations and the writers use the current one. A stat table does not add item bases,
+uniques or skills; a mod that has its own needs its own `data.json`.
+
+The older tables are built from `data/txt/older/<name>.txt`, the save columns of the game's
+`itemstatcost.txt`. To add a game, put its file there (columns are found by name, so a whole
+`itemstatcost.txt` works as well) and run `npm run build:data`:
+
+| Table | Source |
+|---|---|
+| `blizzless-s2` | `itemstatcost.txt` of the Blizzless season 2 mod, 370 stats |
+| `d2r` | `itemstatcost.txt` of D2R 3.x without a mod (save version 105), 368 stats; it reads version 99 as well |
 
 ### Did the parser understand the whole file?
 
@@ -452,17 +468,26 @@ instead of 0.015 ms.
 
 ## Test fixtures
 
-`test/fixtures/` holds real Blizzless v105 saves. Every non-empty normal stash sector in them
-stops parsing on a Blizzless-specific stat code (480–508) after 0–7 items; only the empty sectors
-and the extended sector parse to the end. The tests pin the exact numbers (declared/parsed per
-list, byte ranges of the first items) so a parser change that moves any boundary is caught.
-`test/__snapshots__/compat-0.2.1/` freezes the 0.2.1 output of `readD2S`/`readD2I` for every
-fixture; the compatibility test strips only the fields added since.
+`test/fixtures/` holds saves of several games; `readSave` reads each of them to its end:
+
+| File | Save version | Stat table |
+|---|---|---|
+| `BlizzlessBartuc.d2s` | 105 | `current`; the game client saved it offline with the mod of 14.11.2026, stats 474-477 included |
+| `BlizzlessTest.d2s` | 99 | `blizzless-s2` |
+| `WarlockTest.d2s`, `WarlockShards.d2s` | 105 | `d2r` |
+| `SharedStash*.d2i` | 105 | `d2r` |
+| `MaterialsTab*.d2i` | 105 | `current` |
+
+Read with the current table, the files of the other two tables stop at an "unknown item stat code"
+(474-509) after 0-7 items. Some tests pin that on purpose: the exact numbers (declared/parsed per
+list, byte ranges of the first items) catch a parser change that moves any boundary.
+`test/__snapshots__/compat-0.2.1/` freezes the 0.2.1 output of `readD2S`/`readD2I` for the
+fixtures of that version; the compatibility test strips only the fields added since.
 
 ### `SharedStashComplete.d2i` (synthetic)
 
-The in-place insert path only accepts a **complete** non-empty normal sector, and the real
-fixtures contain none. `SharedStashComplete.d2i` is built from them through the public in-place
+The in-place insert path only accepts a **complete** non-empty normal sector, and with the current
+table the real shared stash fixtures contain none. `SharedStashComplete.d2i` is built from them through the public in-place
 API (`test/helpers/shared-stash-complete.ts`, regenerate with `npm run build:fixtures`):
 
 1. `extractInPlaceD2I(..., { requireCompleteList: false })` cuts the walkable prefix of three

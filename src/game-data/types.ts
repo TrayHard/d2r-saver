@@ -467,6 +467,20 @@ export interface GameInfo {
   patch?: boolean;
 }
 
+// ─── Stat tables ────────────────────────────────────────────────
+
+/** What a stat takes in a save: the save columns of `itemstatcost.txt` (1.2.0). */
+export interface StatTableEntry {
+  id: number;
+  savebits?: number;
+  saveadd?: number;
+  saveparambits?: number;
+  csvbits?: number;
+}
+
+/** A stat table by stat name; `parseStatTable` makes one from an `itemstatcost.txt` (1.2.0). */
+export type StatTable = Record<string, StatTableEntry>;
+
 // ─── Raw data.json shape ────────────────────────────────────────
 
 /** The raw structure of data.json before processing. */
@@ -475,6 +489,8 @@ export interface RawGameData {
   weapons: Record<string, WeaponEntry>;
   misc: Record<string, MiscEntry>;
   itemStatCost: Record<string, ItemStatCostEntry>;
+  /** Tables of the games before `itemStatCost`, by name; `readSave` tries them (1.2.0). */
+  olderStatTables?: Record<string, StatTable>;
   itemTypes: Record<string, ItemTypeEntry>;
   uniqueItems: Record<string, UniqueItemEntry>;
   setItems: Record<string, SetItemEntry>;

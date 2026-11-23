@@ -1,0 +1,5172 @@
+{
+  "blizzless-s2": {
+    "strength": {
+      "id": 0,
+      "savebits": 8,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "energy": {
+      "id": 1,
+      "savebits": 7,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "dexterity": {
+      "id": 2,
+      "savebits": 7,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "vitality": {
+      "id": 3,
+      "savebits": 7,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "statpts": {
+      "id": 4,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "newskills": {
+      "id": 5,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 8
+    },
+    "hitpoints": {
+      "id": 6,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "maxhp": {
+      "id": 7,
+      "savebits": 9,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "mana": {
+      "id": 8,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "maxmana": {
+      "id": 9,
+      "savebits": 8,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "stamina": {
+      "id": 10,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "maxstamina": {
+      "id": 11,
+      "savebits": 8,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "level": {
+      "id": 12,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 7
+    },
+    "experience": {
+      "id": 13,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 32
+    },
+    "gold": {
+      "id": 14,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 25
+    },
+    "goldbank": {
+      "id": 15,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 25
+    },
+    "item_armor_percent": {
+      "id": 16,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_percent": {
+      "id": 17,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_mindamage_percent": {
+      "id": 18,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "tohit": {
+      "id": 19,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "toblock": {
+      "id": 20,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "mindamage": {
+      "id": 21,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxdamage": {
+      "id": 22,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "secondary_mindamage": {
+      "id": 23,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "secondary_maxdamage": {
+      "id": 24,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damagepercent": {
+      "id": 25,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manarecovery": {
+      "id": 26,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manarecoverybonus": {
+      "id": 27,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "staminarecoverybonus": {
+      "id": 28,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lastexp": {
+      "id": 29,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "nextexp": {
+      "id": 30,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armorclass": {
+      "id": 31,
+      "savebits": 11,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armorclass_vs_missile": {
+      "id": 32,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armorclass_vs_hth": {
+      "id": 33,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "normal_damage_reduction": {
+      "id": 34,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magic_damage_reduction": {
+      "id": 35,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damageresist": {
+      "id": 36,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magicresist": {
+      "id": 37,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxmagicresist": {
+      "id": 38,
+      "savebits": 7,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "fireresist": {
+      "id": 39,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxfireresist": {
+      "id": 40,
+      "savebits": 7,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lightresist": {
+      "id": 41,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxlightresist": {
+      "id": 42,
+      "savebits": 7,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldresist": {
+      "id": 43,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxcoldresist": {
+      "id": 44,
+      "savebits": 7,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonresist": {
+      "id": 45,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxpoisonresist": {
+      "id": 46,
+      "savebits": 7,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damageaura": {
+      "id": 47,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "firemindam": {
+      "id": 48,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "firemaxdam": {
+      "id": 49,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lightmindam": {
+      "id": 50,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lightmaxdam": {
+      "id": 51,
+      "savebits": 11,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magicmindam": {
+      "id": 52,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magicmaxdam": {
+      "id": 53,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldmindam": {
+      "id": 54,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldmaxdam": {
+      "id": 55,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldlength": {
+      "id": 56,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonmindam": {
+      "id": 57,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonmaxdam": {
+      "id": 58,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonlength": {
+      "id": 59,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lifedrainmindam": {
+      "id": 60,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lifedrainmaxdam": {
+      "id": 61,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manadrainmindam": {
+      "id": 62,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manadrainmaxdam": {
+      "id": 63,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "stamdrainmindam": {
+      "id": 64,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "stamdrainmaxdam": {
+      "id": 65,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "stunlength": {
+      "id": 66,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "velocitypercent": {
+      "id": 67,
+      "savebits": 7,
+      "saveadd": 30,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "attackrate": {
+      "id": 68,
+      "savebits": 7,
+      "saveadd": 30,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "other_animrate": {
+      "id": 69,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "quantity": {
+      "id": 70,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "value": {
+      "id": 71,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "durability": {
+      "id": 72,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxdurability": {
+      "id": 73,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "hpregen": {
+      "id": 74,
+      "savebits": 6,
+      "saveadd": 30,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdurability_percent": {
+      "id": 75,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxhp_percent": {
+      "id": 76,
+      "savebits": 6,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxmana_percent": {
+      "id": 77,
+      "savebits": 6,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_attackertakesdamage": {
+      "id": 78,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_goldbonus": {
+      "id": 79,
+      "savebits": 9,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_magicbonus": {
+      "id": 80,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_knockback": {
+      "id": 81,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_timeduration": {
+      "id": 82,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_addclassskills": {
+      "id": 83,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "unsentparam1": {
+      "id": 84,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_addexperience": {
+      "id": 85,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_healafterkill": {
+      "id": 86,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_reducedprices": {
+      "id": 87,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_doubleherbduration": {
+      "id": 88,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_lightradius": {
+      "id": 89,
+      "savebits": 4,
+      "saveadd": 4,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_lightcolor": {
+      "id": 90,
+      "savebits": 24,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_req_percent": {
+      "id": 91,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_levelreq": {
+      "id": 92,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fasterattackrate": {
+      "id": 93,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_levelreqpct": {
+      "id": 94,
+      "savebits": 7,
+      "saveadd": 64,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lastblockframe": {
+      "id": 95,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fastermovevelocity": {
+      "id": 96,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_nonclassskill": {
+      "id": 97,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 9,
+      "csvbits": 0
+    },
+    "state": {
+      "id": 98,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 8,
+      "csvbits": 0
+    },
+    "item_fastergethitrate": {
+      "id": 99,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "monster_playercount": {
+      "id": 100,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_poison_override_length": {
+      "id": 101,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fasterblockrate": {
+      "id": 102,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_bypass_undead": {
+      "id": 103,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_bypass_demons": {
+      "id": 104,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fastercastrate": {
+      "id": 105,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_bypass_beasts": {
+      "id": 106,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_singleskill": {
+      "id": 107,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 9,
+      "csvbits": 0
+    },
+    "item_restinpeace": {
+      "id": 108,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "curse_resistance": {
+      "id": 109,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_poisonlengthresist": {
+      "id": 110,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_normaldamage": {
+      "id": 111,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_howl": {
+      "id": 112,
+      "savebits": 7,
+      "saveadd": -1,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_stupidity": {
+      "id": 113,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damagetomana": {
+      "id": 114,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ignoretargetac": {
+      "id": 115,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fractionaltargetac": {
+      "id": 116,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_preventheal": {
+      "id": 117,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_halffreezeduration": {
+      "id": 118,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_percent": {
+      "id": 119,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damagetargetac": {
+      "id": 120,
+      "savebits": 7,
+      "saveadd": 128,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_demondamage_percent": {
+      "id": 121,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_undeaddamage_percent": {
+      "id": 122,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_demon_tohit": {
+      "id": 123,
+      "savebits": 10,
+      "saveadd": 128,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_undead_tohit": {
+      "id": 124,
+      "savebits": 10,
+      "saveadd": 128,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_throwable": {
+      "id": 125,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_elemskill": {
+      "id": 126,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "item_allskills": {
+      "id": 127,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_attackertakeslightdamage": {
+      "id": 128,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "ironmaiden_level": {
+      "id": 129,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lifetap_level": {
+      "id": 130,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "thorns_percent": {
+      "id": 131,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonearmor": {
+      "id": 132,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonearmormax": {
+      "id": 133,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_freeze": {
+      "id": 134,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_openwounds": {
+      "id": 135,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crushingblow": {
+      "id": 136,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_kickdamage": {
+      "id": 137,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_manaafterkill": {
+      "id": 138,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_healafterdemonkill": {
+      "id": 139,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_extrablood": {
+      "id": 140,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_deadlystrike": {
+      "id": 141,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbfire_percent": {
+      "id": 142,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbfire": {
+      "id": 143,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorblight_percent": {
+      "id": 144,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorblight": {
+      "id": 145,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbmagic_percent": {
+      "id": 146,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbmagic": {
+      "id": 147,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbcold_percent": {
+      "id": 148,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbcold": {
+      "id": 149,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_slow": {
+      "id": 150,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_aura": {
+      "id": 151,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 9,
+      "csvbits": 0
+    },
+    "item_indesctructible": {
+      "id": 152,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_cannotbefrozen": {
+      "id": 153,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_staminadrainpct": {
+      "id": 154,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_reanimate": {
+      "id": 155,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 10,
+      "csvbits": 0
+    },
+    "item_pierce": {
+      "id": 156,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_magicarrow": {
+      "id": 157,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_explosivearrow": {
+      "id": 158,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_throw_mindamage": {
+      "id": 159,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_throw_maxdamage": {
+      "id": 160,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_handofathena": {
+      "id": 161,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_staminapercent": {
+      "id": 162,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_passive_staminapercent": {
+      "id": 163,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_concentration": {
+      "id": 164,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_enchant": {
+      "id": 165,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_pierce": {
+      "id": 166,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_conviction": {
+      "id": 167,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_chillingarmor": {
+      "id": 168,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_frenzy": {
+      "id": 169,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_decrepify": {
+      "id": 170,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_armor_percent": {
+      "id": 171,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "alignment": {
+      "id": 172,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "target0": {
+      "id": 173,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "target1": {
+      "id": 174,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "goldlost": {
+      "id": 175,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "conversion_level": {
+      "id": 176,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "conversion_maxhp": {
+      "id": 177,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unit_dooverlay": {
+      "id": 178,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "attack_vs_montype": {
+      "id": 179,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 10,
+      "csvbits": 0
+    },
+    "damage_vs_montype": {
+      "id": 180,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 10,
+      "csvbits": 0
+    },
+    "fade": {
+      "id": 181,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armor_override_percent": {
+      "id": 182,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lasthitreactframe": {
+      "id": 183,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "create_season": {
+      "id": 184,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonus_mindamage": {
+      "id": 185,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonus_maxdamage": {
+      "id": 186,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_cold_immunity": {
+      "id": 187,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_addskill_tab": {
+      "id": 188,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_pierce_fire_immunity": {
+      "id": 189,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_light_immunity": {
+      "id": 190,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_poison_immunity": {
+      "id": 191,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_damage_immunity": {
+      "id": 192,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_magic_immunity": {
+      "id": 193,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_numsockets": {
+      "id": 194,
+      "savebits": 4,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_skillonattack": {
+      "id": 195,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillonkill": {
+      "id": 196,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillondeath": {
+      "id": 197,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillonhit": {
+      "id": 198,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillonlevelup": {
+      "id": 199,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_charge_noconsume": {
+      "id": 200,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_skillongethit": {
+      "id": 201,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "modifierlist_castid": {
+      "id": 202,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unused203": {
+      "id": 203,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_charged_skill": {
+      "id": 204,
+      "savebits": 16,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_noconsume": {
+      "id": 205,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_noconsume": {
+      "id": 206,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_replenish_oncrit": {
+      "id": 206,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unused208": {
+      "id": 208,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unused209": {
+      "id": 209,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unused210": {
+      "id": 210,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unused211": {
+      "id": 211,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_gethit_rate": {
+      "id": 213,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_attack_speed": {
+      "id": 213,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armor_perlevel": {
+      "id": 214,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armorpercent_perlevel": {
+      "id": 215,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_hp_perlevel": {
+      "id": 216,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_mana_perlevel": {
+      "id": 217,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_perlevel": {
+      "id": 218,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_percent_perlevel": {
+      "id": 219,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_strength_perlevel": {
+      "id": 220,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_dexterity_perlevel": {
+      "id": 221,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_energy_perlevel": {
+      "id": 222,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_vitality_perlevel": {
+      "id": 223,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_perlevel": {
+      "id": 224,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohitpercent_perlevel": {
+      "id": 225,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_cold_damagemax_perlevel": {
+      "id": 226,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fire_damagemax_perlevel": {
+      "id": 227,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ltng_damagemax_perlevel": {
+      "id": 228,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pois_damagemax_perlevel": {
+      "id": 229,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_cold_perlevel": {
+      "id": 230,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_fire_perlevel": {
+      "id": 231,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_ltng_perlevel": {
+      "id": 232,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_pois_perlevel": {
+      "id": 233,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_cold_perlevel": {
+      "id": 234,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_fire_perlevel": {
+      "id": 235,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_ltng_perlevel": {
+      "id": 236,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_pois_perlevel": {
+      "id": 237,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_thorns_perlevel": {
+      "id": 238,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gold_perlevel": {
+      "id": 239,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_magic_perlevel": {
+      "id": 240,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_regenstamina_perlevel": {
+      "id": 241,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_stamina_perlevel": {
+      "id": 242,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_demon_perlevel": {
+      "id": 243,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_undead_perlevel": {
+      "id": 244,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_demon_perlevel": {
+      "id": 245,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_undead_perlevel": {
+      "id": 246,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crushingblow_perlevel": {
+      "id": 247,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_openwounds_perlevel": {
+      "id": 248,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_kick_damage_perlevel": {
+      "id": 249,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_deadlystrike_perlevel": {
+      "id": 250,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gems_perlevel": {
+      "id": 251,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_replenish_durability": {
+      "id": 252,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_replenish_quantity": {
+      "id": 253,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_extra_stack": {
+      "id": 254,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_item": {
+      "id": 255,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_slash_damage": {
+      "id": 256,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_slash_damage_percent": {
+      "id": 257,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crush_damage": {
+      "id": 258,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crush_damage_percent": {
+      "id": 259,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_thrust_damage": {
+      "id": 260,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_thrust_damage_percent": {
+      "id": 261,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_slash": {
+      "id": 262,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_crush": {
+      "id": 263,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_thrust": {
+      "id": 264,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_slash_percent": {
+      "id": 265,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_crush_percent": {
+      "id": 266,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_thrust_percent": {
+      "id": 267,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armor_bytime": {
+      "id": 268,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armorpercent_bytime": {
+      "id": 269,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_hp_bytime": {
+      "id": 270,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_mana_bytime": {
+      "id": 271,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_bytime": {
+      "id": 272,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_percent_bytime": {
+      "id": 273,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_strength_bytime": {
+      "id": 274,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_dexterity_bytime": {
+      "id": 275,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_energy_bytime": {
+      "id": 276,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_vitality_bytime": {
+      "id": 277,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_bytime": {
+      "id": 278,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohitpercent_bytime": {
+      "id": 279,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_cold_damagemax_bytime": {
+      "id": 280,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fire_damagemax_bytime": {
+      "id": 281,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ltng_damagemax_bytime": {
+      "id": 282,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pois_damagemax_bytime": {
+      "id": 283,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_cold_bytime": {
+      "id": 284,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_fire_bytime": {
+      "id": 285,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_ltng_bytime": {
+      "id": 286,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_pois_bytime": {
+      "id": 287,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_cold_bytime": {
+      "id": 288,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_fire_bytime": {
+      "id": 289,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_ltng_bytime": {
+      "id": 290,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_pois_bytime": {
+      "id": 291,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gold_bytime": {
+      "id": 292,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_magic_bytime": {
+      "id": 293,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_regenstamina_bytime": {
+      "id": 294,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_stamina_bytime": {
+      "id": 295,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_demon_bytime": {
+      "id": 296,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_undead_bytime": {
+      "id": 297,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_demon_bytime": {
+      "id": 298,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_undead_bytime": {
+      "id": 299,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crushingblow_bytime": {
+      "id": 300,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_openwounds_bytime": {
+      "id": 301,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_kick_damage_bytime": {
+      "id": 302,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_deadlystrike_bytime": {
+      "id": 303,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gems_bytime": {
+      "id": 304,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_cold": {
+      "id": 305,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_fire": {
+      "id": 306,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_ltng": {
+      "id": 307,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_pois": {
+      "id": 308,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_vs_monster": {
+      "id": 309,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_percent_vs_monster": {
+      "id": 310,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_vs_monster": {
+      "id": 311,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_percent_vs_monster": {
+      "id": 312,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ac_vs_monster": {
+      "id": 313,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ac_percent_vs_monster": {
+      "id": 314,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "firelength": {
+      "id": 315,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "burningmin": {
+      "id": 316,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "burningmax": {
+      "id": 317,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_damage": {
+      "id": 318,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_steal": {
+      "id": 319,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_other": {
+      "id": 320,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_fire": {
+      "id": 321,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_cold": {
+      "id": 322,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_lightning": {
+      "id": 323,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_extra_charges": {
+      "id": 324,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_tohit": {
+      "id": 325,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poison_count": {
+      "id": 326,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damage_framerate": {
+      "id": 327,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "pierce_idx": {
+      "id": 328,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_fire_mastery": {
+      "id": 329,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_ltng_mastery": {
+      "id": 330,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_cold_mastery": {
+      "id": 331,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_pois_mastery": {
+      "id": 332,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_fire_pierce": {
+      "id": 333,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_ltng_pierce": {
+      "id": 334,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_cold_pierce": {
+      "id": 335,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_pois_pierce": {
+      "id": 336,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_critical_strike": {
+      "id": 337,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_dodge": {
+      "id": 338,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_avoid": {
+      "id": 339,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_evade": {
+      "id": 340,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_warmth": {
+      "id": 341,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_melee_th": {
+      "id": 342,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_melee_dmg": {
+      "id": 343,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_melee_crit": {
+      "id": 344,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_throw_th": {
+      "id": 345,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_throw_dmg": {
+      "id": 346,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_throw_crit": {
+      "id": 347,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_weaponblock": {
+      "id": 348,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_summon_resist": {
+      "id": 349,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "modifierlist_skill": {
+      "id": 350,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "modifierlist_level": {
+      "id": 351,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "last_sent_hp_pct": {
+      "id": 352,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "source_unit_type": {
+      "id": 353,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "source_unit_id": {
+      "id": 354,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "shortparam1": {
+      "id": 355,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "questitemdifficulty": {
+      "id": 356,
+      "savebits": 2,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mag_mastery": {
+      "id": 357,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mag_pierce": {
+      "id": 358,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_cooldown": {
+      "id": 359,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_missile_damage_scale": {
+      "id": 360,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "Add_one": {
+      "id": 361,
+      "savebits": 11,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pois_dur_skill": {
+      "id": 362,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "torch": {
+      "id": 363,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdurability_new": {
+      "id": 364,
+      "savebits": 7,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_elemskill_cold": {
+      "id": 365,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "item_elemskill_lightning": {
+      "id": 366,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "item_elemskill_poison": {
+      "id": 367,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "item_elemskill_fire": {
+      "id": 368,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "item_elemskill_magic": {
+      "id": 369,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    }
+  },
+  "d2r": {
+    "strength": {
+      "id": 0,
+      "savebits": 8,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "energy": {
+      "id": 1,
+      "savebits": 7,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "dexterity": {
+      "id": 2,
+      "savebits": 7,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "vitality": {
+      "id": 3,
+      "savebits": 7,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "statpts": {
+      "id": 4,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 10
+    },
+    "newskills": {
+      "id": 5,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 8
+    },
+    "hitpoints": {
+      "id": 6,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "maxhp": {
+      "id": 7,
+      "savebits": 9,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "mana": {
+      "id": 8,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "maxmana": {
+      "id": 9,
+      "savebits": 8,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "stamina": {
+      "id": 10,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "maxstamina": {
+      "id": 11,
+      "savebits": 8,
+      "saveadd": 32,
+      "saveparambits": 0,
+      "csvbits": 21
+    },
+    "level": {
+      "id": 12,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 7
+    },
+    "experience": {
+      "id": 13,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 32
+    },
+    "gold": {
+      "id": 14,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 25
+    },
+    "goldbank": {
+      "id": 15,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 25
+    },
+    "item_armor_percent": {
+      "id": 16,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_percent": {
+      "id": 17,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_mindamage_percent": {
+      "id": 18,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "tohit": {
+      "id": 19,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "toblock": {
+      "id": 20,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "mindamage": {
+      "id": 21,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxdamage": {
+      "id": 22,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "secondary_mindamage": {
+      "id": 23,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "secondary_maxdamage": {
+      "id": 24,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damagepercent": {
+      "id": 25,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manarecovery": {
+      "id": 26,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manarecoverybonus": {
+      "id": 27,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "staminarecoverybonus": {
+      "id": 28,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lastexp": {
+      "id": 29,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "nextexp": {
+      "id": 30,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armorclass": {
+      "id": 31,
+      "savebits": 11,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armorclass_vs_missile": {
+      "id": 32,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armorclass_vs_hth": {
+      "id": 33,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "normal_damage_reduction": {
+      "id": 34,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magic_damage_reduction": {
+      "id": 35,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damageresist": {
+      "id": 36,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magicresist": {
+      "id": 37,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxmagicresist": {
+      "id": 38,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "fireresist": {
+      "id": 39,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxfireresist": {
+      "id": 40,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lightresist": {
+      "id": 41,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxlightresist": {
+      "id": 42,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldresist": {
+      "id": 43,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxcoldresist": {
+      "id": 44,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonresist": {
+      "id": 45,
+      "savebits": 9,
+      "saveadd": 200,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxpoisonresist": {
+      "id": 46,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damageaura": {
+      "id": 47,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "firemindam": {
+      "id": 48,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "firemaxdam": {
+      "id": 49,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lightmindam": {
+      "id": 50,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lightmaxdam": {
+      "id": 51,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magicmindam": {
+      "id": 52,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "magicmaxdam": {
+      "id": 53,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldmindam": {
+      "id": 54,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldmaxdam": {
+      "id": 55,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "coldlength": {
+      "id": 56,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonmindam": {
+      "id": 57,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonmaxdam": {
+      "id": 58,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poisonlength": {
+      "id": 59,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lifedrainmindam": {
+      "id": 60,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lifedrainmaxdam": {
+      "id": 61,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manadrainmindam": {
+      "id": 62,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "manadrainmaxdam": {
+      "id": 63,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "stamdrainmindam": {
+      "id": 64,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "stamdrainmaxdam": {
+      "id": 65,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "stunlength": {
+      "id": 66,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "velocitypercent": {
+      "id": 67,
+      "savebits": 7,
+      "saveadd": 30,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "attackrate": {
+      "id": 68,
+      "savebits": 7,
+      "saveadd": 30,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "other_animrate": {
+      "id": 69,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "quantity": {
+      "id": 70,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "value": {
+      "id": 71,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "durability": {
+      "id": 72,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "maxdurability": {
+      "id": 73,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "hpregen": {
+      "id": 74,
+      "savebits": 6,
+      "saveadd": 30,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdurability_percent": {
+      "id": 75,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxhp_percent": {
+      "id": 76,
+      "savebits": 6,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxmana_percent": {
+      "id": 77,
+      "savebits": 6,
+      "saveadd": 10,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_attackertakesdamage": {
+      "id": 78,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_goldbonus": {
+      "id": 79,
+      "savebits": 9,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_magicbonus": {
+      "id": 80,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_knockback": {
+      "id": 81,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_timeduration": {
+      "id": 82,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_addclassskills": {
+      "id": 83,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "unsentparam1": {
+      "id": 84,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_addexperience": {
+      "id": 85,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_healafterkill": {
+      "id": 86,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_reducedprices": {
+      "id": 87,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_doubleherbduration": {
+      "id": 88,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_lightradius": {
+      "id": 89,
+      "savebits": 4,
+      "saveadd": 4,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_lightcolor": {
+      "id": 90,
+      "savebits": 24,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_req_percent": {
+      "id": 91,
+      "savebits": 8,
+      "saveadd": 100,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_levelreq": {
+      "id": 92,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fasterattackrate": {
+      "id": 93,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_levelreqpct": {
+      "id": 94,
+      "savebits": 7,
+      "saveadd": 64,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lastblockframe": {
+      "id": 95,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fastermovevelocity": {
+      "id": 96,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_nonclassskill": {
+      "id": 97,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 9,
+      "csvbits": 0
+    },
+    "state": {
+      "id": 98,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 8,
+      "csvbits": 0
+    },
+    "item_fastergethitrate": {
+      "id": 99,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "monster_playercount": {
+      "id": 100,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_poison_override_length": {
+      "id": 101,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fasterblockrate": {
+      "id": 102,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_bypass_undead": {
+      "id": 103,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_bypass_demons": {
+      "id": 104,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fastercastrate": {
+      "id": 105,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_bypass_beasts": {
+      "id": 106,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_singleskill": {
+      "id": 107,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 9,
+      "csvbits": 0
+    },
+    "item_restinpeace": {
+      "id": 108,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "curse_resistance": {
+      "id": 109,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_poisonlengthresist": {
+      "id": 110,
+      "savebits": 8,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_normaldamage": {
+      "id": 111,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_howl": {
+      "id": 112,
+      "savebits": 7,
+      "saveadd": -1,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_stupidity": {
+      "id": 113,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damagetomana": {
+      "id": 114,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ignoretargetac": {
+      "id": 115,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fractionaltargetac": {
+      "id": 116,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_preventheal": {
+      "id": 117,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_halffreezeduration": {
+      "id": 118,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_percent": {
+      "id": 119,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damagetargetac": {
+      "id": 120,
+      "savebits": 7,
+      "saveadd": 128,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_demondamage_percent": {
+      "id": 121,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_undeaddamage_percent": {
+      "id": 122,
+      "savebits": 9,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_demon_tohit": {
+      "id": 123,
+      "savebits": 10,
+      "saveadd": 128,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_undead_tohit": {
+      "id": 124,
+      "savebits": 10,
+      "saveadd": 128,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_throwable": {
+      "id": 125,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_elemskill": {
+      "id": 126,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 3,
+      "csvbits": 0
+    },
+    "item_allskills": {
+      "id": 127,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_attackertakeslightdamage": {
+      "id": 128,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "ironmaiden_level": {
+      "id": 129,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lifetap_level": {
+      "id": 130,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "thorns_percent": {
+      "id": 131,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonearmor": {
+      "id": 132,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonearmormax": {
+      "id": 133,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_freeze": {
+      "id": 134,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_openwounds": {
+      "id": 135,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crushingblow": {
+      "id": 136,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_kickdamage": {
+      "id": 137,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_manaafterkill": {
+      "id": 138,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_healafterdemonkill": {
+      "id": 139,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_extrablood": {
+      "id": 140,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_deadlystrike": {
+      "id": 141,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbfire_percent": {
+      "id": 142,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbfire": {
+      "id": 143,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorblight_percent": {
+      "id": 144,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorblight": {
+      "id": 145,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbmagic_percent": {
+      "id": 146,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbmagic": {
+      "id": 147,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbcold_percent": {
+      "id": 148,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorbcold": {
+      "id": 149,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_slow": {
+      "id": 150,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_aura": {
+      "id": 151,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 9,
+      "csvbits": 0
+    },
+    "item_indesctructible": {
+      "id": 152,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_cannotbefrozen": {
+      "id": 153,
+      "savebits": 1,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_staminadrainpct": {
+      "id": 154,
+      "savebits": 7,
+      "saveadd": 20,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_reanimate": {
+      "id": 155,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 10,
+      "csvbits": 0
+    },
+    "item_pierce": {
+      "id": 156,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_magicarrow": {
+      "id": 157,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_explosivearrow": {
+      "id": 158,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_throw_mindamage": {
+      "id": 159,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_throw_maxdamage": {
+      "id": 160,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_handofathena": {
+      "id": 161,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_staminapercent": {
+      "id": 162,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_passive_staminapercent": {
+      "id": 163,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_concentration": {
+      "id": 164,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_enchant": {
+      "id": 165,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_pierce": {
+      "id": 166,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_conviction": {
+      "id": 167,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_chillingarmor": {
+      "id": 168,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_frenzy": {
+      "id": 169,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_decrepify": {
+      "id": 170,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_armor_percent": {
+      "id": 171,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "alignment": {
+      "id": 172,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "target0": {
+      "id": 173,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "target1": {
+      "id": 174,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "goldlost": {
+      "id": 175,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "conversion_level": {
+      "id": 176,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "conversion_maxhp": {
+      "id": 177,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "unit_dooverlay": {
+      "id": 178,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "attack_vs_montype": {
+      "id": 179,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 10,
+      "csvbits": 0
+    },
+    "damage_vs_montype": {
+      "id": 180,
+      "savebits": 9,
+      "saveadd": 0,
+      "saveparambits": 10,
+      "csvbits": 0
+    },
+    "fade": {
+      "id": 181,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "armor_override_percent": {
+      "id": 182,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "lasthitreactframe": {
+      "id": 183,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "create_season": {
+      "id": 184,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonus_mindamage": {
+      "id": 185,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "bonus_maxdamage": {
+      "id": 186,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_cold_immunity": {
+      "id": 187,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_addskill_tab": {
+      "id": 188,
+      "savebits": 3,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_pierce_fire_immunity": {
+      "id": 189,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_light_immunity": {
+      "id": 190,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_poison_immunity": {
+      "id": 191,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_damage_immunity": {
+      "id": 192,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_magic_immunity": {
+      "id": 193,
+      "savebits": 10,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_numsockets": {
+      "id": 194,
+      "savebits": 4,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_skillonattack": {
+      "id": 195,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillonkill": {
+      "id": 196,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillondeath": {
+      "id": 197,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillonhit": {
+      "id": 198,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_skillonlevelup": {
+      "id": 199,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_charge_noconsume": {
+      "id": 200,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_skillongethit": {
+      "id": 201,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "modifierlist_castid": {
+      "id": 202,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_item_req_percent": {
+      "id": 203,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_charged_skill": {
+      "id": 204,
+      "savebits": 16,
+      "saveadd": 0,
+      "saveparambits": 16,
+      "csvbits": 0
+    },
+    "item_noconsume": {
+      "id": 205,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_noconsume": {
+      "id": 206,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_replenish_oncrit": {
+      "id": 207,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "missile_thorns_percent": {
+      "id": 208,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_item_level_req_percent": {
+      "id": 209,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "ua_escalation": {
+      "id": 210,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "ua_defeated": {
+      "id": 211,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_gethit_rate": {
+      "id": 213,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_attack_speed": {
+      "id": 213,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armor_perlevel": {
+      "id": 214,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armorpercent_perlevel": {
+      "id": 215,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_hp_perlevel": {
+      "id": 216,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_mana_perlevel": {
+      "id": 217,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_perlevel": {
+      "id": 218,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_percent_perlevel": {
+      "id": 219,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_strength_perlevel": {
+      "id": 220,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_dexterity_perlevel": {
+      "id": 221,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_energy_perlevel": {
+      "id": 222,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_vitality_perlevel": {
+      "id": 223,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_perlevel": {
+      "id": 224,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohitpercent_perlevel": {
+      "id": 225,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_cold_damagemax_perlevel": {
+      "id": 226,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fire_damagemax_perlevel": {
+      "id": 227,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ltng_damagemax_perlevel": {
+      "id": 228,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pois_damagemax_perlevel": {
+      "id": 229,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_cold_perlevel": {
+      "id": 230,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_fire_perlevel": {
+      "id": 231,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_ltng_perlevel": {
+      "id": 232,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_pois_perlevel": {
+      "id": 233,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_cold_perlevel": {
+      "id": 234,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_fire_perlevel": {
+      "id": 235,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_ltng_perlevel": {
+      "id": 236,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_pois_perlevel": {
+      "id": 237,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_thorns_perlevel": {
+      "id": 238,
+      "savebits": 5,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gold_perlevel": {
+      "id": 239,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_magic_perlevel": {
+      "id": 240,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_regenstamina_perlevel": {
+      "id": 241,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_stamina_perlevel": {
+      "id": 242,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_demon_perlevel": {
+      "id": 243,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_undead_perlevel": {
+      "id": 244,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_demon_perlevel": {
+      "id": 245,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_undead_perlevel": {
+      "id": 246,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crushingblow_perlevel": {
+      "id": 247,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_openwounds_perlevel": {
+      "id": 248,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_kick_damage_perlevel": {
+      "id": 249,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_deadlystrike_perlevel": {
+      "id": 250,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gems_perlevel": {
+      "id": 251,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_replenish_durability": {
+      "id": 252,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_replenish_quantity": {
+      "id": 253,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_extra_stack": {
+      "id": 254,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_item": {
+      "id": 255,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_slash_damage": {
+      "id": 256,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_slash_damage_percent": {
+      "id": 257,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crush_damage": {
+      "id": 258,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crush_damage_percent": {
+      "id": 259,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_thrust_damage": {
+      "id": 260,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_thrust_damage_percent": {
+      "id": 261,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_slash": {
+      "id": 262,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_crush": {
+      "id": 263,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_thrust": {
+      "id": 264,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_slash_percent": {
+      "id": 265,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_crush_percent": {
+      "id": 266,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_thrust_percent": {
+      "id": 267,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armor_bytime": {
+      "id": 268,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_armorpercent_bytime": {
+      "id": 269,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_hp_bytime": {
+      "id": 270,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_mana_bytime": {
+      "id": 271,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_bytime": {
+      "id": 272,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_maxdamage_percent_bytime": {
+      "id": 273,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_strength_bytime": {
+      "id": 274,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_dexterity_bytime": {
+      "id": 275,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_energy_bytime": {
+      "id": 276,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_vitality_bytime": {
+      "id": 277,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_bytime": {
+      "id": 278,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohitpercent_bytime": {
+      "id": 279,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_cold_damagemax_bytime": {
+      "id": 280,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_fire_damagemax_bytime": {
+      "id": 281,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ltng_damagemax_bytime": {
+      "id": 282,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pois_damagemax_bytime": {
+      "id": 283,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_cold_bytime": {
+      "id": 284,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_fire_bytime": {
+      "id": 285,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_ltng_bytime": {
+      "id": 286,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_resist_pois_bytime": {
+      "id": 287,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_cold_bytime": {
+      "id": 288,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_fire_bytime": {
+      "id": 289,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_ltng_bytime": {
+      "id": 290,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_absorb_pois_bytime": {
+      "id": 291,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gold_bytime": {
+      "id": 292,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_magic_bytime": {
+      "id": 293,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_regenstamina_bytime": {
+      "id": 294,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_stamina_bytime": {
+      "id": 295,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_demon_bytime": {
+      "id": 296,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_undead_bytime": {
+      "id": 297,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_demon_bytime": {
+      "id": 298,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_undead_bytime": {
+      "id": 299,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_crushingblow_bytime": {
+      "id": 300,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_openwounds_bytime": {
+      "id": 301,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_kick_damage_bytime": {
+      "id": 302,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_deadlystrike_bytime": {
+      "id": 303,
+      "savebits": 22,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_find_gems_bytime": {
+      "id": 304,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_cold": {
+      "id": 305,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_fire": {
+      "id": 306,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_ltng": {
+      "id": 307,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_pierce_pois": {
+      "id": 308,
+      "savebits": 8,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_vs_monster": {
+      "id": 309,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_damage_percent_vs_monster": {
+      "id": 310,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_vs_monster": {
+      "id": 311,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_tohit_percent_vs_monster": {
+      "id": 312,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ac_vs_monster": {
+      "id": 313,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_ac_percent_vs_monster": {
+      "id": 314,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "firelength": {
+      "id": 315,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "burningmin": {
+      "id": 316,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "burningmax": {
+      "id": 317,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_damage": {
+      "id": 318,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_steal": {
+      "id": 319,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_other": {
+      "id": 320,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_fire": {
+      "id": 321,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_cold": {
+      "id": 322,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_lightning": {
+      "id": 323,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_extra_charges": {
+      "id": 324,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "progressive_tohit": {
+      "id": 325,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "poison_count": {
+      "id": 326,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "damage_framerate": {
+      "id": 327,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "pierce_idx": {
+      "id": 328,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_fire_mastery": {
+      "id": 329,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_ltng_mastery": {
+      "id": 330,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_cold_mastery": {
+      "id": 331,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_pois_mastery": {
+      "id": 332,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_fire_pierce": {
+      "id": 333,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_ltng_pierce": {
+      "id": 334,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_cold_pierce": {
+      "id": 335,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_pois_pierce": {
+      "id": 336,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_critical_strike": {
+      "id": 337,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_dodge": {
+      "id": 338,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_avoid": {
+      "id": 339,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_evade": {
+      "id": 340,
+      "savebits": 7,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_warmth": {
+      "id": 341,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_melee_th": {
+      "id": 342,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_melee_dmg": {
+      "id": 343,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_melee_crit": {
+      "id": 344,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_throw_th": {
+      "id": 345,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_throw_dmg": {
+      "id": 346,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mastery_throw_crit": {
+      "id": 347,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_weaponblock": {
+      "id": 348,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_summon_resist": {
+      "id": 349,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "modifierlist_skill": {
+      "id": 350,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "modifierlist_level": {
+      "id": 351,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "last_sent_hp_pct": {
+      "id": 352,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "source_unit_type": {
+      "id": 353,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "source_unit_id": {
+      "id": 354,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "shortparam1": {
+      "id": 355,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "questitemdifficulty": {
+      "id": 356,
+      "savebits": 2,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mag_mastery": {
+      "id": 357,
+      "savebits": 9,
+      "saveadd": 50,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_mag_pierce": {
+      "id": 358,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_cooldown": {
+      "id": 359,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_missile_damage_scale": {
+      "id": 360,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "psychicward": {
+      "id": 361,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "psychicwardmax": {
+      "id": 362,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "skill_channeling_tick": {
+      "id": 363,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "customization_index": {
+      "id": 364,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "item_magic_damagemax_perlevel": {
+      "id": 365,
+      "savebits": 6,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "passive_dmg_pierce": {
+      "id": 366,
+      "savebits": 8,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    },
+    "heraldtier": {
+      "id": 367,
+      "savebits": 0,
+      "saveadd": 0,
+      "saveparambits": 0,
+      "csvbits": 0
+    }
+  }
+}
