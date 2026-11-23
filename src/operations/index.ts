@@ -15,6 +15,8 @@ export {
   type ReadSaveResult,
   type ReadSaveD2SResult,
   type ReadSaveD2IResult,
+  type ReadSaveLegacyD2IResult,
+  type ReadSaveSource,
 } from './read-save.js';
 export {
   extractInPlaceD2I,

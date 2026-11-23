@@ -94,7 +94,8 @@ export type {
 } from './formats/item-parser.js';
 export type { ExtractResult } from './operations/extract-item.js';
 export type { InsertResult, InsertD2IResult, InsertD2STarget } from './operations/insert-item.js';
-export type { ReadSaveResult, ReadSaveD2SResult, ReadSaveD2IResult } from './operations/read-save.js';
+export type { ReadSaveResult, ReadSaveD2SResult, ReadSaveD2IResult, ReadSaveLegacyD2IResult, ReadSaveSource } from './operations/read-save.js';
+export type { StatTableName } from './game-data/stat-tables.js';
 export type { DeserializedItem } from './items/item-serializer.js';
 export type { TradeItemDTO, ItemQuality } from './items/item-dto.js';
 export type { PlacementItem } from './inventory/placement.js';
@@ -330,7 +331,10 @@ export class D2RSaver {
     return readD2I(buffer, this.gd, options);
   }
 
-  /** Auto-detect format and read a save file. */
+  /**
+   * Read a save of any version (99, 105) and season: the format and the stat table are detected
+   * (1.1.0). `statTable` names the table; `null` means no table reads the file to its end.
+   */
   readSave(buffer: Uint8Array, options?: ReadOptions): ReadSaveResult {
     return readSave(buffer, this.gd, options);
   }

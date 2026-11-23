@@ -54,9 +54,10 @@ const saver = D2RSaver.fromData(dataJson, stringsJson);
 ## Reading Save Files
 
 ```ts
-// Auto-detect format
+// Any file: the format, the save version (99 or 105) and the season are detected (1.1.0)
 const result = saver.readSave(buffer);
-// result.type === 'd2s' | 'd2i'
+// result.type === 'd2s' | 'd2i' | 'd2i-v99', result.version === 99 | 105
+// result.statTable === 'current' | 'blizzless-s2' | 'd2r', or null when no table reads it to its end
 
 // Or explicitly
 const d2s = saver.readD2S(buffer);  // character file
@@ -69,6 +70,13 @@ const tab = saver.walkLegacyD2I(buffer);
 // Without the affix solver: same bits, raw stats, no uniqueValues/mods
 const fast = saver.readD2S(buffer, { resolveMods: false });
 ```
+
+An item stores its stats as bare bits. Their ids and widths come from the `itemstatcost.txt` of the
+game that wrote the save, so a file reads only with the table of its own game: with another one the
+reader drifts by a few bits and stops at an "unknown item stat code" close to the 511 terminator.
+`data/data.json` is the current Blizzless mod (14.11.2026) and also reads seasons 3 and 4;
+`readSave` falls back to the tables of season 2 and of D2R without the mod. Reading with a
+fallback table is for reading only: the in-place operations and the writers use the current one.
 
 ### Did the parser understand the whole file?
 

@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0
+
+- The trade site line 0.4.11-0.4.17 is merged: tables of the Blizzless mod of 14.11.2026 (Bartuc
+  patch, saved stats 474-477), `chargesLeft`, materials fixes, Larzuk sockets, gold in place.
+- `readSave` reads a file of any save version and season: it detects v99 and v105, tries the current
+  stat table, then Blizzless season 2 and D2R without the mod, and returns `version` and `statTable`.
+  A v99 shared stash comes as `type: 'd2i-v99'` with the walked sectors. Files that were refused
+  with INVALID_FORMAT because of version 99 are read now; `detectFormat` still accepts 105 only.
+- The Rust core returns `socketsFieldBit` and `contentBits`.
+- `setCharacterGold` no longer refuses a file whose broken list stops at the end of the buffer.
+
 ## 1.0.0
 
 Every save is now read by a Rust core compiled to WebAssembly. The objects are the same as those

@@ -3,11 +3,12 @@
  * stash fixtures come from D2R without the mod and BlizzlessTest.d2s from Blizzless season 2, so
  * the current Blizzless table in data/data.json stops them at "unknown stat" codes: their stat ids
  * and widths differ (item_singleskill is 3 bits in D2R and 5 in Blizzless, the season 2 custom
- * stats sat at 361-369). test/fixtures/stat-tables.json holds those older tables.
+ * stats sat at 361-369). src/game-data/stat-tables.ts holds those older tables.
  */
 import { describe, expect, it } from 'vitest';
 import { readdirSync, readFileSync } from 'node:fs';
 import { D2RSaver } from '../src/index.js';
+import { computeChecksum } from '../src/core/checksum.js';
 import { locale, rawData, rawDataWith, type StatTable } from './helpers/stat-tables.js';
 
 const fixture = (name: string) => new Uint8Array(readFileSync(`test/fixtures/${name}`));
@@ -47,10 +48,32 @@ describe('fixtures', () => {
     expect(saves).toEqual(Object.keys(FIXTURES).sort());
   });
 
+  it('readSave gives the current read of a file no table reads to its end', () => {
+    const bytes = fixture('WarlockTest.d2s');
+    // A main list that declares one item more than the file holds.
+    bytes[916] += 1;
+    new DataView(bytes.buffer).setUint32(12, computeChecksum(bytes), true);
+    const read = current.readSave(bytes);
+    expect(read.statTable).toBeNull();
+    expect(read.data).toEqual(current.readD2S(bytes));
+  });
+
   for (const [name, table] of Object.entries(FIXTURES)) {
     it(`${name} reads completely with the ${table ?? 'current'} stat table`, () => {
       expect(readsCompletely(saverFor(table), name)).toBe(true);
       if (table) expect(readsCompletely(current, name)).toBe(false);
+    });
+
+    it(`readSave reads ${name} without being told the version or the table`, () => {
+      const bytes = fixture(name);
+      const read = current.readSave(bytes, { resolveMods: false });
+      expect(read).toMatchObject({ statTable: table ?? 'current', version: bytes[name.endsWith('.d2s') ? 4 : 8] });
+      // The same read as with the right table named.
+      const named = saverFor(table);
+      const options = { resolveMods: false };
+      const expected = read.type === 'd2i' ? named.readD2I(bytes, options)
+        : read.version === 99 ? named.readLegacyD2S(bytes, options) : named.readD2S(bytes, options);
+      expect(read.data).toEqual(expected);
     });
   }
 });

@@ -1,47 +1,104 @@
 /**
- * Universal save file reader — auto-detects format and parses.
+ * Universal save file reader — detects the format, the save version and the stat table, and parses.
  */
 
-import { detectFormat } from '../formats/detect.js';
-import { readD2S, type D2SReadResult } from '../formats/d2s-reader.js';
+import { readD2S, readLegacyD2S, type D2SReadResult } from '../formats/d2s-reader.js';
 import { readD2I, type D2IReadResult } from '../formats/d2i-reader.js';
+import { walkLegacyD2I, type D2IParseReport } from '../formats/item-walker.js';
 import type { GameData } from '../game-data/game-data.js';
+import { OLDER_STAT_TABLES, withStatTable, type StatTableName } from '../game-data/stat-tables.js';
 import type { ReadOptions } from '../formats/item-parser.js';
+import { BLIZZLESS_VERSION, D2S_MAGIC } from '../types/constants.js';
 import { D2RSaverError, ErrorCode } from '../types/errors.js';
 
 // ─── Types ──────────────────────────────────────────────────────
 
-export interface ReadSaveD2SResult {
+/** What `readSave` found out about the file (1.1.0). */
+export interface ReadSaveSource {
+  /** The save version in the file's header. */
+  version: 99 | 105;
+  /**
+   * The stat table the file reads to its end with. `null` when none does; `data` is then the read
+   * with the current table, its errors included.
+   */
+  statTable: StatTableName | null;
+}
+
+export interface ReadSaveD2SResult extends ReadSaveSource {
   type: 'd2s';
   data: D2SReadResult;
 }
 
-export interface ReadSaveD2IResult {
+export interface ReadSaveD2IResult extends ReadSaveSource {
   type: 'd2i';
   data: D2IReadResult;
 }
 
-export type ReadSaveResult = ReadSaveD2SResult | ReadSaveD2IResult;
+/** A v99 shared stash has no page layout to split: its sectors come walked (1.1.0). */
+export interface ReadSaveLegacyD2IResult extends ReadSaveSource {
+  type: 'd2i-v99';
+  data: D2IParseReport;
+}
+
+export type ReadSaveResult = ReadSaveD2SResult | ReadSaveD2IResult | ReadSaveLegacyD2IResult;
+
+type Parsed =
+  | Pick<ReadSaveD2SResult, 'type' | 'data'>
+  | Pick<ReadSaveD2IResult, 'type' | 'data'>
+  | Pick<ReadSaveLegacyD2IResult, 'type' | 'data'>;
 
 // ─── Public API ─────────────────────────────────────────────────
 
+const LEGACY_VERSION = 99;
+const METADATA_SECTOR = 2;
+
+function parse(buffer: Uint8Array, type: 'd2s' | 'd2i', legacy: boolean, gd: GameData, options?: ReadOptions): Parsed {
+  if (type === 'd2s') return { type, data: legacy ? readLegacyD2S(buffer, gd, options) : readD2S(buffer, gd, options) };
+  return legacy ? { type: 'd2i-v99', data: walkLegacyD2I(buffer, gd, options) } : { type, data: readD2I(buffer, gd, options) };
+}
+
+/** Every byte of the file belongs to a list that parsed to its declared count. */
+function isComplete(read: Parsed): boolean {
+  switch (read.type) {
+    case 'd2s': return read.data.coverage.complete;
+    case 'd2i': return read.data.tiled && read.data.sectors.every(s => s.type === METADATA_SECTOR || !!s.list?.complete);
+    case 'd2i-v99': return read.data.tiled && read.data.sectors.every(s => !s.walk || s.walk.report.complete);
+  }
+}
+
 /**
- * Detect format and parse a save file buffer.
+ * Read a save file of any version and season: detects the format, the save version (99 or 105) and
+ * the stat table the file was written with. The current table is tried first. For reading only:
+ * never write a file that was read with another table.
  *
  * @param buffer  Raw file bytes.
  * @param gd      GameData instance.
- * @returns Discriminated union with `type` and parsed `data`.
+ * @returns Discriminated union with `type`, parsed `data`, `version` and `statTable`.
  * @throws {D2RSaverError} INVALID_FORMAT if file cannot be detected.
  */
 export function readSave(buffer: Uint8Array, gd: GameData, options?: ReadOptions): ReadSaveResult {
-  const format = detectFormat(buffer);
-  if (!format) {
-    throw new D2RSaverError(ErrorCode.INVALID_FORMAT, 'File is not a valid Blizzless v105 d2s or d2i.');
+  const view = new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength);
+  const magic = buffer.length >= 16 && view.getUint32(0, true) === D2S_MAGIC;
+  const isSave = (offset: number) => [LEGACY_VERSION, BLIZZLESS_VERSION].includes(view.getUint32(offset, true));
+  const type = magic && isSave(4) ? 'd2s' : magic && isSave(8) ? 'd2i' : null;
+  if (!type) {
+    throw new D2RSaverError(ErrorCode.INVALID_FORMAT, 'File is not a d2s or d2i of save version 99 or 105.');
   }
+  const version = view.getUint32(type === 'd2s' ? 4 : 8, true) as 99 | 105;
+  const read = (table: StatTableName) => parse(buffer, type, version === LEGACY_VERSION, withStatTable(gd, table), options);
 
-  if (format.type === 'd2s') {
-    return { type: 'd2s', data: readD2S(buffer, gd, options) };
+  let current: Parsed | undefined;
+  let failure: unknown;
+  for (const statTable of ['current', ...Object.keys(OLDER_STAT_TABLES)] as StatTableName[]) {
+    try {
+      const parsed = read(statTable);
+      if (isComplete(parsed)) return { ...parsed, version, statTable };
+      if (statTable === 'current') current = parsed;
+    } catch (error) {
+      // A file no table reads throws what the current one did.
+      if (statTable === 'current') failure = error;
+    }
   }
-
-  return { type: 'd2i', data: readD2I(buffer, gd, options) };
+  if (!current) throw failure;
+  return { ...current, version, statTable: null };
 }
