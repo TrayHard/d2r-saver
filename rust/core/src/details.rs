@@ -45,6 +45,9 @@ pub struct CharacterDetails {
     pub copies: Vec<ItemCopy>,
     /// Simple items by base code (`SimpleCounts`), corpses and the hireling included.
     pub counts: SimpleCounts,
+    /// Why the rows are not the whole save (`Character::broken`); `None` when they are. An index must
+    /// not take the items behind a list that broke off for gone.
+    pub broken: Option<String>,
 }
 
 #[derive(Debug, PartialEq, Eq)]
@@ -85,6 +88,7 @@ pub fn character_details(bytes: &[u8], gd: &GameData) -> Result<CharacterDetails
         rows,
         copies: read.copies,
         counts: read.counts,
+        broken: read.broken,
     })
 }
 

@@ -16,15 +16,22 @@ fn gd() -> &'static GameData {
     GD.get_or_init(|| GameData::from_json(&repo_file("data/data.json"), &repo_file("data/strings.json")).unwrap())
 }
 
-/// The current data with the stat table a fixture was written with (`test/fixtures/stat-tables.json`).
+/// The current data with the stat table a fixture was written with (`src/game-data/stat-tables.ts`, one
+/// `stat: [id,savebits,saveadd,saveparambits,csvbits],` a line under the name of its table).
 fn gd_with(table: &str) -> GameData {
     let mut data: Value = serde_json::from_str(&repo_file("data/data.json")).unwrap();
-    let tables: Value = serde_json::from_str(&repo_file("test/fixtures/stat-tables.json")).unwrap();
-    let stats = tables[table].as_object().unwrap().iter().map(|(stat, row)| {
-        let entry =
-            json!({"id": row[0], "savebits": row[1], "saveadd": row[2], "saveparambits": row[3], "csvbits": row[4]});
-        (stat.clone(), entry)
-    });
+    let tables = repo_file("src/game-data/stat-tables.ts");
+    let stats = tables
+        .lines()
+        .skip_while(|line| !(line.contains(table) && line.trim_end().ends_with(": {")))
+        .skip(1)
+        .map_while(|line| line.trim().strip_suffix(',')?.split_once(": "))
+        .map(|(stat, row)| {
+            let row: [i64; 5] = serde_json::from_str(row).unwrap();
+            let entry =
+                json!({"id": row[0], "savebits": row[1], "saveadd": row[2], "saveparambits": row[3], "csvbits": row[4]});
+            (stat.to_string(), entry)
+        });
     data["itemStatCost"] = Value::Object(stats.collect());
     GameData::from_json(&data.to_string(), &repo_file("data/strings.json")).unwrap()
 }
@@ -694,4 +701,13 @@ fn charged_skills_read_the_charges_left() {
     }
     let (max, left) = charges(&ring(&data));
     assert_eq!((max, left.len(), left[KEY].as_i64()), (Some(27), 1, Some(11)));
+}
+
+#[test]
+fn a_character_says_when_its_rows_are_not_the_whole_save() {
+    // Read with the mod's table the D2R save breaks off at its sixth item.
+    let broken = |name: &str, gd: &GameData| character_details(&fixture(name), gd).unwrap().broken;
+    let error = "Main item list truncated: item 6/26: unknown item stat code 508";
+    assert_eq!(broken("WarlockTest.d2s", gd()).as_deref(), Some(error));
+    assert_eq!(broken("WarlockTest.d2s", gd_d2r()), None);
 }

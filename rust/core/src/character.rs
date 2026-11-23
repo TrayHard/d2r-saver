@@ -68,6 +68,8 @@ pub struct Character {
     pub copies: Vec<ItemCopy>,
     /// With details: the simple item counts of the same lists.
     pub counts: SimpleCounts,
+    /// The first list that broke off or section that did not read, as the warnings say it.
+    pub broken: Option<String>,
 }
 
 /// `D2SItemLists`.
@@ -187,6 +189,7 @@ pub(crate) fn read_version(data: &[u8], gd: &GameData, version: u32, details: bo
         details: p.details.unwrap_or_default(),
         copies: p.copies.unwrap_or_default(),
         counts: p.counts.unwrap_or_default(),
+        broken: read.profile.warnings.into_iter().next(),
     })
 }
 

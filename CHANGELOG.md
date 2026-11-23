@@ -9,6 +9,8 @@
   A v99 shared stash comes as `type: 'd2i-v99'` with the walked sectors. Files that were refused
   with INVALID_FORMAT because of version 99 are read now; `detectFormat` still accepts 105 only.
 - The Rust core returns `socketsFieldBit` and `contentBits`.
+- `character_details` of the Rust core says in `broken` when a list broke off and its rows are not
+  the whole save.
 - `setCharacterGold` no longer refuses a file whose broken list stops at the end of the buffer.
 
 ## 1.0.0
